@@ -1,0 +1,53 @@
+// This file contains styling for buttons and form inputs
+
+input:focus, button:focus { // Prevent outline on input selection
+    outline: none;
+}
+
+button, .btn { // General button styling
+    border: 0;
+    background-color: transparent;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 3px;
+    font-size: 14px; // Might chang eback to 16 in the future
+    transition: .2s;
+    cursor: pointer;
+
+    &.confirm-action { // Also used for login, etc
+        background-color: #2ed573;
+        color: $white;
+        &:hover {
+            background-color: #34e47d;
+        }
+    }
+    &.btn-danger { // Also used for login, etc
+        background-color: #ff4757;
+        color: $white;
+        &:hover {
+            background-color: #ff6b81;
+        }
+    }
+    &.btn-secondary {
+        background-color: none;
+        color: rgb(90, 90, 90);
+        &:hover {
+            color: rgb(120, 120, 120);
+        }
+    }
+}
+
+input[type=text], input[type=password] {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+
+    color: $dark;
+    border: 0;
+    background-color: $lightgray;
+    padding: 6px 12px;
+    border-radius: 3px;
+    &::-webkit-input-placeholder, &::-moz-placeholder, &:-ms-input-placeholder, &:-moz-placeholder {
+        background-color: rgb(122, 122, 130);
+    }
+}

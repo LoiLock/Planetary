@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="../css/style.css">
+        <style>
+            body {
+                display: grid;
+                place-items: center;
+                text-align: center;
+            }
+            h2 {
+                margin-bottom: 20px;
+            }
+        </style>
+    </head>
+    <body>
+        <div>
+            <h2>Are you sure you want to delete {{ filename }}</h2>
+            <form action="/delete" method="POST">
+                <input type="hidden" name="deletionkey" value="{{ deletionKey }}">
+                <input class="btn btn-danger" type="submit" value="Are you sure?">
+            </form>
+        </div>
+    </body>
+</html>
