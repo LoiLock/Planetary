@@ -1,21 +1,21 @@
 /*
 Error: Undefined variable: "$white".
-        on line 75 of scss/pages/dashboard.scss
+        on line 73 of scss/pages/dashboard.scss
 
-70:         padding: 20px;
-71:         display: flex;
-72:         justify-content: flex-end;
-73:         flex-direction: column;
-74:         flex-wrap: nowrap;
-75:         color: $white;
-76:         h3, span {
-77:             overflow: hidden;
-78:             text-overflow: ellipsis;
-79:             white-space: nowrap;
-80:             transform: translateX(-100%);
+68:         padding: 20px;
+69:         display: flex;
+70:         justify-content: flex-end;
+71:         flex-direction: column;
+72:         flex-wrap: nowrap;
+73:         color: $white;
+74:         h3, span {
+75:             overflow: hidden;
+76:             text-overflow: ellipsis;
+77:             white-space: nowrap;
+78:             transform: translateX(-100%);
 
 Backtrace:
-scss/pages/dashboard.scss:75
+scss/pages/dashboard.scss:73
 /var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/script/tree/variable.rb:49:in `_perform'
 /var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/script/tree/node.rb:50:in `perform'
 /var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:377:in `visit_prop'
@@ -76,4 +76,4 @@ scss/pages/dashboard.scss:75
 body:before {
   white-space: pre;
   font-family: monospace;
-  content: "Error: Undefined variable: \"$white\".\A         on line 75 of scss/pages/dashboard.scss\A \A 70:         padding: 20px;\A 71:         display: flex;\A 72:         justify-content: flex-end;\A 73:         flex-direction: column;\A 74:         flex-wrap: nowrap;\A 75:         color: $white;\A 76:         h3, span {\A 77:             overflow: hidden;\A 78:             text-overflow: ellipsis;\A 79:             white-space: nowrap;\A 80:             transform: translateX(-100%);"; }
+  content: "Error: Undefined variable: \"$white\".\A         on line 73 of scss/pages/dashboard.scss\A \A 68:         padding: 20px;\A 69:         display: flex;\A 70:         justify-content: flex-end;\A 71:         flex-direction: column;\A 72:         flex-wrap: nowrap;\A 73:         color: $white;\A 74:         h3, span {\A 75:             overflow: hidden;\A 76:             text-overflow: ellipsis;\A 77:             white-space: nowrap;\A 78:             transform: translateX(-100%);"; }

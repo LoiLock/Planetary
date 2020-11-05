@@ -28,10 +28,11 @@
 .dashboard {
   width: 100%;
   height: 100%;
-  padding: 50px; }
+  padding: 0 50px 50px; }
   .dashboard__header {
     display: flex;
     flex-wrap: nowrap;
+    margin: 50px 0;
     justify-content: space-between; }
     .dashboard__header__user__name {
       font-weight: 700; }
@@ -58,8 +59,6 @@
     display: inline-block;
     padding-top: 100%;
     vertical-align: top; }
-  .thumbnail-container * {
-    pointer-events: none; }
   .thumbnail-container__child {
     position: absolute;
     top: 0;
@@ -76,7 +75,7 @@
     width: 100%;
     height: 100%;
     opacity: 0;
-    background-color: rgba(55, 66, 250, 0.5);
+    background-color: rgba(10, 10, 10, 0.6);
     transition: .5s;
     padding: 20px;
     display: flex;
@@ -94,6 +93,50 @@
       transition-delay: .15s; }
     .thumbnail-container__summary span {
       transition-delay: .25s; }
+    .thumbnail-container__summary.clipboard-copied::before {
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 24px;
+      z-index: 10;
+      content: 'Copied to clipboard';
+      display: grid;
+      place-items: center;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(49, 231, 125, 0.75);
+      opacity: 0;
+      animation: animateClipboard 5s forwards;
+      pointer-events: none; }
+    .thumbnail-container__summary__actions {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 50%;
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: flex-end; }
+      .thumbnail-container__summary__actions .summary-action {
+        box-sizing: border-box;
+        border-radius: 3px;
+        padding: unset;
+        background-color: rgba(10, 10, 10, 0.6);
+        padding: 4px;
+        max-height: 32px;
+        max-width: 32px;
+        transition: .2s;
+        margin-left: 5px; }
+        .thumbnail-container__summary__actions .summary-action * {
+          pointer-events: none; }
+        .thumbnail-container__summary__actions .summary-action svg {
+          width: 24px;
+          height: 24px;
+          color: #111111;
+          color: #e6e6e6; }
+        .thumbnail-container__summary__actions .summary-action:hover {
+          background-color: rgba(100, 100, 100, 0.6); }
   .thumbnail-container__video {
     position: absolute;
     top: 0;
@@ -103,6 +146,15 @@
     object-fit: cover;
     object-position: center; }
 
+@keyframes animateClipboard {
+  0% {
+    opacity: 0; }
+  25% {
+    opacity: 1; }
+  75% {
+    opacity: 1; }
+  100% {
+    opacity: 0; } }
 input:focus, button:focus {
   outline: none; }
 
@@ -158,7 +210,7 @@ h1, h2, h3, h4, h5, h6, p {
   padding: 0;
   margin: 0; }
 
-div, section, input, header {
+div, section, input, header, button {
   box-sizing: border-box; }
 
 a {

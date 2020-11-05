@@ -22,7 +22,11 @@ async function createVideoThumb(inputFile, outputFile) {
         .audioCodec('aac')
         .audioBitrate('96k')
         .fps('24')
-        .size('640x480')
+        .size('200x200')
+        .outputOptions('-t 10')
+        .on('start', (commandline) => {
+            console.log(commandline);
+        })
         .on('error', (error) => {
             reject(error)
         })
@@ -55,3 +59,5 @@ async function createImageThumb(inputFile, outputFile) {
     var res = await data
     return res
 }
+
+// async function createSoundThumb(inputFile, outputFile)

@@ -33,7 +33,7 @@ function initDB() {
                 console.error(err)
             }
         })
-        db.run("CREATE TABLE IF NOT EXISTS uploads(uploader text, filename text, unixtime text, deletionkey text)", (err) => { // Create users table
+        db.run("CREATE TABLE IF NOT EXISTS uploads(uploader text, filename text, unixtime text, deletionkey text, thumbnail text)", (err) => { // Create users table
             if (err) {
                 console.error(err)
             }
