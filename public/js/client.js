@@ -21,7 +21,7 @@ async function getUploads() {
 
 function addImageToGrid(gridElement, element) { // Creates image element to be added to the image grid, gridElement is the element to which the grid items will be added
     var thumbnailContainer = document.createElement("div") // Container for the actual image grid item
-    var containerChild = document.createElement("div") // Element which has the thumbnail as background image or video or audio
+    var containerChild = document.createElement("img") // backgroun image or video or audio
 
     var buttonWrapper = document.createElement("div") // This div is a wrapper for the share, download, open (in new tab) button
     var summaryCover = document.createElement("div") // This div is a cover for when the user hovers over the image container
@@ -50,6 +50,8 @@ function addImageToGrid(gridElement, element) { // Creates image element to be a
         console.log(fileExt)
         switch(fileExt) {
             case "mp4": // ? Create video player
+                summaryCover.appendChild(createIcon("film")) // Add filetype icon
+
                 thumbnailContainer.addEventListener("click", function(event) {
                     toggleVideo(event.currentTarget) // Why did no one tell me about event.currentTarget before????
                 }, false)
@@ -63,15 +65,20 @@ function addImageToGrid(gridElement, element) { // Creates image element to be a
                 videoSource.src = `thumbs/${element.thumbnail}`
                 videoContainer.appendChild(videoSource)
                 thumbnailContainer.appendChild(videoContainer)
+
                 break;
             case "jpg": // Set background image of containerChild to the thumbnail
+                summaryCover.appendChild(createIcon("image")) // Add filetype icon
                 thumbnailContainer.addEventListener("click", function(event) {
                     openFile(event.currentTarget) // Why did no one tell me about event.currentTarget before????
                 }, false)
                 thumbnailContainer.setAttribute("data-filename", element.filename) // Set Filename, used for opening in new tab
-                containerChild.style.backgroundImage = `url('thumbs/${element.thumbnail}')`
+                containerChild.setAttribute("loading", "lazy") // Use lazy loading where possible
+                containerChild.src = `thumbs/${element.thumbnail}` // Set img.src for the thumbnail
                 break;
             default:
+                summaryCover.appendChild(createIcon("file")) // Add filetype icon
+
                 thumbnailContainer.addEventListener("click", function(event) {
                     openFile(event.currentTarget) // Why did no one tell me about event.currentTarget before????
                 }, false)
@@ -84,9 +91,12 @@ function addImageToGrid(gridElement, element) { // Creates image element to be a
     // thumbnailContainer.addEventListener("click", handleThumbnailClick, false)
 
     // add buttons to summarycover
+    buttonWrapper.appendChild(createDeleteButton(element.deletionkey))
     buttonWrapper.appendChild(createShareButton(element.filename))
     buttonWrapper.appendChild(createDownloadButton(element.filename))
+
     summaryCover.appendChild(buttonWrapper)
+
 
     thumbnailContainer.appendChild(containerChild)
     thumbnailContainer.appendChild(summaryCover)
@@ -148,4 +158,27 @@ function createShareButton(filename) {
         })
     }, false)
     return shareButton
+}
+
+function createDeleteButton(deletionkey) {
+    var deleteButton = document.createElement("a")
+    deleteButton.classList.add("summary-action")
+    var icon = document.createElement("i")
+    icon.setAttribute("data-feather", "trash")
+    deleteButton.appendChild(icon)
+    deleteButton.addEventListener("click", function(event) {
+        event.stopImmediatePropagation() // prevent Parent element click event being triggered
+        window.open("/delete/" + deletionkey, '_blank')
+    }, false)
+    return deleteButton
+}
+
+function createIcon(iconName) {
+    var iconContainer = document.createElement("div")
+    iconContainer.classList.add("icon-container")
+    var icon = document.createElement("i")
+    icon.setAttribute("data-feather", iconName)
+    iconContainer.style.pointerEvents = "none"
+    iconContainer.appendChild(icon)
+    return iconContainer
 }

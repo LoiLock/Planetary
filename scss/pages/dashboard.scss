@@ -23,6 +23,7 @@
 }
 
 .thumbnail-container {
+    box-shadow: 0 4px 6px hsla(0, 0%, 0%, 0.4);
     overflow: hidden;
     border-radius: 6px;
     position: relative;
@@ -54,6 +55,8 @@
         background-repeat: no-repeat;
         background-size: cover;
         transition: .5s;
+        object-fit: cover;
+        object-position: center;
     }
 
     &__summary {
@@ -80,6 +83,22 @@
         }
         h3 { transition-delay: .15s; }
         span { transition-delay: .25s; }
+
+        .icon-container {
+            position: absolute;
+            display: inline-block;
+            top: 20px;
+            left: 20px;
+            padding: 4px;
+            * {
+                pointer-events: none;
+            }
+            svg {
+                height: 24px;
+                width: 24px;
+            }
+        }
+
         $self: &;
         &.clipboard-copied {
             &::before {
@@ -106,7 +125,7 @@
             position: absolute;
             top: 20px;
             right: 20px;
-            width: 50%;
+            width: calc(100% - 40px); // Width minus padding on either sides
             display: flex;
             flex-wrap: nowrap;
             justify-content: flex-end;
@@ -150,10 +169,10 @@
     0% {
         opacity: 0;
     }
-    25% {
+    10% {
         opacity: 1;
     }
-    75% {
+    90% {
         opacity: 1;
     }
     100% {

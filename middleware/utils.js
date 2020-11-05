@@ -18,11 +18,14 @@ async function createVideoThumb(inputFile, outputFile) {
     var data = new Promise((resolve, reject) => {
         ffmpeg('public/u/' + inputFile)
         .videoCodec('libx264')
-        .videoBitrate('700k')
+        .outputOptions("-crf 30")
+        .outputOptions("-maxrate 600k")
+        .outputOptions("-bufsize 1M")
+        .outputOptions("-movflags +faststart")
         .audioCodec('aac')
         .audioBitrate('96k')
         .fps('24')
-        .size('200x200')
+        .size('300x300')
         .outputOptions('-t 10')
         .on('start', (commandline) => {
             console.log(commandline);
@@ -34,6 +37,7 @@ async function createVideoThumb(inputFile, outputFile) {
             resolve(outputFile + '.mp4') // resolve with random filename
         })
         .save('public/thumbs/' + outputFile + '.mp4')
+        // .videoBitrate('450k')
     })
     var res = await data
     return res
@@ -42,10 +46,10 @@ async function createVideoThumb(inputFile, outputFile) {
 async function createImageThumb(inputFile, outputFile) {
     var data = new Promise((resolve, reject) => {
         sharp('public/u/' + inputFile).jpeg({
-            quality: 80,
+            quality: 75,
             progressive: true
         })
-        .resize(200, 200, {
+        .resize(300, 300, {
             fit: 'cover'
         })
         .toFile('public/thumbs/' + outputFile + '.jpg', (error, info) => {
