@@ -7,6 +7,7 @@
 @import 'components/inputs.scss';
 
 html, body {
+    min-height: 100vh !important;
     height: 100%;
 }
 
@@ -22,7 +23,7 @@ h1, h2,h3,h4,h5,h6, p {
     padding: 0;
     margin: 0;
 }
-div, section, input {
+div, section, input, header {
     box-sizing: border-box;
 }
 

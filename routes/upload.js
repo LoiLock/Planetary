@@ -30,16 +30,29 @@ module.exports = {
             var deletionKey = Utils.rndString(32)
             database.logUpload(req.body.key, rndFilename, deletionKey) // Log file upload
 
-            try { // Save the file
-                await fs.writeFile('public/u/' + rndFilename, req.files.uploadfile.data)
-                // TODO: Add Deletion URL
+            var uploadedFile = req.files.uploadfile
+
+            uploadedFile.mv('public/u/' + rndFilename, function(error) {
+                if (error) {
+                    console.log('File upload error: ', error)
+                    return res.status(500).send('Something went wrong during the file upload')
+                }
                 res.send(JSON.stringify({
                     Url: config.protocol + config.serverURL + "/u/" + rndFilename,
                     DeletionURL: config.protocol + config.serverURL + "/delete/" + deletionKey
                 }))
-            } catch (error) {
-                console.error(error)
-            }
+            })
+            // TODO: test function above, remove comment
+            // try { // Save the file
+            //     await fs.writeFile('public/u/' + rndFilename, req.files.uploadfile.data)
+            //     // TODO: Add Deletion URL
+            //     res.send(JSON.stringify({
+            //         Url: config.protocol + config.serverURL + "/u/" + rndFilename,
+            //         DeletionURL: config.protocol + config.serverURL + "/delete/" + deletionKey
+            //     }))
+            // } catch (error) {
+            //     console.error(error)
+            // }
         })
     }
 }

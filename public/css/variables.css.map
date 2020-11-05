@@ -1,1 +1,7 @@
-{"version":3,"sourceRoot":"","sources":["../../scss/variables.scss"],"names":[],"mappings":"AAMA;EACI","file":"variables.css"}
+{
+"version": 3,
+"mappings": "AAMA,UAAW;EACP,WAAW,EAAE,GAAG;;AAGpB,KAAM;EACF,gBAAgB,EAAE,KAAK",
+"sources": ["../../scss/variables.scss"],
+"names": [],
+"file": "variables.css"
+}

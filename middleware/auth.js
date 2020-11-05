@@ -25,7 +25,7 @@ module.exports = {
         // TODO: Add response
     },
 
-    isTokenValid: function(req, res, next) { // Middleware for express.js, check is JWT token is valid, and if so use next() to continue to the handler function of the protected route, if not, send back to login screen
+    isTokenValid: function(req, res, next) { // * Middleware for express.js, check is JWT token is valid, and if so use next() to continue to the handler function of the protected route, if not, send back to login screen
         // database.verifyUser
         console.log(req.cookies)
         if (!req.cookies.token) { // Token cookie isn't set, redirect to login page
@@ -36,7 +36,7 @@ module.exports = {
                 return res.redirect(301, '/login')
             }
             // Valid token
-            req.user = user
+            req.user = user // Allows us to access signed JWT token user object from the routehandler function
             next()
         })
 
@@ -58,7 +58,7 @@ module.exports = {
                 if (await argon2.verify(user.phash, req.body.password, { type: argon2id, timeCost: 30, memoryCost: 1 << 14 })) {
                     // passwords matched, generate JWT token
                     console.log("reached")
-                    var JWTtoken = jwt.sign({username: user.username, isAdmin: user.isAdmin}, config.secretToken, { expiresIn: "1h" })
+                    var JWTtoken = jwt.sign({username: user.username, isAdmin: user.isAdmin, sharextoken: user.sharextoken}, config.secretToken, { expiresIn: "1h" })
                     console.log(JWTtoken)
                     res.json({
                         success: true,

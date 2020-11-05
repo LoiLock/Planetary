@@ -1,5 +1,7 @@
 .text-bold {
-  font-weight: 700;
-}
+  font-weight: 700; }
+
+:root {
+  --grid-item-size: 300px; }
 
 /*# sourceMappingURL=variables.css.map */

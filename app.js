@@ -14,10 +14,12 @@ app.use(fileUpload({
     preserveExtension: true,
     limits: {
         fileSize: config.fileSizeLimitMB * 1000
-    }
+    },
+    useTempFiles : true, // Allows for much larger file uploads and saves ram
+    tempFileDir : 'tmp/'
 }));
 
-app.use(cookieParser())
+app.use(cookieParser()) // Easy cookie parsing for JWT
 
 var nunjucks = require("nunjucks")
 const port = 3000

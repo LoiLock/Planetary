@@ -7,8 +7,22 @@
         <meta name="description" content="Planetary dashboard">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="css/style.css">
+        <script type="module" src="js/client.js"></script>
     </head>
     <body>
-        <div></div>
+        <p>{{ user | dump }}</p>
+        <div class="dashboard">
+            <header class="dashboard__header">
+                <nav>
+    
+                </nav>
+                <div class="dashboard__header__user">
+                    <span class="dashboard__header__user__name">{{ user.username }}</span>
+                </div>
+            </header>
+            <section class="dashboard__content">
+                
+            </section>
+        </div>
     </body>
 </html>

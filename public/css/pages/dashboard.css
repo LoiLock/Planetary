@@ -1,3 +1,51 @@
+.dashboard {
+  width: 100%;
+  height: 100%;
+  padding: 50px; }
+  .dashboard__header {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between; }
+    .dashboard__header__user__name {
+      font-weight: 700; }
+  .dashboard__content {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, var(--grid-item-size));
+    grid-auto-rows: --grid-item-size;
+    grid-gap: 10px;
+    justify-content: center; }
 
+.image-container {
+  overflow: hidden;
+  border-radius: 6px;
+  position: relative;
+  cursor: pointer; }
+  .image-container:hover .image-container__child {
+    transform: scale(1.2); }
+  .image-container:hover .image-container__summary {
+    opacity: 1; }
+  .image-container::before {
+    content: "";
+    display: inline-block;
+    padding-top: 100%;
+    vertical-align: top; }
+  .image-container__child {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    transition: .5s; }
+  .image-container__summary {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    background-color: rgba(55, 66, 250, 0.5);
+    transition: .5s; }
 
 /*# sourceMappingURL=dashboard.css.map */

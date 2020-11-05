@@ -22,7 +22,8 @@ module.exports = {
     isSharexTokenValid,
     verifyUser,
     logUpload,
-    getFileName
+    getFileName,
+    getUploads
 }
 
 function initDB() {
@@ -48,7 +49,7 @@ async function addUser(username, passwordhash, sharextoken) {
 }
 
 function verifyUser(username, callback) { // returns passwordhash, isAdmin and other profile information
-    db.get('SELECT username, phash, isAdmin FROM users WHERE username = ?', username, function(error, result) {
+    db.get('SELECT username, phash, sharextoken, isAdmin FROM users WHERE username = ?', username, function(error, result) {
         if (error) {
             console.error(error)
             return callback(null)
@@ -109,6 +110,22 @@ async function getFileName(deletionkey) { // Get filename associated with deleti
             reject("Invalid file name")
         } else {
             resolve(result.filename)
+        }
+    }))
+    let res = await results
+    return res
+}
+
+async function getUploads(username) { // Get all uploads for a given user
+    let results = new Promise((resolve, reject) => db.all('SELECT uploader, filename, unixtime, deletionkey FROM uploads WHERE uploader = ?', username, (error, result) => {
+        if (error) {
+            console.log(error)
+            reject(error)
+        }
+        if(!result) {
+            reject("Invalid request") // ? no uploads or no user found with that name????
+        } else {
+            resolve(result)
         }
     }))
     let res = await results

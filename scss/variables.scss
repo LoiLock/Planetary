@@ -7,3 +7,7 @@ $lightgray: #f3f3f4; // Primarily used for text inputs such as login and registr
 .text-bold {
     font-weight: 700;
 }
+
+:root {
+    --grid-item-size: 300px;
+}
