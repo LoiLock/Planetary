@@ -17,11 +17,11 @@
         grid-template-columns: repeat(auto-fill, var(--grid-item-size)); // TODO: Make the 200px a css variable to easily be able to change the grid-item size for different media queries
         grid-auto-rows: --grid-item-size;
         grid-gap: 10px;
-        justify-content: center;
+        justify-content: center; // Equal spacing on either side of the grid
     }
 }
 
-.image-container {
+.thumbnail-container {
     overflow: hidden;
     border-radius: 6px;
     position: relative;
@@ -33,6 +33,9 @@
         }
         #{$self}__summary {
             opacity: 1;
+            h3, span {
+                transform: translateX(0%);
+            }
         }
     }
     &::before {
@@ -40,6 +43,9 @@
         display: inline-block;
         padding-top: 100%;
         vertical-align: top;
+    }
+    * { // Only activate on root
+        pointer-events: none;
     }
     &__child {
         position: absolute;
@@ -61,5 +67,29 @@
         opacity: 0;
         background-color: rgba(55, 66, 250, 0.5);
         transition: .5s;
+        padding: 20px;
+        display: flex;
+        justify-content: flex-end;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        color: $white;
+        h3, span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            transform: translateX(-100%);
+            transition: .3s;
+        }
+        h3 { transition-delay: .15s; }
+        span { transition-delay: .25s; }
+    }
+    &__video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
     }
 }

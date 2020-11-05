@@ -19,7 +19,7 @@ module.exports = {
                 return
             }
 
-
+            console.log(req.files)
             // Keep file extension and generate a random filename
             var fileExt = path.extname(req.files.uploadfile.name)
             // ! FIXME, currently this only fixes russian characters, but does not account for files without extension
@@ -28,10 +28,8 @@ module.exports = {
             }
             var rndFilename = Utils.rndString(16) + fileExt
             var deletionKey = Utils.rndString(32)
-            database.logUpload(req.body.key, rndFilename, deletionKey) // Log file upload
-
+            
             var uploadedFile = req.files.uploadfile
-
             uploadedFile.mv('public/u/' + rndFilename, function(error) {
                 if (error) {
                     console.log('File upload error: ', error)
@@ -41,6 +39,7 @@ module.exports = {
                     Url: config.protocol + config.serverURL + "/u/" + rndFilename,
                     DeletionURL: config.protocol + config.serverURL + "/delete/" + deletionKey
                 }))
+                logUpload(req, rndFilename, deletionKey)
             })
             // TODO: test function above, remove comment
             // try { // Save the file
@@ -54,5 +53,33 @@ module.exports = {
             //     console.error(error)
             // }
         })
+    }
+}
+
+// Log file upload to database asyncrously
+// Determine whether a thumbnail can be made for the uploaded file
+async function logUpload(req, rndFilename, deletionKey) {
+    var imageMimes = [ 'image/png', 'image/gif', 'image/jpeg']
+    var videoMimes = [ 'video/mp4', 'video/mpeg', 'video/webm', 'video/x-matroska']
+    if (videoMimes.includes(req.files.uploadfile.mimetype)) { // If upload file has mimetype of supported video, create thumbnail
+        try {
+            var rndThumbVideo = await Utils.createVideoThumb(rndFilename, Utils.rndString(16))
+            console.log("random thumbnail:")
+            console.log(rndThumbVideo)
+            console.log("random thumbnail")
+            database.logUpload(req.body.key, rndFilename, deletionKey, rndThumbVideo) // Log file upload
+        } catch (error) {
+            // ! couldn't create thumbnail
+        }
+    }
+    else if(imageMimes.includes(req.files.uploadfile.mimetype)) {
+        try {
+            var rndThumbnail = await Utils.createImageThumb(rndFilename, Utils.rndString(16))
+            database.logUpload(req.body.key, rndFilename, deletionKey, rndThumbnail) // Log file upload
+        } catch (error) {
+            // ! couldn't create thumbnail
+        }
+    } else {
+        database.logUpload(req.body.key, rndFilename, deletionKey) // Log file upload
     }
 }

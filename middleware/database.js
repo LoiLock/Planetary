@@ -87,7 +87,8 @@ function isSharexTokenValid(sharextoken, callback) { // returns error (could be 
     })
 }
 
-async function logUpload(sharextoken, filename, deletionKey) { // Will lookup the sharextoken, grab the username, and add a new row to the uploads table with the current timestamp
+// ? Thumbnail is a smaller / shorter image or video of the original file
+async function logUpload(sharextoken, filename, deletionKey, thumbnail) { // Will lookup the sharextoken, grab the username, and add a new row to the uploads table with the current timestamp
     db.serialize(() => {
         db.get('SELECT username FROM users WHERE sharextoken = ?', sharextoken, function(error, result) {
             if (error) {
@@ -95,7 +96,7 @@ async function logUpload(sharextoken, filename, deletionKey) { // Will lookup th
                 return
             }
             var currentTime = Math.floor(Date.now() / 1000)
-            db.run('INSERT INTO uploads (uploader, filename, unixtime, deletionkey) VALUES (?,?,?,?)', result.username, filename, currentTime.toString(), deletionKey)
+            db.run('INSERT INTO uploads (uploader, filename, unixtime, deletionkey, thumbnail) VALUES (?,?,?,?,?)', result.username, filename, currentTime.toString(), deletionKey, thumbnail)
         })
         return // !
     })
@@ -117,7 +118,7 @@ async function getFileName(deletionkey) { // Get filename associated with deleti
 }
 
 async function getUploads(username) { // Get all uploads for a given user
-    let results = new Promise((resolve, reject) => db.all('SELECT uploader, filename, unixtime, deletionkey FROM uploads WHERE uploader = ?', username, (error, result) => {
+    let results = new Promise((resolve, reject) => db.all('SELECT uploader, filename, unixtime, deletionkey, thumbnail FROM uploads WHERE uploader = ?', username, (error, result) => {
         if (error) {
             console.log(error)
             reject(error)

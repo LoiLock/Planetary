@@ -42,21 +42,25 @@
     grid-gap: 10px;
     justify-content: center; }
 
-.image-container {
+.thumbnail-container {
   overflow: hidden;
   border-radius: 6px;
   position: relative;
   cursor: pointer; }
-  .image-container:hover .image-container__child {
+  .thumbnail-container:hover .thumbnail-container__child {
     transform: scale(1.2); }
-  .image-container:hover .image-container__summary {
+  .thumbnail-container:hover .thumbnail-container__summary {
     opacity: 1; }
-  .image-container::before {
+    .thumbnail-container:hover .thumbnail-container__summary h3, .thumbnail-container:hover .thumbnail-container__summary span {
+      transform: translateX(0%); }
+  .thumbnail-container::before {
     content: "";
     display: inline-block;
     padding-top: 100%;
     vertical-align: top; }
-  .image-container__child {
+  .thumbnail-container * {
+    pointer-events: none; }
+  .thumbnail-container__child {
     position: absolute;
     top: 0;
     left: 0;
@@ -65,7 +69,7 @@
     background-repeat: no-repeat;
     background-size: cover;
     transition: .5s; }
-  .image-container__summary {
+  .thumbnail-container__summary {
     position: absolute;
     top: 0;
     left: 0;
@@ -73,7 +77,31 @@
     height: 100%;
     opacity: 0;
     background-color: rgba(55, 66, 250, 0.5);
-    transition: .5s; }
+    transition: .5s;
+    padding: 20px;
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    color: #fffefc; }
+    .thumbnail-container__summary h3, .thumbnail-container__summary span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      transform: translateX(-100%);
+      transition: .3s; }
+    .thumbnail-container__summary h3 {
+      transition-delay: .15s; }
+    .thumbnail-container__summary span {
+      transition-delay: .25s; }
+  .thumbnail-container__video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center; }
 
 input:focus, button:focus {
   outline: none; }

@@ -4,6 +4,8 @@ var config = require("./config.json")
 const fileUpload = require("express-fileupload")
 var cookieParser = require('cookie-parser')
 
+var Utils = require("./middleware/utils")
+
 const database = require("./middleware/database")
 
 // Allows reading json post bodies
@@ -13,7 +15,7 @@ app.use(fileUpload({
     safeFileNames: true,
     preserveExtension: true,
     limits: {
-        fileSize: config.fileSizeLimitMB * 1000
+        fileSize: config.fileSizeLimitMB * 1024 * 1024
     },
     useTempFiles : true, // Allows for much larger file uploads and saves ram
     tempFileDir : 'tmp/'
@@ -22,6 +24,7 @@ app.use(fileUpload({
 app.use(cookieParser()) // Easy cookie parsing for JWT
 
 var nunjucks = require("nunjucks")
+const utils = require("./middleware/utils")
 const port = 3000
 
 nunjucks.configure('views', {
@@ -38,5 +41,5 @@ require('./router')(app);
 database.initDB()
 
 app.listen(port, () => {
-    console.log(`Planetary started on ${port}`)
+    console.log(`Planetary started on ${port}`);
 })
