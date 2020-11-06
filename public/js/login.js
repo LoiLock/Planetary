@@ -1,15 +1,22 @@
 window.onload = function() {
     var login_btn = document.querySelector(".login-form .confirm-action")
-    login_btn.addEventListener("click", function() {
-        var username = document.querySelector(".login-form__username").value;
-        var password = document.querySelector(".login-form__password").value;
-        signin(username, password)
-        .then(data => {
-            console.log(data)
-        })
+    var pwInput = document.querySelector(".login-form__password")
+    login_btn.addEventListener("click", getForm, false)
+    pwInput.addEventListener("keyup", function(event) {
+        if (event.key == "Enter" && event.keyCode == 13) {
+            getForm()
+        }
     }, false)
-}
 
+}
+function getForm() {
+    var username = document.querySelector(".login-form__username").value;
+    var password = document.querySelector(".login-form__password").value;
+    signin(username, password)
+    .then(data => {
+        console.log(data)
+    })
+}
 
 // If successfull, server returns JWT token which will be set as cookie to be accessed from the server
 async function signin(username, password) {
@@ -17,7 +24,7 @@ async function signin(username, password) {
         username: username,
         password: password
     }
-    console.log(JSON.stringify(reqBody))
+    // console.log(JSON.stringify(reqBody))
     const response = await fetch("/login", {
         method: "POST",
         headers: {
@@ -29,6 +36,6 @@ async function signin(username, password) {
     console.log(result)
     if (result && result.success) {
         document.cookie = `token=${result.token}`
-        window.location.href = "/dashboard"
+        window.location.href = "/dashboard" + "?n=" + Date.now() // Prevent browser from caching redirect back to /login
     }
 }

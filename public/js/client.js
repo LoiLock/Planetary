@@ -48,6 +48,8 @@ function addImageToGrid(gridElement, element) { // Creates image element to be a
         var fileExt = element.thumbnail.split('.').pop()
         fileExt = fileExt.toLowerCase()
         console.log(fileExt)
+        var fullFileExt = element.filename.split('.').pop() // The file extension of the FILE not the thumbnail
+        fullFileExt =  fullFileExt.toLowerCase()
         switch(fileExt) {
             case "mp4": // ? Create video player
                 summaryCover.appendChild(createIcon("film")) // Add filetype icon
@@ -68,13 +70,49 @@ function addImageToGrid(gridElement, element) { // Creates image element to be a
 
                 break;
             case "jpg": // Set background image of containerChild to the thumbnail
-                summaryCover.appendChild(createIcon("image")) // Add filetype icon
+                if (fullFileExt == "pdf") {
+                    summaryCover.appendChild(createIcon("file")) // Add filetype icon
+                } else {
+                    summaryCover.appendChild(createIcon("image")) // Add filetype icon
+                }
                 thumbnailContainer.addEventListener("click", function(event) {
                     openFile(event.currentTarget) // Why did no one tell me about event.currentTarget before????
                 }, false)
                 thumbnailContainer.setAttribute("data-filename", element.filename) // Set Filename, used for opening in new tab
                 containerChild.setAttribute("loading", "lazy") // Use lazy loading where possible
                 containerChild.src = `thumbs/${element.thumbnail}` // Set img.src for the thumbnail
+                break;
+            case "opus":
+                summaryCover.appendChild(createIcon("music")) // Add filetype icon              
+
+                thumbnailContainer.setAttribute("data-filename", element.filename) // Set Filename, used for opening in new tab
+                
+                var soundContainer = document.createElement("audio")
+                soundContainer.preload = "metadata"
+                // soundContainer.classList.add("thumbnail-container__video")
+                var soundSource = document.createElement("source")
+                soundSource.type = "audio/ogg"
+                soundSource.src = `thumbs/${element.thumbnail}`
+
+                var progressBar = document.createElement("div")
+                progressBar.classList.add("audio-progress")
+
+                // add fancy audioplayer
+                soundContainer.addEventListener('timeupdate', function() {
+                    console.log(this.currentTime)
+                    console.log(this.duration)
+                    var progression = (100 / this.duration) * this.currentTime
+                    this.nextSibling.style.transform = "scaleX(" + progression + "%)"
+                    console.log(progression)
+                }, false)
+                thumbnailContainer.addEventListener("click", function(event) { // Toggle playstate
+                    toggleMusic(event.currentTarget) // Why did no one tell me about event.currentTarget before????
+                }, false)
+
+                thumbnailContainer.appendChild(progressBar)
+                soundContainer.appendChild(soundSource)
+                thumbnailContainer.prepend(soundContainer)
+
                 break;
             default:
                 summaryCover.appendChild(createIcon("file")) // Add filetype icon
@@ -84,18 +122,29 @@ function addImageToGrid(gridElement, element) { // Creates image element to be a
                 }, false)
                 thumbnailContainer.setAttribute("data-filename", element.filename) // Set Filename, used for opening in new tab
         }
+    } else {
+        summaryCover.appendChild(createIcon("file")) // Add filetype icon
+
+        thumbnailContainer.addEventListener("click", function(event) {
+            openFile(event.currentTarget) // Why did no one tell me about event.currentTarget before????
+        }, false)
+        thumbnailContainer.setAttribute("data-filename", element.filename) // Set Filename, used for opening in new tab
     }
 
 
 
     // thumbnailContainer.addEventListener("click", handleThumbnailClick, false)
-
+    
     // add buttons to summarycover
     buttonWrapper.appendChild(createDeleteButton(element.deletionkey))
     buttonWrapper.appendChild(createShareButton(element.filename))
     buttonWrapper.appendChild(createDownloadButton(element.filename))
 
     summaryCover.appendChild(buttonWrapper)
+
+    if (containerChild.src == "") { // Hide image container if src is empty, prevents weird border
+        containerChild.style.display = "none"
+    }
 
 
     thumbnailContainer.appendChild(containerChild)
@@ -109,6 +158,15 @@ function openFile(elem) {
 }
 
 function toggleVideo(elem) {
+    console.log(elem)
+    if (elem.firstChild.paused) {
+        elem.firstChild.play()
+    } else {
+        elem.firstChild.pause()
+    }
+}
+
+function toggleMusic(elem) {
     console.log(elem)
     if (elem.firstChild.paused) {
         elem.firstChild.play()

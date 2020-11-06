@@ -11,7 +11,7 @@ module.exports = {
         // console.log(req.body.key)
         database.isSharexTokenValid(req.body.key, async function(err, result) { // Check if token is valid
             console.log(`RESULT: ${result}`)
-            console.log(result)
+            console.log(result) // Username that's associated with the sharextoken
             if(result.valid == false || err) { // If token is invalid or something went wrong
                 res.send(JSON.stringify({
                     Url: config.protocol + config.serverURL + "/u/" + 'invalidtoken.png'
@@ -39,7 +39,7 @@ module.exports = {
                     Url: config.protocol + config.serverURL + "/u/" + rndFilename,
                     DeletionURL: config.protocol + config.serverURL + "/delete/" + deletionKey
                 }))
-                logUpload(req, rndFilename, deletionKey)
+                logUpload(req, rndFilename, deletionKey) // Log upload to database and create thumbnail
             })
             // TODO: test function above, remove comment
             // try { // Save the file
@@ -61,6 +61,9 @@ module.exports = {
 async function logUpload(req, rndFilename, deletionKey) {
     var imageMimes = [ 'image/png', 'image/gif', 'image/jpeg']
     var videoMimes = [ 'video/mp4', 'video/mpeg', 'video/webm', 'video/x-matroska']
+    var soundMimes = [ 'audio/mpeg' ]
+    var pdfMimes = [ 'application/pdf' ]
+    console.log(req.files.uploadfile.mimetype)
     if (videoMimes.includes(req.files.uploadfile.mimetype)) { // If upload file has mimetype of supported video, create thumbnail
         try {
             var rndThumbVideo = await Utils.createVideoThumb(rndFilename, Utils.rndString(16))
@@ -77,6 +80,22 @@ async function logUpload(req, rndFilename, deletionKey) {
             var rndThumbnail = await Utils.createImageThumb(rndFilename, Utils.rndString(16))
             database.logUpload(req.body.key, rndFilename, deletionKey, rndThumbnail) // Log file upload
         } catch (error) {
+            // ! couldn't create thumbnail
+        }
+    } else if (soundMimes.includes(req.files.uploadfile.mimetype)) {
+        try {
+            var rndSoundThumb = await Utils.createSoundThumb(rndFilename, Utils.rndString(16))
+            database.logUpload(req.body.key, rndFilename, deletionKey, rndSoundThumb) // Log file upload
+        } catch (error) {
+            console.log(error)
+            // ! couldn't create thumbnail
+        }
+    } else if (pdfMimes.includes(req.files.uploadfile.mimetype)) {
+        try {
+            var rndPDFThumb = await Utils.createPDFThumb(rndFilename, Utils.rndString(16))
+            database.logUpload(req.body.key, rndFilename, deletionKey, rndPDFThumb) // Log file upload
+        } catch (error) {
+            console.log(error)
             // ! couldn't create thumbnail
         }
     } else {

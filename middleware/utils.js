@@ -1,5 +1,7 @@
 var ffmpeg = require("fluent-ffmpeg")
 var sharp =  require('sharp')
+var fs = require('fs')
+  , gm = require('gm').subClass({imageMagick: true});
 
 module.exports = {
     rndString: function(length) {
@@ -11,7 +13,9 @@ module.exports = {
         return rndStr
     },
     createVideoThumb,
-    createImageThumb
+    createImageThumb,
+    createSoundThumb,
+    createPDFThumb
 }
 
 async function createVideoThumb(inputFile, outputFile) {
@@ -64,4 +68,46 @@ async function createImageThumb(inputFile, outputFile) {
     return res
 }
 
-// async function createSoundThumb(inputFile, outputFile)
+async function createSoundThumb(inputFile, outputFile) {
+    var data = new Promise((resolve, reject) => {
+        ffmpeg('public/u/' + inputFile)
+        .audioCodec('libopus')
+        .audioBitrate('80k')
+        .outputOptions("-compression_level 6")
+        .outputOptions('-t 10')
+        .on('start', (commandline) => {
+            console.log(commandline);
+        })
+        .on('error', (error) => {
+            reject(error)
+        })
+        .on('end', () => {
+            resolve(outputFile + '.opus') // resolve with random filename
+        })
+        .save('public/thumbs/' + outputFile + '.opus')
+    })
+    var res = await data
+    return res
+}
+
+async function createPDFThumb(inputFile, outputFile) {
+    var data = new Promise((resolve, reject) => {
+        console.log("sdkfhsdjfhskjdf")
+        gm('public/u/' + inputFile + '[0]')
+        .setFormat("jpg")
+        .resize(250)
+        .quality(70)
+        .interlace("Plane")
+        .background('White')
+        .in('-layers', 'flatten')
+        .write('public/thumbs/' + outputFile + '.jpg', (error) => {
+            if (error) {
+                reject(error)
+            }
+            resolve(outputFile + '.jpg')
+        })
+    })
+
+    var res = await data
+    return res
+}
