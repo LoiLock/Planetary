@@ -26,7 +26,10 @@ self.addEventListener('fetch', function(event) {
         //     return caches.match(event.request);
         // }),
         fetch(event.request).then(function(response) { // If we have internet, don't access the cache and just continue as normal
-            return response
+            return caches.open(cacheName).then((cache) => {
+                cache.put(event.request, response.clone())
+                return response
+            })
         }).catch(function() { // If we don't have internet, use the cache
             return caches.match(event.request);
         })

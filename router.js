@@ -1,5 +1,6 @@
 var Upload = require("./routes/upload")
 var Delete = require("./routes/delete")
+var Login = require("./routes/login")
 var Dashboard = require("./routes/dashboard")
 var Auth =  require("./middleware/auth")
 const auth = require("./middleware/auth")
@@ -9,9 +10,7 @@ module.exports = function(app) {
         res.render("index.html")
     })
     
-    app.get("/login", (req, res) => {
-        res.render("login.html")
-    })
+    app.get("/login", Auth.isTokenValid, Login.renderLoginPage)
     app.post("/login", Auth.loginUser)
 
 

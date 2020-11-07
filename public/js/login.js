@@ -32,10 +32,10 @@ async function signin(username, password) {
         },
         body: JSON.stringify(reqBody)
     })
+    console.log(document.cookie)
     var result = await response.json()
     console.log(result)
     if (result && result.success) {
-        document.cookie = `token=${result.token}`
-        window.location.href = "/dashboard" + "?n=" + Date.now() // Prevent browser from caching redirect back to /login
+        window.location.reload() // Just force a reload, the server will check the cookie and redirect me to the dashboard if it's valid
     }
 }

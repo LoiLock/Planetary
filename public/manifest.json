@@ -1,0 +1,16 @@
+{
+    "name": "Planetary - Dashboard",
+    "short_name": "Planetary",
+    "lang": "en-US",
+    "start_url": "/dashboard",
+    "display": "standalone",
+    "background_color": "white",
+    "theme_color": "white",
+    "icons": [
+        {
+          "src": "icon-270.png",
+          "sizes": "270x270",
+          "type": "image/png"
+        }
+    ]
+}
