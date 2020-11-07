@@ -2,7 +2,9 @@ import { humanDate, generateShareXConfig } from './clientutils.js'
 
 window.onload = function() {
     if ('serviceWorker' in navigator) { //register service worker
-        navigator.serviceWorker.register('sw.js');
+        navigator.serviceWorker.register('sw.js', {
+            scope: '/'
+        });
     }
     getUploads() // Get uploads on dashboard load
     initComponents() // Add event listeners to buttons and such

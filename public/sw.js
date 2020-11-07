@@ -3,6 +3,7 @@
 var cacheName = "planetary-pwa"
 
 var filesToCache = [ // Files necessary for the dashboard to function
+    "/sw.js",
     "/dashboard",
     "/js/client.js",
     "/js/clientutils.js",
