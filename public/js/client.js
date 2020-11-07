@@ -107,11 +107,12 @@ function addImageToGrid(gridElement, element) { // Creates image element to be a
                 progressBar.classList.add("audio-progress")
 
                 // add fancy audioplayer
-                soundContainer.addEventListener('timeupdate', function() {
+                soundContainer.addEventListener('timeupdate', function(e) {
                     console.log(this.currentTime)
                     console.log(this.duration)
-                    var progression = (100 / this.duration) * this.currentTime
-                    this.nextSibling.style.transform = "scaleX(" + progression + "%)"
+                    // Interestingly enough, Chrome doesn't support percentages for transform scaleX, so we'll divide the percentages by 100
+                    var progression = ((100 / this.duration) * this.currentTime) / 100
+                    progressBar.setAttribute("style", "transform: scaleX(" + progression + ");")
                     console.log(progression)
                 }, false)
                 thumbnailContainer.addEventListener("click", function(event) { // Toggle playstate
