@@ -195,6 +195,7 @@ function createDownloadButton(filename) {
     // Download attribute
     dlButton.setAttribute("download", filename)
     dlButton.setAttribute("href", '/u/' + filename)
+    dlButton.setAttribute("target", "_blank")
 
     var icon = document.createElement("i")
     icon.setAttribute("data-feather", "download-cloud")
@@ -254,6 +255,32 @@ function createIcon(iconName) {
     return iconContainer
 }
 
+
+
+function toggleColorTheme(e) { // ? Change color theme toggle switch, saves to localstorage
+    document.body.classList.toggle("dark")
+    e.currentTarget.classList.toggle("dark")
+    if(e.currentTarget.classList.contains("dark")) {
+        localStorage.setItem("color-theme", "dark")
+    } else {
+        localStorage.setItem("color-theme", "light")
+    }
+    console.log(e.currentTarget)
+}
+
+function setSavedColorTheme() { // ? Load the currently saved color-theme
+    var currentTheme = localStorage.getItem("color-theme")
+    if (!currentTheme) { // If localstorage item for theme is empty
+        console.log("empty")
+        localStorage.setItem("color-theme", "light")
+        currentTheme = "light"
+    }
+    if (currentTheme == "dark") { document.querySelector(".toggle-colortheme").classList.add("dark") } // Make sure the toggle switch is set to the right position onload as well
+    document.body.classList.add(currentTheme)
+}
+
 function initComponents() {
+    setSavedColorTheme()
     document.querySelector(".generate-sharex-config").addEventListener("click", generateShareXConfig, false) // Generate sharex config file
+    document.querySelector(".toggle-colortheme").addEventListener("click", (event) => {toggleColorTheme(event)}, false)
 }

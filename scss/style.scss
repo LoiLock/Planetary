@@ -15,9 +15,14 @@ html, body {
 body {
     padding: 0;
     margin: 0;
-    background-color: $white;
-    color: $dark;
+    background-color: var(--bg-color);
+    color: var(--fg-color-text);
     font-family: 'Inter', sans-serif;
+    transition: background-color .5s, color .5s;
+    &.dark {
+        --bg-color: #1d1d1d;
+        --fg-color-text: #fffefc;
+    }
 }
 
 h1, h2,h3,h4,h5,h6, p {

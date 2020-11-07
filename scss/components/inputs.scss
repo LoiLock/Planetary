@@ -58,3 +58,34 @@ input[type=text], input[type=password] {
         background-color: rgb(122, 122, 130);
     }
 }
+
+.toggle-colortheme {
+    margin-left: 10px;
+    display: inline-block;
+    vertical-align: top;
+    padding: 0;
+    width: 29px;
+    overflow: hidden;
+    white-space: nowrap;
+    svg {
+        width: 29px;
+        height: 29px;
+        &.feather-sun {
+            color: #ffecbf;
+            transform-origin: -1.5px center;
+            filter: drop-shadow(0 0 2px #ffecbf);
+        }
+        &.feather-moon {
+            color: #66757F;
+            fill: #66757F;
+            transform-origin: right center;
+            filter: drop-shadow(0 0 2px #66757F);
+        }
+        transition: .5s ease;
+    }
+    &.dark {
+        svg {
+            transform: rotate(180deg);
+        }
+    }
+}

@@ -3,7 +3,10 @@
   font-weight: 700; }
 
 :root {
-  --grid-item-size: 300px; }
+  --grid-item-size: 300px;
+  --bg-color: #fffefc;
+  --fg-color-text: #111111;
+  --summary-padding: 20px; }
 
 .login-form-container {
   position: absolute;
@@ -28,21 +31,25 @@
 .dashboard {
   width: 100%;
   height: 100%;
-  padding: 0 50px 50px; }
+  padding: 50px; }
   .dashboard__header {
     display: flex;
     flex-wrap: nowrap;
-    margin: 50px 0;
     justify-content: space-between; }
     .dashboard__header__user__name {
       font-weight: 700; }
   .dashboard__content {
-    margin-bottom: 50px;
+    position: relative;
     display: grid;
     grid-template-columns: repeat(auto-fill, var(--grid-item-size));
     grid-auto-rows: --grid-item-size;
     grid-gap: 10px;
-    justify-content: center; }
+    justify-content: center;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 50px 0; }
+    .dashboard__content::-webkit-scrollbar {
+      display: none; }
 
 .thumbnail-container {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
@@ -81,7 +88,7 @@
     opacity: 0;
     background-color: rgba(10, 10, 10, 0.6);
     transition: .5s;
-    padding: 20px;
+    padding: var(--summary-padding);
     display: flex;
     justify-content: flex-end;
     flex-direction: column;
@@ -100,8 +107,8 @@
     .thumbnail-container__summary .icon-container {
       position: absolute;
       display: inline-block;
-      top: 20px;
-      left: 20px;
+      top: var(--summary-padding);
+      left: var(--summary-padding);
       padding: 4px; }
       .thumbnail-container__summary .icon-container * {
         pointer-events: none; }
@@ -127,9 +134,9 @@
       pointer-events: none; }
     .thumbnail-container__summary__actions {
       position: absolute;
-      top: 20px;
-      right: 20px;
-      width: calc(100% - 40px);
+      top: var(--summary-padding);
+      right: var(--summary-padding);
+      width: calc(100% - (var(--summary-padding) * 2 ));
       display: flex;
       flex-wrap: nowrap;
       justify-content: flex-end; }
@@ -187,16 +194,27 @@
   transform-origin: left;
   transition: .35s linear; }
 
+.dashboard__content.small {
+  --grid-item-size: 150px; }
+  .dashboard__content.small .dashboard {
+    padding: 50px 20px; }
+.dashboard__content.medium {
+  --grid-item-size: 220px;
+  --summary-padding: 15px; }
+  .dashboard__content.medium .dashboard {
+    padding: 50px 20px; }
+
 @media (max-width: 768px) {
   body {
     --grid-item-size: 150px; }
     body .dashboard {
-      padding: 0 20px 50px; } }
-@media (min-width: 768px) and (max-width: 1200px) {
+      padding: 50px 20px; } }
+@media (min-width: 768px) and (max-width: 1280px) {
   body {
-    --grid-item-size: 220px; }
+    --grid-item-size: 220px;
+    --summary-padding: 15px; }
     body .dashboard {
-      padding: 0 20px 50px; } }
+      padding: 50px 20px; } }
 input:focus, button:focus {
   outline: none; }
 
@@ -237,6 +255,30 @@ input[type=text], input[type=password] {
   input[type=text]::-webkit-input-placeholder, input[type=text]::-moz-placeholder, input[type=text]:-ms-input-placeholder, input[type=text]:-moz-placeholder, input[type=password]::-webkit-input-placeholder, input[type=password]::-moz-placeholder, input[type=password]:-ms-input-placeholder, input[type=password]:-moz-placeholder {
     background-color: #7a7a82; }
 
+.toggle-colortheme {
+  margin-left: 10px;
+  display: inline-block;
+  vertical-align: top;
+  padding: 0;
+  width: 29px;
+  overflow: hidden;
+  white-space: nowrap; }
+  .toggle-colortheme svg {
+    width: 29px;
+    height: 29px;
+    transition: .5s ease; }
+    .toggle-colortheme svg.feather-sun {
+      color: #ffecbf;
+      transform-origin: -1.5px center;
+      filter: drop-shadow(0 0 2px #ffecbf); }
+    .toggle-colortheme svg.feather-moon {
+      color: #66757F;
+      fill: #66757F;
+      transform-origin: right center;
+      filter: drop-shadow(0 0 2px #66757F); }
+  .toggle-colortheme.dark svg {
+    transform: rotate(180deg); }
+
 html, body {
   min-height: 100vh !important;
   height: 100%; }
@@ -244,9 +286,13 @@ html, body {
 body {
   padding: 0;
   margin: 0;
-  background-color: #fffefc;
-  color: #111111;
-  font-family: 'Inter', sans-serif; }
+  background-color: var(--bg-color);
+  color: var(--fg-color-text);
+  font-family: 'Inter', sans-serif;
+  transition: background-color .5s, color .5s; }
+  body.dark {
+    --bg-color: #1d1d1d;
+    --fg-color-text: #fffefc; }
 
 h1, h2, h3, h4, h5, h6, p {
   padding: 0;

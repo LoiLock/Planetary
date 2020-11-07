@@ -2,6 +2,9 @@
   font-weight: 700; }
 
 :root {
-  --grid-item-size: 300px; }
+  --grid-item-size: 300px;
+  --bg-color: #fffefc;
+  --fg-color-text: #111111;
+  --summary-padding: 20px; }
 
 /*# sourceMappingURL=variables.css.map */
