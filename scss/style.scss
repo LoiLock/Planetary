@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
 
 // Import other page stylings and variables from variables.scss
+@import 'responsive.scss';
 @import 'variables.scss';
 @import 'pages/login.scss';
 @import 'pages/dashboard.scss';

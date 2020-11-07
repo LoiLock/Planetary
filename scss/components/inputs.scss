@@ -22,7 +22,14 @@ button, .btn { // General button styling
             background-color: #34e47d;
         }
     }
-    &.btn-danger { // Also used for login, etc
+    // &.confirm-action { // user for things 
+    //     background-color: #2ed573;
+    //     color: $white;
+    //     &:hover {
+    //         background-color: #34e47d;
+    //     }
+    // }
+    &.btn-danger { // used for deletion and other irreversable actions
         background-color: #ff4757;
         color: $white;
         &:hover {

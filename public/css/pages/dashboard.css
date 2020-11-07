@@ -1,17 +1,61 @@
-/* Error: Undefined variable.
- *     ,
- * 149 |                     color: $dark;
- *     |                            ^^^^^
- *     '
- *   scss/pages/dashboard.scss 149:28  root stylesheet */
+/*
+Error: Undefined mixin 'small'.
+        on line 203 of scss/pages/dashboard.scss, in `small'
+        from line 203 of scss/pages/dashboard.scss
 
-body::before {
-  font-family: "Source Code Pro", "SF Mono", Monaco, Inconsolata, "Fira Mono",
-      "Droid Sans Mono", monospace, monospace;
+198:     background-color: rgba(0,0,0,0.5);
+199:     transform-origin: left;
+200:     transition: .35s linear;
+201: }
+202: 
+203: @include small {
+204:     body {
+205:         --grid-item-size: 150px;
+206:         .dashboard {
+207:             padding: 0 20px 50px;
+208:         }
+
+Backtrace:
+scss/pages/dashboard.scss:203:in `small'
+scss/pages/dashboard.scss:203
+/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:331:in `block in visit_mixin'
+/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/stack.rb:98:in `block in with_mixin'
+/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/stack.rb:115:in `with_frame'
+/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/stack.rb:98:in `with_mixin'
+/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:329:in `visit_mixin'
+/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/base.rb:36:in `visit'
+/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:152:in `block in visit'
+/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/stack.rb:79:in `block in with_base'
+/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/stack.rb:115:in `with_frame'
+/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/stack.rb:79:in `with_base'
+/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:152:in `visit'
+/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/base.rb:52:in `block in visit_children'
+/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/base.rb:52:in `map'
+/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/base.rb:52:in `visit_children'
+/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:161:in `block in visit_children'
+/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:173:in `with_environment'
+/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:160:in `visit_children'
+/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/base.rb:36:in `block in visit'
+/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:180:in `visit_root'
+/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/base.rb:36:in `visit'
+/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:151:in `visit'
+/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:8:in `visit'
+/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/root_node.rb:36:in `css_tree'
+/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/root_node.rb:29:in `render_with_sourcemap'
+/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/engine.rb:368:in `_render_with_sourcemap'
+/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/engine.rb:285:in `render_with_sourcemap'
+/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/plugin/compiler.rb:484:in `update_stylesheet'
+/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/plugin/compiler.rb:214:in `block in update_stylesheets'
+/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/plugin/compiler.rb:208:in `each'
+/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/plugin/compiler.rb:208:in `update_stylesheets'
+/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/plugin/compiler.rb:464:in `on_file_changed'
+/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/plugin/compiler.rb:324:in `block in watch'
+/var/lib/gems/2.7.0/gems/sass-3.4.0/vendor/listen/lib/listen/listener.rb:252:in `on_change'
+/var/lib/gems/2.7.0/gems/sass-3.4.0/vendor/listen/lib/listen/listener.rb:290:in `block in initialize_adapter'
+/var/lib/gems/2.7.0/gems/sass-3.4.0/vendor/listen/lib/listen/adapters/polling.rb:48:in `poll_changed_directories'
+/var/lib/gems/2.7.0/gems/sass-3.4.0/vendor/listen/lib/listen/adapter.rb:299:in `block in start_poller'
+*/
+body:before {
   white-space: pre;
-  display: block;
-  padding: 1em;
-  margin-bottom: 1em;
-  border-bottom: 2px solid black;
-  content: "Error: Undefined variable.\a     \2577 \a 149 \2502                      color: $dark;\a     \2502                             ^^^^^\a     \2575 \a   scss/pages/dashboard.scss 149:28  root stylesheet";
-}
+  font-family: monospace;
+  content: "Error: Undefined mixin 'small'.\A         on line 203 of scss/pages/dashboard.scss, in `small'\A         from line 203 of scss/pages/dashboard.scss\A \A 198:     background-color: rgba(0,0,0,0.5);\A 199:     transform-origin: left;\A 200:     transition: .35s linear;\A 201: }\A 202: \A 203: @include small {\A 204:     body {\A 205:         --grid-item-size: 150px;\A 206:         .dashboard {\A 207:             padding: 0 20px 50px;\A 208:         }"; }

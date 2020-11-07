@@ -11,7 +11,7 @@ window.onload = function() {
 }
 
 
-// If successfull, server returns JWT token which will be set as cookie to be accessed from the server
+// If successfull, send user to login page
 async function register(username, password) {
     var reqBody = {
         username: username,

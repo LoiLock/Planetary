@@ -28,6 +28,7 @@ async function createVideoThumb(inputFile, outputFile) {
         .outputOptions("-movflags +faststart")
         .audioCodec('aac')
         .audioBitrate('96k')
+        .videoFilters('setdar=1:1')
         .fps('24')
         .size('300x300')
         .outputOptions('-t 10')

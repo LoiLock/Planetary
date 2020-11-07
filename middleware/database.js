@@ -42,10 +42,18 @@ function initDB() {
 }
 
 async function addUser(username, passwordhash, sharextoken) {
-    var stmt = db.prepare("INSERT INTO users (username, phash, sharextoken, isAdmin) VALUES (?,?,?,?)")
-    stmt.run(username, passwordhash, sharextoken, 0)
-    stmt.finalize()
-    console.log("added")
+    var result = new Promise((resolve, reject) => {
+        db.run("INSERT INTO users(username, phash, sharextoken, isAdmin) VALUES(?,?,?,?)", [username, passwordhash, sharextoken, 0], (error) => {
+            if(error) {
+                reject(error)
+            }
+            else {
+                resolve(`Added user ${username}`)
+            }
+        })
+    })
+    var res = await result
+    return res
 }
 
 function verifyUser(username, callback) { // returns passwordhash, isAdmin and other profile information

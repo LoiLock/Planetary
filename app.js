@@ -13,7 +13,7 @@ app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 app.use(fileUpload({
     safeFileNames: true,
-    preserveExtension: true,
+    preserveExtension: 4,
     limits: {
         fileSize: config.fileSizeLimitMB * 1024 * 1024
     },

@@ -61,7 +61,7 @@ module.exports = {
 async function logUpload(req, rndFilename, deletionKey) {
     var imageMimes = [ 'image/png', 'image/gif', 'image/jpeg']
     var videoMimes = [ 'video/mp4', 'video/mpeg', 'video/webm', 'video/x-matroska']
-    var soundMimes = [ 'audio/mpeg' ]
+    var soundMimes = [ 'audio/mpeg', 'audio/mp3', 'audio/x-wav', 'audio/wav', 'audio/x-aiff', 'audio/opus', 'audio/ogg', 'audio/flac', 'audio/x-flac' ]
     var pdfMimes = [ 'application/pdf' ]
     console.log(req.files.uploadfile.mimetype)
     if (videoMimes.includes(req.files.uploadfile.mimetype)) { // If upload file has mimetype of supported video, create thumbnail

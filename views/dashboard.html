@@ -7,7 +7,7 @@
         <meta name="description" content="Planetary dashboard">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="css/style.css">
-        <script src="https://unpkg.com/feather-icons"></script>
+        <script src="js/feather-min.js"></script>
         <script type="module" src="js/client.js"></script>
     </head>
     <body>
@@ -18,12 +18,26 @@
     
                 </nav>
                 <div class="dashboard__header__user">
+                    <button class="generate-sharex-config btn-secondary">Generate shareX configfile</button>
+                    <button class="testfetch">testbutton</button>
                     <span class="dashboard__header__user__name">{{ user.username }}</span>
                 </div>
             </header>
             <section class="dashboard__content">
                 
             </section>
+            <script>
+                document.querySelector(".testfetch").addEventListener("click", async () => {
+                    console.log("test")
+                    var response = await fetch("/uploads")
+                    let data = await response.json()
+                    console.log(data)
+                    data = data.reverse()
+                    data.forEach(element => {
+                        console.log(element)
+                    });
+                }, false)
+            </script>
         </div>
     </body>
 </html>

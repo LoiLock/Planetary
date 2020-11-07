@@ -1,12 +1,19 @@
-import { humanDate } from './clientutils.js'
+import { humanDate, generateShareXConfig } from './clientutils.js'
 
 window.onload = function() {
+    if ('serviceWorker' in navigator) { //register service worker
+        navigator.serviceWorker.register('sw.js');
+    }
     getUploads() // Get uploads on dashboard load
+    initComponents() // Add event listeners to buttons and such
 }
 
 
 async function getUploads() {
     var gridElement = document.querySelector(".dashboard__content")
+    // caches.open('planetary-pwa').then(function(cache) {
+        
+    // })
     var response = await fetch("/uploads")
     let data = await response.json()
     console.log(data)
@@ -108,8 +115,11 @@ function addImageToGrid(gridElement, element) { // Creates image element to be a
                 thumbnailContainer.addEventListener("click", function(event) { // Toggle playstate
                     toggleMusic(event.currentTarget) // Why did no one tell me about event.currentTarget before????
                 }, false)
-
+                var iconBG = document.createElement("i") // Sets background of music player to music icon
+                iconBG.setAttribute("data-feather", "play")
+                iconBG.classList.add("thumbnailicon-bg")
                 thumbnailContainer.appendChild(progressBar)
+                thumbnailContainer.appendChild(iconBG)
                 soundContainer.appendChild(soundSource)
                 thumbnailContainer.prepend(soundContainer)
 
@@ -239,4 +249,8 @@ function createIcon(iconName) {
     iconContainer.style.pointerEvents = "none"
     iconContainer.appendChild(icon)
     return iconContainer
+}
+
+function initComponents() {
+    document.querySelector(".generate-sharex-config").addEventListener("click", generateShareXConfig, false) // Generate sharex config file
 }

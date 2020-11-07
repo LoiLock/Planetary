@@ -1,0 +1,13 @@
+@mixin small { // Phones
+    @media (max-width: 768px) {
+        @content;
+    }
+}
+
+@mixin medium { // Small tablets and small laptops
+    @media (min-width: 768px) and (max-width: 1200px) {
+        @content;
+    }
+}
+
+// Desktop isn't specified, since that's what the default values are for

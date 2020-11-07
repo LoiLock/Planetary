@@ -13,15 +13,43 @@ module.exports = {
         console.log(req.body)
         var sharexToken = Utils.rndString(20)
 
+        // TODO: Make this Utils function
+        if (!req.body.password || !req.body.username) {
+            return res.status(400).json({
+                success: false,
+                message: "Missing fields"
+            })
+        }
+        if(req.body.password == "" || req.body.password.length < 8) {
+            return res.json({
+                success: false,
+                message: "Password is too short"
+            })
+        }
+
         try {
             hash = await argon2.hash(req.body.password, { type: argon2id, timeCost: 30, memoryCost: 1 << 14 }) // Hash users password
+            var username = req.body.username
+            username = username.toLowerCase()
+            try {
+                var result = await database.addUser(username, hash, sharexToken)
+                if (result) {
+                    return res.json({
+                        success: true,
+                        message: "Registered successfully"
+                    })
+                }
+            } catch (error) { // We're just gonna assume here that it's a SQLITE_CONSTRAINT error for the unique username field
+                return res.json({
+                    success: false,
+                    message: "User already exists"
+                })
+            }
         } catch(error) {
-            console.error(error)
+            console.log(error)
         }
-        var username = req.body.username
-        username = username.toLowerCase()
-        database.addUser(username, hash, sharexToken)
-        console.log(hash)
+        
+        // console.log(hash)
         // TODO: Add response
     },
 
@@ -44,6 +72,20 @@ module.exports = {
 
     loginUser: async function(req, res) { // Gives JWT token back to user if the password hash matches the one in the database
         console.log(req.body)
+
+        // TODO: Make this a Utils function
+        if (!req.body.password || !req.body.username) {
+            return res.status(400).json({
+                success: false,
+                message: "Missing fields"
+            })
+        }
+        if(req.body.password == "" || req.body.password.length < 8) {
+            return res.json({
+                success: false,
+                message: "Password is too short"
+            })
+        }
         database.verifyUser((req.body.username).toLowerCase(), async function(user) { // returns a 'user' object, if this is empty, the user does not exist. If it does exist > verify passwordhash
             if (!user) {
                 res.json({
