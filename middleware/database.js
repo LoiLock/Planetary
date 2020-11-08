@@ -23,7 +23,8 @@ module.exports = {
     verifyUser,
     logUpload,
     getFileName,
-    getUploads
+    getUploads,
+    flagDelete
 }
 
 function initDB() {
@@ -33,7 +34,7 @@ function initDB() {
                 console.error(err)
             }
         })
-        db.run("CREATE TABLE IF NOT EXISTS uploads(uploader text, filename text, unixtime text, deletionkey text, thumbnail text)", (err) => { // Create users table
+        db.run("CREATE TABLE IF NOT EXISTS uploads(uploader text, filename text, unixtime text, deletionkey text, thumbnail text, isdeleted integer DEFAULT 0)", (err) => { // Create uploads table
             if (err) {
                 console.error(err)
             }
@@ -126,7 +127,7 @@ async function getFileName(deletionkey) { // Get filename associated with deleti
 }
 
 async function getUploads(username) { // Get all uploads for a given user
-    let results = new Promise((resolve, reject) => db.all('SELECT uploader, filename, unixtime, deletionkey, thumbnail FROM uploads WHERE uploader = ?', username, (error, result) => {
+    let results = new Promise((resolve, reject) => db.all('SELECT uploader, filename, unixtime, deletionkey, thumbnail, isdeleted FROM uploads WHERE uploader = ?', username, (error, result) => {
         if (error) {
             console.log(error)
             reject(error)
@@ -139,4 +140,17 @@ async function getUploads(username) { // Get all uploads for a given user
     }))
     let res = await results
     return res
+}
+
+async function flagDelete(deletionkey) { // Flag file as deleted
+    var results = new Promise((resolve, reject) => {
+        db.run("UPDATE uploads SET isdeleted = 1 WHERE deletionkey = ?", deletionkey, (error) => {
+            if(error) {
+                reject(error)
+            }
+            resolve("Successfully deleted")
+        })
+    })
+    var res = await results
+    return results
 }

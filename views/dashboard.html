@@ -24,6 +24,21 @@
                     <button class="toggle-colortheme"><i data-feather="moon"></i> <i data-feather="sun"></i></button>
                 </div>
             </header>
+            <section class="dashboard__filters">
+                <div class="dashboard__filters__group">
+                    <input class="input-file-search" type="text" placeholder="Enter keywords">
+                    <button class="start-editor icon-btn"><i data-feather="edit-2"></i></button>
+                    <span class="editor-controls">
+                        <button class="submit-deletion icon-btn"><i data-feather="trash"></i></button>
+                    </span>
+                </div>
+
+
+                <div class="dashboard__filters__group">
+                    <div class="input-container"><label for="showFilenames" class="input-label">show info</label> <button id="showFilenames" class="check-box toggle-filter" data-value="showFilenames"></button></div>
+                    <div class="input-container"><label for="hideDeleted" class="input-label">hide deleted</label> <button id="hideDeleted" class="check-box toggle-filter" data-value="hideDeleted" data-checked="true"></button></div>
+                </div>
+            </section>
             <section class="dashboard__content">
                 
             </section>

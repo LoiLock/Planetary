@@ -27,6 +27,7 @@ module.exports = function(app) {
     // Handle sending of deletion page and confirmation page, and actual deletion on post with the right key provided
     app.get("/delete/:deletionkey", Delete.handleDelete)
     app.post("/delete", Delete.handleDeletePOST)
+    app.post("/deleteselection", Delete.handleDeleteSelection) // Delete a list of files
 
     app.get("/dashboard", Auth.isTokenValid, Dashboard.handleDashboard)
 

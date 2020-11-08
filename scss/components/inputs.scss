@@ -49,17 +49,18 @@ input[type=text], input[type=password] {
     font-family: 'Inter', sans-serif;
     font-weight: 700;
 
-    color: $dark;
+    color: var(--fg-color-text);
     border: 0;
-    background-color: $lightgray;
+    background-color: var(--input-bg);
     padding: 6px 12px;
     border-radius: 3px;
+    transition: .2s;
     &::-webkit-input-placeholder, &::-moz-placeholder, &:-ms-input-placeholder, &:-moz-placeholder {
         background-color: rgb(122, 122, 130);
     }
 }
 
-.toggle-colortheme {
+.toggle-colortheme { // Toggle switch for dark/light theme
     margin-left: 10px;
     display: inline-block;
     vertical-align: top;
@@ -67,9 +68,20 @@ input[type=text], input[type=password] {
     width: 29px;
     overflow: hidden;
     white-space: nowrap;
-    svg {
+    &:hover { // TODO: Fix the drop-shadow clipping the overflow borders
+        svg {
+            &.feather-sun {
+                filter: drop-shadow(0 0 4px #ffecbf);
+            }
+            &.feather-moon {
+                filter: drop-shadow(0 0 4px #66757F);
+            }
+        }
+    }
+    svg { // set the transform origin to the center of the actual button. This way the svg's rotate around the center of the switch
         width: 29px;
         height: 29px;
+        transition: .2s;
         &.feather-sun {
             color: #ffecbf;
             transform-origin: -1.5px center;
@@ -87,5 +99,79 @@ input[type=text], input[type=password] {
         svg {
             transform: rotate(180deg);
         }
+    }
+}
+
+
+
+// ? Style checkboxes
+button.check-box {
+    box-sizing: border-box;
+    padding: unset;
+    background-color: rgba(10, 10, 10, 0.6);
+    padding: 4px;
+    height: 32px;
+    width: 32px;
+    transition: .2s;
+    margin: 0 5px;
+    display: inline-block;
+    border-radius: 3px;
+    &[data-checked="true"] {
+        background-color: rgba(140, 140, 140, 0.6);
+        background-color: rgb(55, 66, 250);
+    }
+    * {
+        pointer-events: none;
+    }
+    svg {
+        width: 24px;
+        height: 24px;
+        color: darken(#fff, 10);
+    }
+    &:hover {
+        background-color: rgba(100, 100, 100, 0.6);
+    }
+}
+
+.input-label {
+    color: rgb(90, 90, 90);
+    transition: .2s;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    &:hover {
+        color: rgb(120, 120, 120);
+    }
+}
+
+.input-container { // ? Ties inputs together for justifi-content: space-evenly
+    display: inline-flex;
+}
+
+.summary-action, .icon-btn { // Icon buttons
+    box-sizing: border-box;
+    border-radius: 3px;
+    padding: unset;
+    background-color: rgba(10, 10, 10, 0.6);
+    padding: 4px;
+    max-height: 32px;
+    max-width: 32px;
+    transition: .2s;
+    * {
+        pointer-events: none;
+    }
+    svg {
+        width: 24px;
+        height: 24px;
+        color: darken(#fff, 10);
+    }
+    &:hover {
+        background-color: rgba(100, 100, 100, 0.6);
+    }
+    &.selected {
+        background-color: rgba(49, 231, 125, 0.75);
     }
 }

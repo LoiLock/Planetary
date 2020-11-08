@@ -1,10 +1,13 @@
 .text-bold {
-  font-weight: 700; }
+  font-weight: 700;
+  background-color: rgba(153, 30, 38, 0.6); }
 
 :root {
   --grid-item-size: 300px;
   --bg-color: #fffefc;
   --fg-color-text: #111111;
-  --summary-padding: 20px; }
+  --summary-padding: 20px;
+  --input-bg: #f3f3f4;
+  --bg-color-secondary: #d8d8d8; }
 
 /*# sourceMappingURL=variables.css.map */

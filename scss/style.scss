@@ -6,6 +6,7 @@
 @import 'pages/login.scss';
 @import 'pages/dashboard.scss';
 @import 'components/inputs.scss';
+@import 'components/popups.scss';
 
 html, body {
     min-height: 100vh !important;
@@ -22,6 +23,8 @@ body {
     &.dark {
         --bg-color: #1d1d1d;
         --fg-color-text: #fffefc;
+        --input-bg: #212121;
+        --bg-color-secondary: #0e0e0e
     }
 }
 

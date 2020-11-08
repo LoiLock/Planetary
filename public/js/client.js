@@ -1,5 +1,6 @@
 import { humanDate, generateShareXConfig } from './clientutils.js'
 
+var isInEditor = false // Used to check if click events
 window.onload = function() {
     if ('serviceWorker' in navigator) { //register service worker
         navigator.serviceWorker.register('sw.js', {
@@ -24,6 +25,7 @@ async function getUploads() {
         console.log(element)
         addImageToGrid(gridElement, element)
     });
+    initFilters() // After everything is loaded, add filters
     feather.replace() // reload icons
     return data
 }
@@ -50,6 +52,8 @@ function addImageToGrid(gridElement, element) { // Creates image element to be a
     summaryCover.classList.add("thumbnail-container__summary")
     containerChild.classList.add("thumbnail-container__child")
     buttonWrapper.classList.add("thumbnail-container__summary__actions")
+
+    thumbnailContainer.addEventListener("click", (event) => {selectThumbnailContainer(event) }, false) // first event listener will be the one for the editor, so that it can stop immediate propagation if isInEditor equals true
 
 
     // Create video player or use default background image
@@ -148,16 +152,23 @@ function addImageToGrid(gridElement, element) { // Creates image element to be a
 
     // thumbnailContainer.addEventListener("click", handleThumbnailClick, false)
     
-    // add buttons to summarycover
+    // add buttons to summarycover (delete, share/copy-to-clipboard, download/open-externally)
     buttonWrapper.appendChild(createDeleteButton(element.deletionkey))
     buttonWrapper.appendChild(createShareButton(element.filename))
     buttonWrapper.appendChild(createDownloadButton(element.filename))
 
     summaryCover.appendChild(buttonWrapper)
 
+    if(element.isdeleted == 1) { // make summary cover slightly red if the file is deleted
+        thumbnailContainer.setAttribute("data-isdeleted", true)
+        summaryCover.style.backgroundColor = "rgba(153, 30, 38, 0.3)"
+    }
     if (containerChild.src == "") { // Hide image container if src is empty, prevents weird border
         containerChild.style.display = "none"
     }
+
+    // Set data attributes
+    thumbnailContainer.setAttribute("data-deletionkey", element.deletionkey)
 
 
     thumbnailContainer.appendChild(containerChild)
@@ -170,7 +181,7 @@ function openFile(elem) {
     window.open('/u/' + elem.dataset.filename, '_blank')
 }
 
-function toggleVideo(elem) {
+function toggleVideo(elem) { // Toggles video playback
     console.log(elem)
     if (elem.firstChild.paused) {
         elem.firstChild.play()
@@ -179,7 +190,7 @@ function toggleVideo(elem) {
     }
 }
 
-function toggleMusic(elem) {
+function toggleMusic(elem) { // Toggles music playback
     console.log(elem)
     if (elem.firstChild.paused) {
         elem.firstChild.play()
@@ -279,8 +290,175 @@ function setSavedColorTheme() { // ? Load the currently saved color-theme
     document.body.classList.add(currentTheme)
 }
 
-function initComponents() {
+
+
+
+// TODO: if applyFilter is called from anywhere else, also automatically set the checkboxes to checked
+var applyFilter = { // adds or removes classes based on the boolean "show"
+    showFilenames: function(yes) {
+        var thumbnailContainers = document.getElementsByClassName("thumbnail-container")
+        console.log(thumbnailContainers.length)
+        for (var i = 0; i < thumbnailContainers.length; i++) {
+            if (yes) {
+                thumbnailContainers[i].classList.add("show-info")
+            } else {
+                thumbnailContainers[i].classList.remove("show-info")
+            }
+        }
+    },
+    hideDeleted: function(yes) {
+        var deletedContainers = document.querySelectorAll('.thumbnail-container[data-isdeleted="true"]')
+        for (var i = 0; i < deletedContainers.length; i++) {
+            if(yes) {
+                deletedContainers[i].style.display = "none"
+            } else {
+                deletedContainers[i].style.display = "inline-block"
+            }
+        }
+    }
+}
+
+function handleCheckbox(e) { // Fires the correct function if a .toggle-filter updates
+    var checkbox = e.currentTarget
+    var filtername = checkbox.getAttribute("data-value")
+    if (checkbox.getAttribute("data-checked") == "true") {
+        checkbox.setAttribute("data-checked", "false")
+        applyFilter[filtername](false) // Call function with the same name as the data-value attribute's value
+    } else {
+        checkbox.setAttribute("data-checked", "true")
+        applyFilter[filtername](true)
+    }
+}
+
+function initFilters() { // adds event listeners to filter values
+    var checkboxElems = document.querySelectorAll(".toggle-filter")
+    for (var i = 0; i < checkboxElems.length; i++) {
+        var isChecked = checkboxElems[i].getAttribute("data-checked")
+        var filterType = checkboxElems[i].getAttribute("data-value")
+        console.log(isChecked)
+        console.log(filterType)
+        if (isChecked && isChecked == "true") {
+            console.log(isChecked)
+            console.log(filterType)
+            applyFilter[filterType](isChecked)
+        }
+        checkboxElems[i].addEventListener("click", function(e) {
+            handleCheckbox(e)
+        }, false)
+    }
+}
+
+function initComponents() { // Add events listeners to components and set other values on body load
     setSavedColorTheme()
     document.querySelector(".generate-sharex-config").addEventListener("click", generateShareXConfig, false) // Generate sharex config file
     document.querySelector(".toggle-colortheme").addEventListener("click", (event) => {toggleColorTheme(event)}, false)
+    document.querySelector(".start-editor").addEventListener("click", (event) => { startEditor(event) }, false)
+    document.querySelector(".submit-deletion").addEventListener("click", submitDeleteSelection, false)
+}
+
+
+
+// ? Here we create the dashboard editor, allows selecting multiple files and deleting them, or add them to an album
+function startEditor(e) {
+    isInEditor = !isInEditor
+    console.log(isInEditor)
+    var editorControls = document.querySelector(".editor-controls")
+    if (isInEditor) {
+        e.currentTarget.classList.add("selected")
+        editorControls.style.display = "block"
+    } else {
+        e.currentTarget.classList.remove("selected")
+        editorControls.style.display = "none"
+    }
+}
+
+function selectThumbnailContainer(e) { // ? If isInEditor, then stop other (click) events on the thumbnail-containers, this way
+    if (!isInEditor) { return }
+    e.stopImmediatePropagation()
+
+    var thumbnailContainer = e.currentTarget
+    thumbnailContainer.classList.toggle("selected")
+}
+
+async function submitDeleteSelection() { // Submits selected files as an array of files to be deleted
+    showConfirmation("Delete the selected files?")
+    .then(async (result) => {
+        if (result) {
+            removeAllElementsByQuery(".popup-container")
+            var fileContainers = document.querySelectorAll(".thumbnail-container.selected")
+            var deletionkeys = []
+        
+            for (let i = 0; i < fileContainers.length; i++) { // Create list with deletionkeys
+                var deletionkey = fileContainers[i].getAttribute("data-deletionkey")
+                deletionkeys.push(deletionkey)
+            }
+            if(deletionkeys.length == 0) return
+            
+            var response = await fetch("/deleteselection", {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    keys: deletionkeys
+                })
+            })
+            var data = await response.json()
+            console.log(data)
+        }
+    })
+    .catch((result) => {
+        return
+    })
+}
+
+
+async function showConfirmation(message) {
+    removeAllElementsByQuery(".popup-container")
+    var popupContainer = document.createElement("div")
+    popupContainer.classList.add("popup-container")
+
+    var popupHeader = document.createElement("h2")
+    popupHeader.classList.add("popup-container__header")
+    var popupText = document.createTextNode(message)
+    popupHeader.appendChild(popupText)
+
+    var confirmBtn = document.createElement("button")
+    confirmBtn.classList.add("confirm-btn")
+    var cancelBtn = document.createElement("button")
+    cancelBtn.classList.add("cancel-btn")
+
+    var confirmText = document.createTextNode("Yes, delete")
+    var cancelText = document.createTextNode("No, cancel")
+
+    confirmBtn.appendChild(confirmText)
+    cancelBtn.appendChild(cancelText)
+    
+    confirmBtn.classList.add("btn-danger")
+    cancelBtn.classList.add("btn-secondary")
+
+    popupContainer.appendChild(popupHeader)
+    popupContainer.appendChild(confirmBtn)
+    popupContainer.appendChild(cancelBtn)
+    document.body.appendChild(popupContainer)
+    console.log("2")
+
+
+    var result = new Promise((resolve, reject) => {
+        confirmBtn.addEventListener("click", function() {
+            resolve(true)
+        }, false)
+        cancelBtn.addEventListener("click", function() {
+            popupContainer.remove()
+            reject(false)
+        }, false)
+    })
+    var res = await result
+    return res
+}
+
+function removeAllElementsByQuery(query) {
+    document.querySelectorAll(query).forEach(elem => elem.remove())
+    console.log("1")
 }

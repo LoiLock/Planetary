@@ -12,6 +12,19 @@
             }
         }
     }
+    &__filters {
+        width: 100%;
+        display: flex;
+        justify-content: space-evenly;
+        // flex-wrap: ;
+        &__group {
+            display: inline-flex;
+            gap: 10px; // ! VERY new property, won't work on a lot of browsers
+        }
+        .editor-controls {
+            display: none;
+        }
+    }
     &__content {
         position: relative;
         display: grid;
@@ -34,8 +47,9 @@
     border-radius: 6px;
     position: relative;
     cursor: pointer;
+    transition: box-shadow .2s;
     $self: &;
-    &:hover {
+    &:hover, &.show-info { // If filter showFilenames (show-info) is set, or on hover
         #{$self}__child {
             transform: scale(1.2);
         }
@@ -135,27 +149,8 @@
             display: flex;
             flex-wrap: nowrap;
             justify-content: flex-end;
-            .summary-action { // Icon buttons
-                box-sizing: border-box;
-                border-radius: 3px;
-                padding: unset;
-                background-color: rgba(10, 10, 10, 0.6);
-                padding: 4px;
-                max-height: 32px;
-                max-width: 32px;
-                transition: .2s;
+            .summary-action {
                 margin-left: 5px;
-                * {
-                    pointer-events: none;
-                }
-                svg {
-                    width: 24px;
-                    height: 24px;
-                    color: darken(#fff, 10);
-                }
-                &:hover {
-                    background-color: rgba(100, 100, 100, 0.6);
-                }
             }
         }
     }
@@ -176,6 +171,10 @@
         height: 50%;
         color: rgb(64,64,64);
         transform: translate(-50%, -50%);
+    }
+
+    &.selected { // thumbnail-container is selected in the editor
+        box-shadow: 0 0 0 4px rgba(49, 231, 125, 0.75);
     }
 }
 
