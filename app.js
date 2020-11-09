@@ -25,7 +25,7 @@ app.use(cookieParser()) // Easy cookie parsing for JWT
 
 var nunjucks = require("nunjucks")
 const utils = require("./middleware/utils")
-const port = 3000
+const port = process.env.PORT || 3000
 
 nunjucks.configure('views', {
     autoescape: true,

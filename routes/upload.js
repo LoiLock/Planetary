@@ -36,6 +36,7 @@ module.exports = {
             // 1. save the uploaded mp4 to tmp/ folder
             // 2. in optimizeMP4 save it back to public/u/ folder
             // 3. wait for this and send response back to sharex
+            // TODO: remove the tempfile, since we don't use uploadedfile.mv() the tempfile never gets deleted
             if(['video/mp4', 'video/mpeg'].includes(req.files.uploadfile.mimetype)) {
                 console.log("trying optimization")
                 console.log(rndFilename)
@@ -49,7 +50,7 @@ module.exports = {
                     return // Prevent uploadedFile.mv from firing, this
                 } catch (error) { // something went wrong with ffmpeg video optimization
                     console.log('File upload error: ', error)
-                    // Don't return, continnue to next function
+                    // Don't return, continue to uploadedFile.mv
                 }
             }
 
