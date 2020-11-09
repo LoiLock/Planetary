@@ -34,7 +34,7 @@ function initDB() {
                 console.error(err)
             }
         })
-        db.run("CREATE TABLE IF NOT EXISTS uploads(uploader text, filename text, unixtime text, deletionkey text, thumbnail text, isdeleted integer DEFAULT 0)", (err) => { // Create uploads table
+        db.run("CREATE TABLE IF NOT EXISTS uploads(uploader text, filename text, unixtime text, deletionkey text, thumbnail text, isdeleted integer DEFAULT 0, tags text)", (err) => { // Create uploads table
             if (err) {
                 console.error(err)
             }
@@ -154,3 +154,17 @@ async function flagDelete(deletionkey) { // Flag file as deleted
     var res = await results
     return results
 }
+
+// // tags must be an array
+// async function setAlbums(deletionkey, album) { // Replaces all tags in field
+//     var results = new Promise((resolve, reject) => {
+//         db.run("UPDATE uploads SET tags = ? WHERE deletionkey = ?", deletionkey, (error) => {
+//             if(error) {
+//                 reject(error)
+//             }
+//             resolve("Successfully deleted")
+//         })
+//     })
+//     var res = await results
+//     return results
+// }

@@ -5,6 +5,8 @@ var Dashboard = require("./routes/dashboard")
 var Auth =  require("./middleware/auth")
 const auth = require("./middleware/auth")
 
+var Albums = require("./routes/albums")
+
 module.exports = function(app) {
     app.get("/", (req, res) => {
         res.render("index.html")
@@ -27,11 +29,12 @@ module.exports = function(app) {
     // Handle sending of deletion page and confirmation page, and actual deletion on post with the right key provided
     app.get("/delete/:deletionkey", Delete.handleDelete)
     app.post("/delete", Delete.handleDeletePOST)
+    // TODO: Check for JWT (Although not really necessary since the deletionkeys are already secret)
     app.post("/deleteselection", Delete.handleDeleteSelection) // Delete a list of files
 
     app.get("/dashboard", Auth.isTokenValid, Dashboard.handleDashboard)
 
+    app.use("/albums",Auth.isTokenValid, Albums)
 
     app.get("/uploads", Auth.isTokenValid, Dashboard.getUploads) // Get uploads if JWT token is valid
-
 }

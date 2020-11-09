@@ -1,23 +1,23 @@
 /*
 Error: Undefined mixin 'small'.
-        on line 223 of scss/pages/dashboard.scss, in `small'
-        from line 223 of scss/pages/dashboard.scss
+        on line 224 of scss/pages/dashboard.scss, in `small'
+        from line 224 of scss/pages/dashboard.scss
 
-218:             padding: 50px 20px;
-219:         }
-220:     }
-221: }
-222: 
-223: @include small {
-224:     body {
-225:         --grid-item-size: 150px;
-226:         .dashboard {
-227:             padding: 50px 20px;
-228:         }
+219:             padding: 50px 20px;
+220:         }
+221:     }
+222: }
+223: 
+224: @include small {
+225:     body {
+226:         --grid-item-size: 150px;
+227:         .dashboard {
+228:             padding: 50px 20px;
+229:         }
 
 Backtrace:
-scss/pages/dashboard.scss:223:in `small'
-scss/pages/dashboard.scss:223
+scss/pages/dashboard.scss:224:in `small'
+scss/pages/dashboard.scss:224
 /var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:331:in `block in visit_mixin'
 /var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/stack.rb:98:in `block in with_mixin'
 /var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/stack.rb:115:in `with_frame'
@@ -58,4 +58,4 @@ scss/pages/dashboard.scss:223
 body:before {
   white-space: pre;
   font-family: monospace;
-  content: "Error: Undefined mixin 'small'.\A         on line 223 of scss/pages/dashboard.scss, in `small'\A         from line 223 of scss/pages/dashboard.scss\A \A 218:             padding: 50px 20px;\A 219:         }\A 220:     }\A 221: }\A 222: \A 223: @include small {\A 224:     body {\A 225:         --grid-item-size: 150px;\A 226:         .dashboard {\A 227:             padding: 50px 20px;\A 228:         }"; }
+  content: "Error: Undefined mixin 'small'.\A         on line 224 of scss/pages/dashboard.scss, in `small'\A         from line 224 of scss/pages/dashboard.scss\A \A 219:             padding: 50px 20px;\A 220:         }\A 221:     }\A 222: }\A 223: \A 224: @include small {\A 225:     body {\A 226:         --grid-item-size: 150px;\A 227:         .dashboard {\A 228:             padding: 50px 20px;\A 229:         }"; }

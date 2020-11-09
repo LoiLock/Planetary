@@ -30,7 +30,31 @@ module.exports = {
             var deletionKey = Utils.rndString(32)
             
             var uploadedFile = req.files.uploadfile
+            console.log(req.files.uploadfile.mimetype)
+
+            // * Checks whether file is an mp4, if so, we'll optimize the file
+            // 1. save the uploaded mp4 to tmp/ folder
+            // 2. in optimizeMP4 save it back to public/u/ folder
+            // 3. wait for this and send response back to sharex
+            if(['video/mp4', 'video/mpeg'].includes(req.files.uploadfile.mimetype)) {
+                console.log("trying optimization")
+                console.log(rndFilename)
+                try {
+                    var filename = await Utils.optimizeMP4(req.files.uploadfile.tempFilePath, rndFilename) // Express file-upload provides a tempfile
+                    res.send(JSON.stringify({
+                        Url: config.protocol + config.serverURL + "/u/" + filename,
+                        DeletionURL: config.protocol + config.serverURL + "/delete/" + deletionKey
+                    }))
+                    logUpload(req, rndFilename, deletionKey) // Log upload to database and create thumbnail
+                    return // Prevent uploadedFile.mv from firing, this
+                } catch (error) { // something went wrong with ffmpeg video optimization
+                    console.log('File upload error: ', error)
+                    // Don't return, continnue to next function
+                }
+            }
+
             uploadedFile.mv('public/u/' + rndFilename, function(error) {
+                console.log("Fired")
                 if (error) {
                     console.log('File upload error: ', error)
                     return res.status(500).send('Something went wrong during the file upload')
@@ -41,17 +65,7 @@ module.exports = {
                 }))
                 logUpload(req, rndFilename, deletionKey) // Log upload to database and create thumbnail
             })
-            // TODO: test function above, remove comment
-            // try { // Save the file
-            //     await fs.writeFile('public/u/' + rndFilename, req.files.uploadfile.data)
-            //     // TODO: Add Deletion URL
-            //     res.send(JSON.stringify({
-            //         Url: config.protocol + config.serverURL + "/u/" + rndFilename,
-            //         DeletionURL: config.protocol + config.serverURL + "/delete/" + deletionKey
-            //     }))
-            // } catch (error) {
-            //     console.error(error)
-            // }
+            
         })
     }
 }

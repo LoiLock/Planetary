@@ -365,7 +365,7 @@ function startEditor(e) {
     var editorControls = document.querySelector(".editor-controls")
     if (isInEditor) {
         e.currentTarget.classList.add("selected")
-        editorControls.style.display = "block"
+        editorControls.style.display = "flex"
     } else {
         e.currentTarget.classList.remove("selected")
         editorControls.style.display = "none"

@@ -1,4 +1,5 @@
-var ffmpeg = require("fluent-ffmpeg")
+var ffmpeg = require("fluent-ffmpeg");
+const { resolve } = require("path");
 var sharp =  require('sharp')
 var fs = require('fs')
   , gm = require('gm').subClass({imageMagick: true});
@@ -15,7 +16,8 @@ module.exports = {
     createVideoThumb,
     createImageThumb,
     createSoundThumb,
-    createPDFThumb
+    createPDFThumb,
+    optimizeMP4
 }
 
 async function createVideoThumb(inputFile, outputFile) {
@@ -109,6 +111,28 @@ async function createPDFThumb(inputFile, outputFile) {
         })
     })
 
+    var res = await data
+    return res
+}
+
+// Moves mp4's MOOV atom to the beginning of the file so it can start streaming immediately
+// This function adds roughly 1-2 seconds of delay to a 3 hour long mp4 that's 358MB
+async function optimizeMP4(tempfile, filename) {
+    var data = new Promise((resolve, reject) => {
+        ffmpeg(tempfile)
+        .outputOptions('-c copy')
+        .outputOptions("-movflags +faststart")
+        .on('start', (commandline) => {
+            console.log(commandline);
+        })
+        .on('error', (error) => {
+            reject(error)
+        })
+        .on('end', () => {
+            resolve(filename) // resolve with random filename
+        })
+        .save('public/u/' + filename)
+    })
     var res = await data
     return res
 }
