@@ -1,0 +1,6 @@
+{
+    "protocol": "http://",
+    "serverURL": "localhost:3000",
+    "fileSizeLimitMB": 1024,
+    "secretToken": "slmJoJMHC9x235zKlDPBXFoxFgoEVEcXoMzWrJmiOIJHGhteBXmoklvZOHoHDr4D"
+}

@@ -15,7 +15,7 @@ export function generateShareXConfig() { // Gets JWT token from localstorage, cr
     var key = userObj.sharextoken
     var domainName = window.location.host
     var protocol = window.location.protocol
-    var RequestURL = `${protocol}://${domainName}/upload`
+    var RequestURL = `${protocol}//${domainName}/upload`
     var sharexConfig = // Define sharex structure
     {
         Name: domainName, // TODO: Set this to websitename
