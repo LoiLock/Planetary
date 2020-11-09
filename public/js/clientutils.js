@@ -12,11 +12,13 @@ export function generateShareXConfig() { // Gets JWT token from localstorage, cr
     var userString = atob(JWTtoken.split(".")[1])
     var userObj = JSON.parse(userString)
 
-    var RequestURL = "http://localhost:3000/upload"
     var key = userObj.sharextoken
+    var domainName = window.location.host
+    var protocol = window.location.protocol
+    var RequestURL = `${protocol}://${domainName}/upload`
     var sharexConfig = // Define sharex structure
     {
-        Name: "Planetary", // TODO: Set this to websitename
+        Name: domainName, // TODO: Set this to websitename
         DestinationType: "ImageUploader, TextUploader, FileUploader",
         RequestType: "POST",
         RequestURL,
@@ -30,7 +32,7 @@ export function generateShareXConfig() { // Gets JWT token from localstorage, cr
         DeletionURL: "$json:DeletionURL$"
     }
 
-    createTextFile(`Planetary-${userObj.username}.sxcu`, JSON.stringify(sharexConfig, null, 2)) // Create the config file with pretty-fied json
+    createTextFile(`${domainName}-${userObj.username}.sxcu`, JSON.stringify(sharexConfig, null, 2)) // Create the config file with pretty-fied json
 }
 
 export function getCookieByName(name) { // Get cookie by name
