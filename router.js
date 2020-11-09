@@ -3,13 +3,14 @@ var Delete = require("./routes/delete")
 var Login = require("./routes/login")
 var Dashboard = require("./routes/dashboard")
 var Auth =  require("./middleware/auth")
+var { currentCommitHash } =  require("./middleware/utils")
 const auth = require("./middleware/auth")
 
 var Albums = require("./routes/albums")
 
 module.exports = function(app) {
     app.get("/", (req, res) => {
-        res.render("index.html")
+        res.render("index.html", { currentCommitHash: currentCommitHash })
     })
     
     app.get("/login", Auth.isTokenValid, Login.renderLoginPage)

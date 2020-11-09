@@ -5,6 +5,7 @@ const fileUpload = require("express-fileupload")
 var cookieParser = require('cookie-parser')
 
 var Utils = require("./middleware/utils")
+Utils.setCurrentCommitHash()
 
 const database = require("./middleware/database")
 

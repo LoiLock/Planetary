@@ -4,6 +4,9 @@ var sharp =  require('sharp')
 var fs = require('fs')
   , gm = require('gm').subClass({imageMagick: true});
 
+var { execSync } =  require("child_process")
+
+
 module.exports = {
     rndString: function(length) {
         var rndStr = ""
@@ -17,7 +20,8 @@ module.exports = {
     createImageThumb,
     createSoundThumb,
     createPDFThumb,
-    optimizeMP4
+    optimizeMP4,
+    setCurrentCommitHash
 }
 
 async function createVideoThumb(inputFile, outputFile) {
@@ -135,4 +139,10 @@ async function optimizeMP4(tempfile, filename) {
     })
     var res = await data
     return res
+}
+
+// Gets the current (short) commit hash and sets it as an environment value
+function setCurrentCommitHash() {
+    var cliCommand = "git rev-parse --short HEAD"
+    module.exports.currentCommitHash = execSync(cliCommand).toString().trim()
 }
