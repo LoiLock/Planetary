@@ -1,4 +1,5 @@
 import { humanDate, generateShareXConfig } from './clientutils.js'
+import { initSSE } from './handleevents.js'
 
 var isInEditor = false // Used to check if click events
 window.onload = function() {
@@ -9,10 +10,11 @@ window.onload = function() {
     }
     getUploads() // Get uploads on dashboard load
     initComponents() // Add event listeners to buttons and such
+    initSSE()
 }
 
 
-async function getUploads() {
+export async function getUploads() {
     var gridElement = document.querySelector(".dashboard__content")
     // caches.open('planetary-pwa').then(function(cache) {
         
@@ -22,7 +24,7 @@ async function getUploads() {
     console.log(data)
     data = data.reverse()
     data.forEach(element => {
-        console.log(element)
+        // console.log(element)
         addImageToGrid(gridElement, element)
     });
     initFilters() // After everything is loaded, add filters
@@ -60,7 +62,7 @@ function addImageToGrid(gridElement, element) { // Creates image element to be a
     if (element.thumbnail && element.thumbnail != "") { // If the file has a thumbnail
         var fileExt = element.thumbnail.split('.').pop()
         fileExt = fileExt.toLowerCase()
-        console.log(fileExt)
+        // console.log(fileExt)
         var fullFileExt = element.filename.split('.').pop() // The file extension of the FILE not the thumbnail
         fullFileExt =  fullFileExt.toLowerCase()
         switch(fileExt) {

@@ -145,4 +145,5 @@ async function optimizeMP4(tempfile, filename) {
 function setCurrentCommitHash() {
     var cliCommand = "git rev-parse --short HEAD"
     module.exports.currentCommitHash = execSync(cliCommand).toString().trim()
+    console.log("Set short commit hash")
 }

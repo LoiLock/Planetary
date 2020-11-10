@@ -11,3 +11,7 @@
 - Dashboard "exists" but there's nothing of value there
 
 Also, DB calls are super inconsistent (at least parameterized I guess...) Due to me figuring out late in the project that the standard sqlite package isn't async. Will fix this later... The best example of what that will look like is in delete.js
+
+
+## Setup:
+head /dev/urandom | tr -dc A-Za-z0-9 | head -c 64 ; echo ''

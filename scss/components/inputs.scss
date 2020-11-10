@@ -16,24 +16,18 @@ button, .btn { // General button styling
     cursor: pointer;
 
     &.confirm-action { // Also used for login, etc
-        background-color: #2ed573;
+        background-color: var(--color-medium-green);
         color: $white;
         &:hover {
-            background-color: #34e47d;
+            background-color: var(--color-light-green);
         }
     }
-    // &.confirm-action { // user for things 
-    //     background-color: #2ed573;
-    //     color: $white;
-    //     &:hover {
-    //         background-color: #34e47d;
-    //     }
-    // }
+
     &.btn-danger { // used for deletion and other irreversable actions
-        background-color: #ff4757;
+        background-color: var(--color-medium-red);
         color: $white;
         &:hover {
-            background-color: #ff6b81;
+            background-color: var(--color-light-red);
         }
     }
     &.btn-secondary {

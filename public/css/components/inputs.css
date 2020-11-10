@@ -6,13 +6,13 @@ Error: Undefined variable: "$white".
 16:     cursor: pointer;
 17: 
 18:     &.confirm-action { // Also used for login, etc
-19:         background-color: #2ed573;
+19:         background-color: var(--color-medium-green);
 20:         color: $white;
 21:         &:hover {
-22:             background-color: #34e47d;
+22:             background-color: var(--color-light-green);
 23:         }
 24:     }
-25:     // &.confirm-action { // user for things 
+25: 
 
 Backtrace:
 scss/components/inputs.scss:20
@@ -76,4 +76,4 @@ scss/components/inputs.scss:20
 body:before {
   white-space: pre;
   font-family: monospace;
-  content: "Error: Undefined variable: \"$white\".\A         on line 20 of scss/components/inputs.scss\A \A 15:     transition: .2s;\A 16:     cursor: pointer;\A 17: \A 18:     &.confirm-action { // Also used for login, etc\A 19:         background-color: #2ed573;\A 20:         color: $white;\A 21:         &:hover {\A 22:             background-color: #34e47d;\A 23:         }\A 24:     }\A 25:     // &.confirm-action { // user for things "; }
+  content: "Error: Undefined variable: \"$white\".\A         on line 20 of scss/components/inputs.scss\A \A 15:     transition: .2s;\A 16:     cursor: pointer;\A 17: \A 18:     &.confirm-action { // Also used for login, etc\A 19:         background-color: var(--color-medium-green);\A 20:         color: $white;\A 21:         &:hover {\A 22:             background-color: var(--color-light-green);\A 23:         }\A 24:     }\A 25: "; }

@@ -15,6 +15,27 @@ function getForm() {
     signin(username, password)
     .then(data => {
         console.log(data)
+        console.log(data.success)
+        if (data && data.success) { // * Reload page to force redirect from server after 3 seconds
+            setTimeout(() => {
+                window.location.reload() // Just force a reload, the server will check the cookie and redirect me to the dashboard if it's valid
+            }, 3000);
+        }
+        var formResponseInfo = document.querySelector(".form-response-info")
+
+        formResponseInfoTimeout = setTimeout(() => { // Clear message after 5 seconds
+            formResponseInfo.classList.remove("success", "fail")
+        }, 5000);
+
+        if(data.success && data.success == true) {
+            formResponseInfo.classList.remove("fail")
+            formResponseInfo.classList.add("success")
+            formResponseInfo.textContent = data.message
+        } else {
+            formResponseInfo.classList.remove("success")
+            formResponseInfo.classList.add("fail")
+            formResponseInfo.textContent = data.message
+        }
     })
 }
 
@@ -32,10 +53,6 @@ async function signin(username, password) {
         },
         body: JSON.stringify(reqBody)
     })
-    console.log(document.cookie)
-    var result = await response.json()
-    console.log(result)
-    if (result && result.success) {
-        window.location.reload() // Just force a reload, the server will check the cookie and redirect me to the dashboard if it's valid
-    }
+    var data = await response.json()
+    return data
 }

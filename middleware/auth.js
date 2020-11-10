@@ -91,7 +91,7 @@ module.exports = {
         if(req.body.password == "" || req.body.password.length < 8) {
             return res.json({
                 success: false,
-                message: "Password is too short"
+                message: "Invalid login"
             })
         }
 
@@ -116,7 +116,8 @@ module.exports = {
                         expiresIn: 60 * 60 * 1000 // Cookie expires after 1 hour, just like the JWT token
                     })
                     return res.json({
-                        success: true
+                        success: true,
+                        message: "Logged in. Redirecting..."
                     })
                 } else {
                     // passwords did not match

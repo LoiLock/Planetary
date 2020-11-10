@@ -1,5 +1,7 @@
 const sqlite3 = require("sqlite3").verbose()
 
+var { sendEvent } = require("../middleware/liveevents")
+
 const db = new sqlite3.Database("./db/planetary.db", (err) => {
     if (err) {
         console.error(err)
@@ -106,6 +108,7 @@ async function logUpload(sharextoken, filename, deletionKey, thumbnail) { // Wil
             }
             var currentTime = Math.floor(Date.now() / 1000)
             db.run('INSERT INTO uploads (uploader, filename, unixtime, deletionkey, thumbnail) VALUES (?,?,?,?,?)', result.username, filename, currentTime.toString(), deletionKey, thumbnail)
+            sendEvent("fileupload", result.username, filename) // ? Send SSE to client/browser when the thumbnail has been added to the database
         })
         return // !
     })

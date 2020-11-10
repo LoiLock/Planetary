@@ -1,5 +1,7 @@
 // Contains useful conversion functions
 
+import { getUploads } from './client.js'
+
 export function humanDate(unixTime) { // Takes unixtime in SECONDS and returns string in format: 4 September 2020
     var dateObject = new Date(unixTime * 1000)
     
@@ -52,7 +54,34 @@ function createTextFile(filename, fileContent) { // Create and save file with co
     tempElem.style.display = 'none'
     document.body.appendChild(tempElem)
     
-    tempElem.click()
+    tempElem.click() // Open the download link
     
     document.body.removeChild(tempElem)
+}
+
+export function showNotification(title, notifyObj) { // notifyObj contains object with various fields to customize notifications
+    if (!("Notification" in window)) {
+        // ! Browser does not support notifications;
+    }
+    // Check if we have the permission to send notifications
+    else if (Notification.permission === "granted") {
+        // If it's okay let's create a notification
+        var notification = new Notification(title, notifyObj);
+    }
+    // No permission to send notifications, ask permission
+    else if (Notification.permission !== "denied") {
+        Notification.requestPermission().then(function (permission) {
+            // If the user accepts, let's create a notification
+            if (permission === "granted") {
+                var notification = new Notification(title, notifyObj);
+            }
+        });
+    }
+
+    // TODO: If the user has denied the notifications, stop bothering them
+}
+
+export function refreshDashboardContent() { // Empties dashboard, and repopulates it with the latest uploads
+    document.querySelector(".dashboard__content").textContent = "";
+    getUploads()
 }

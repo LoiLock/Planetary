@@ -46,7 +46,7 @@ module.exports = {
                         Url: config.protocol + config.serverURL + "/u/" + filename,
                         DeletionURL: config.protocol + config.serverURL + "/delete/" + deletionKey
                     }))
-                    logUpload(req, rndFilename, deletionKey) // Log upload to database and create thumbnail
+                    createThumbnail(req, rndFilename, deletionKey) // Log upload to database and create thumbnail
                     return // Prevent uploadedFile.mv from firing, this
                 } catch (error) { // something went wrong with ffmpeg video optimization
                     console.log('File upload error: ', error)
@@ -64,7 +64,7 @@ module.exports = {
                     Url: config.protocol + config.serverURL + "/u/" + rndFilename,
                     DeletionURL: config.protocol + config.serverURL + "/delete/" + deletionKey
                 }))
-                logUpload(req, rndFilename, deletionKey) // Log upload to database and create thumbnail
+                createThumbnail(req, rndFilename, deletionKey) // Log upload to database and create thumbnail
             })
             
         })
@@ -73,47 +73,60 @@ module.exports = {
 
 // Log file upload to database asyncrously
 // Determine whether a thumbnail can be made for the uploaded file
-async function logUpload(req, rndFilename, deletionKey) {
+async function createThumbnail(req, rndFilename, deletionKey) {
     var imageMimes = [ 'image/png', 'image/gif', 'image/jpeg']
     var videoMimes = [ 'video/mp4', 'video/mpeg', 'video/webm', 'video/x-matroska']
     var soundMimes = [ 'audio/mpeg', 'audio/mp3', 'audio/x-wav', 'audio/wav', 'audio/x-aiff', 'audio/opus', 'audio/ogg', 'audio/flac', 'audio/x-flac' ]
     var pdfMimes = [ 'application/pdf' ]
     console.log(req.files.uploadfile.mimetype)
-    if (videoMimes.includes(req.files.uploadfile.mimetype)) { // If upload file has mimetype of supported video, create thumbnail
-        try {
-            var rndThumbVideo = await Utils.createVideoThumb(rndFilename, Utils.rndString(16))
-            console.log("random thumbnail:")
-            console.log(rndThumbVideo)
-            console.log("random thumbnail")
-            database.logUpload(req.body.key, rndFilename, deletionKey, rndThumbVideo) // Log file upload
-        } catch (error) {
-            // ! couldn't create thumbnail
+
+    var thumbnail = new Promise(async (resolve, reject) => {
+        if (videoMimes.includes(req.files.uploadfile.mimetype)) { // If upload file has mimetype of supported video, create thumbnail
+            try {
+                var rndThumbVideo = await Utils.createVideoThumb(rndFilename, Utils.rndString(16))
+                console.log("random thumbnail:")
+                console.log(rndThumbVideo)
+                console.log("random thumbnail")
+                resolve(rndThumbVideo)
+            } catch (error) {
+                reject(error)
+            }
         }
-    }
-    else if(imageMimes.includes(req.files.uploadfile.mimetype)) {
-        try {
-            var rndThumbnail = await Utils.createImageThumb(rndFilename, Utils.rndString(16))
-            database.logUpload(req.body.key, rndFilename, deletionKey, rndThumbnail) // Log file upload
-        } catch (error) {
-            // ! couldn't create thumbnail
+        else if(imageMimes.includes(req.files.uploadfile.mimetype)) {
+            try {
+                var rndThumbnail = await Utils.createImageThumb(rndFilename, Utils.rndString(16))
+                resolve(rndThumbnail)
+            } catch (error) {
+                reject(error)
+            }
+        } else if (soundMimes.includes(req.files.uploadfile.mimetype)) {
+            try {
+                var rndSoundThumb = await Utils.createSoundThumb(rndFilename, Utils.rndString(16))
+                resolve(rndSoundThumb)
+            } catch (error) {
+                console.log(error)
+                reject(reject)
+            }
+        } else if (pdfMimes.includes(req.files.uploadfile.mimetype)) {
+            try {
+                var rndPDFThumb = await Utils.createPDFThumb(rndFilename, Utils.rndString(16))
+                resolve(rndPDFThumb)
+            } catch (error) {
+                reject(error)
+            }
+        } else {
+            reject("Filetype does not support thumbnails")
         }
-    } else if (soundMimes.includes(req.files.uploadfile.mimetype)) {
-        try {
-            var rndSoundThumb = await Utils.createSoundThumb(rndFilename, Utils.rndString(16))
-            database.logUpload(req.body.key, rndFilename, deletionKey, rndSoundThumb) // Log file upload
-        } catch (error) {
-            console.log(error)
-            // ! couldn't create thumbnail
-        }
-    } else if (pdfMimes.includes(req.files.uploadfile.mimetype)) {
-        try {
-            var rndPDFThumb = await Utils.createPDFThumb(rndFilename, Utils.rndString(16))
-            database.logUpload(req.body.key, rndFilename, deletionKey, rndPDFThumb) // Log file upload
-        } catch (error) {
-            console.log(error)
-            // ! couldn't create thumbnail
-        }
-    } else {
+    })
+
+    try {
+        var thumbnailResult = await thumbnail
+        console.log("Thumbnail:")
+        console.log(thumbnailResult)
+        database.logUpload(req.body.key, rndFilename, deletionKey, thumbnailResult) // Log file upload with thumbnail
+    } catch (error) { // ! File does not support thumbnails, or something went wrong and not thumbnail could be created
+        console.log("Error on thumbnail creation")
+        console.log(error)
         database.logUpload(req.body.key, rndFilename, deletionKey) // Log file upload
     }
 }

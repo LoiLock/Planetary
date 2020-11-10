@@ -11,7 +11,7 @@ module.exports = {
         username = username.toLowerCase()
         try {
             var uploads = await database.getUploads(username)
-            console.log(uploads)
+            // console.log(uploads)
             return res.send(uploads)
         } catch (error) {
             return res.send('Something went wrong') // TODO: Handle error on the client side

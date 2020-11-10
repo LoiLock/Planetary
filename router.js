@@ -5,6 +5,7 @@ var Dashboard = require("./routes/dashboard")
 var Auth =  require("./middleware/auth")
 var { currentCommitHash } =  require("./middleware/utils")
 const auth = require("./middleware/auth")
+const LiveEvents = require("./middleware/liveevents")
 
 var Albums = require("./routes/albums")
 
@@ -35,7 +36,9 @@ module.exports = function(app) {
 
     app.get("/dashboard", Auth.isTokenValid, Dashboard.handleDashboard)
 
-    app.use("/albums",Auth.isTokenValid, Albums)
+    app.use("/albums", Auth.isTokenValid, Albums) // TODO: change to tags instead of albums
 
     app.get("/uploads", Auth.isTokenValid, Dashboard.getUploads) // Get uploads if JWT token is valid
+
+    app.get("/events", Auth.isTokenValid, LiveEvents.handleEvent)
 }

@@ -10,7 +10,11 @@
   --summary-padding: 20px;
   --input-bg: #f3f3f4;
   --bg-color-secondary: #d8d8d8;
-  --placeholder-color-text: #7a7a82; }
+  --placeholder-color-text: #7a7a82;
+  --color-medium-green: #2ed573;
+  --color-light-green: #34e47d;
+  --color-medium-red: #ff4757;
+  --color-light-red: #ff6b81; }
 
 .login-form-container {
   position: absolute;
@@ -216,6 +220,26 @@
     --summary-padding: 15px; }
     body .dashboard {
       padding: 50px 20px; } }
+.form-response-info {
+  display: inline-block;
+  transform: translateY(0px);
+  overflow-x: hidden;
+  width: 0;
+  white-space: nowrap;
+  opacity: 0;
+  transition: .5s;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--placeholder-color-text); }
+  .form-response-info.success {
+    color: var(--color-medium-green); }
+  .form-response-info.fail {
+    color: var(--color-medium-red); }
+  .form-response-info.success, .form-response-info.fail {
+    opacity: 1;
+    transform: translateY(10px);
+    width: 100%; }
+
 input:focus, button:focus {
   outline: none; }
 
@@ -230,15 +254,15 @@ button, .btn {
   transition: .2s;
   cursor: pointer; }
   button.confirm-action, .btn.confirm-action {
-    background-color: #2ed573;
+    background-color: var(--color-medium-green);
     color: #fffefc; }
     button.confirm-action:hover, .btn.confirm-action:hover {
-      background-color: #34e47d; }
+      background-color: var(--color-light-green); }
   button.btn-danger, .btn.btn-danger {
-    background-color: #ff4757;
+    background-color: var(--color-medium-red);
     color: #fffefc; }
     button.btn-danger:hover, .btn.btn-danger:hover {
-      background-color: #ff6b81; }
+      background-color: var(--color-light-red); }
   button.btn-secondary, .btn.btn-secondary {
     background-color: none;
     color: #5a5a5a; }
