@@ -25,7 +25,7 @@ self.addEventListener('fetch', function(event) {
         fetch(event.request).then(function(response) { // If we have internet, don't access the cache and just continue as normal
             // ? Get url pathname, check if starts with /u/, if it does, return the response of the fetch request and do NOT cache the /u/ file
             var reqPath = new URL(event.request.url)
-            if (reqPath.pathname.startsWith("/u/")) {
+            if (reqPath.pathname.startsWith("/u/") || reqPath.pathname.startsWith("/events")) {
                 // console.log("not caching " + reqPath.pathname)
                 return response
             }

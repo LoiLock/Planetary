@@ -82,6 +82,16 @@ export function showNotification(title, notifyObj) { // notifyObj contains objec
 }
 
 export function refreshDashboardContent() { // Empties dashboard, and repopulates it with the latest uploads
-    document.querySelector(".dashboard__content").textContent = "";
+    // document.querySelector(".dashboard__content").textContent = "";
     getUploads()
+}
+
+
+function createThumbnailCard() {
+
+}
+
+
+export var svgValues = {
+    iconTrash: feather.icons.trash.toSvg()
 }

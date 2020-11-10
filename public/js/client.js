@@ -1,4 +1,4 @@
-import { humanDate, generateShareXConfig } from './clientutils.js'
+import { humanDate, generateShareXConfig, svgValues } from './clientutils.js'
 import { initSSE } from './handleevents.js'
 
 var isInEditor = false // Used to check if click events
@@ -13,28 +13,58 @@ window.onload = function() {
     initSSE()
 }
 
-
+var previousUploads = [] // Empty array to compare against in getUploads
+var gridFragment = document.createDocumentFragment() // Use gridfragment to prevent constant repainting
 export async function getUploads() {
+    console.time("startrequest")
     var gridElement = document.querySelector(".dashboard__content")
     // caches.open('planetary-pwa').then(function(cache) {
         
     // })
     var response = await fetch("/uploads")
     let data = await response.json()
+
+    // data = data.reverse()
     console.log(data)
-    data = data.reverse()
-    data.forEach(element => {
-        // console.log(element)
-        addImageToGrid(gridElement, element)
+    console.log(previousUploads)
+
+    // Check which files are actually new (From SSE for example)
+    // And only add those files
+    console.time("filter")
+    var newUploads = data.filter(({deletionkey: value1 }) => { // loop request array and grab deletion key as value1, as function function argument
+        return !previousUploads.some(({deletionkey: value2}) => value2 === value1 ) // is the current filtered array entry NOT ANYWHERE in previous uploads
+    })
+    console.timeEnd("filter")
+
+    previousUploads = data
+    console.log(newUploads)
+    console.time("populate")
+
+
+    // ! Create thumbnail grid-item for every item in array
+    newUploads.forEach(element => {
+        addImageToGrid(element)
     });
+    gridElement.prepend(gridFragment) // Consome the gridFragment and append it to the body
+    
+    console.timeEnd("startrequest")
+    console.timeEnd("populate")
+    console.log(document.querySelectorAll(".thumbnail-container").length)
+    countElements(".dashboard__content")
+    countElementsNoSVG(".dashboard__content")
+    countElements(".thumbnail-container")
     initFilters() // After everything is loaded, add filters
+
+    console.time("replaceIcons")
     feather.replace() // reload icons
+    console.timeEnd("replaceIcons")
     return data
 }
 
-function addImageToGrid(gridElement, element) { // Creates image element to be added to the image grid, gridElement is the element to which the grid items will be added
+function addImageToGrid(element) { // Creates image element to be added to the image grid, gridElement is the element to which the grid items will be added
+    console.time("singlecomponent")
     var thumbnailContainer = document.createElement("div") // Container for the actual image grid item
-    var containerChild = document.createElement("img") // backgroun image or video or audio
+    var containerChild = document.createElement("img") // background image or video or audio
 
     var buttonWrapper = document.createElement("div") // This div is a wrapper for the share, download, open (in new tab) button
     var summaryCover = document.createElement("div") // This div is a cover for when the user hovers over the image container
@@ -149,10 +179,6 @@ function addImageToGrid(gridElement, element) { // Creates image element to be a
         }, false)
         thumbnailContainer.setAttribute("data-filename", element.filename) // Set Filename, used for opening in new tab
     }
-
-
-
-    // thumbnailContainer.addEventListener("click", handleThumbnailClick, false)
     
     // add buttons to summarycover (delete, share/copy-to-clipboard, download/open-externally)
     buttonWrapper.appendChild(createDeleteButton(element.deletionkey))
@@ -165,17 +191,16 @@ function addImageToGrid(gridElement, element) { // Creates image element to be a
         thumbnailContainer.setAttribute("data-isdeleted", true)
         summaryCover.style.backgroundColor = "rgba(153, 30, 38, 0.3)"
     }
-    if (containerChild.src == "") { // Hide image container if src is empty, prevents weird border
-        containerChild.style.display = "none"
-    }
 
     // Set data attributes
     thumbnailContainer.setAttribute("data-deletionkey", element.deletionkey)
-
-
-    thumbnailContainer.appendChild(containerChild)
+    if (!containerChild.src == "") { // Hide image container if src is empty, prevents weird border
+        thumbnailContainer.appendChild(containerChild)
+        // containerChild.style.display = "none"
+    }
     thumbnailContainer.appendChild(summaryCover)
-    gridElement.appendChild(thumbnailContainer)
+    // fragment.append(thumbnailContainer)
+    gridFragment.prepend(thumbnailContainer)
 }
 
 function openFile(elem) {
@@ -210,9 +235,8 @@ function createDownloadButton(filename) {
     dlButton.setAttribute("href", '/u/' + filename)
     dlButton.setAttribute("target", "_blank")
 
-    var icon = document.createElement("i")
-    icon.setAttribute("data-feather", "download-cloud")
-    dlButton.appendChild(icon)
+    dlButton.innerHTML = feather.icons["download-cloud"].toSvg()
+
     dlButton.addEventListener("click", function(event) {
         event.stopImmediatePropagation() // prevent Parent element click event being triggered
     }, false)
@@ -222,9 +246,7 @@ function createDownloadButton(filename) {
 function createShareButton(filename) {
     var shareButton = document.createElement("button")
     shareButton.classList.add("summary-action")
-    var icon = document.createElement("i")
-    icon.setAttribute("data-feather", "share-2")
-    shareButton.appendChild(icon)
+    shareButton.innerHTML = feather.icons["share-2"].toSvg()
     shareButton.addEventListener("click", function(event) {
         event.stopImmediatePropagation() // prevent Parent element click event being triggered
         console.log(event.currentTarget)
@@ -248,9 +270,9 @@ function createShareButton(filename) {
 function createDeleteButton(deletionkey) {
     var deleteButton = document.createElement("a")
     deleteButton.classList.add("summary-action")
-    var icon = document.createElement("i")
-    icon.setAttribute("data-feather", "trash")
-    deleteButton.appendChild(icon)
+    
+    deleteButton.innerHTML = svgValues.iconTrash
+
     deleteButton.addEventListener("click", function(event) {
         event.stopImmediatePropagation() // prevent Parent element click event being triggered
         window.open("/delete/" + deletionkey, '_blank')
@@ -261,10 +283,8 @@ function createDeleteButton(deletionkey) {
 function createIcon(iconName) {
     var iconContainer = document.createElement("div")
     iconContainer.classList.add("icon-container")
-    var icon = document.createElement("i")
-    icon.setAttribute("data-feather", iconName)
+    iconContainer.innerHTML = feather.icons[iconName].toSvg()
     iconContainer.style.pointerEvents = "none"
-    iconContainer.appendChild(icon)
     return iconContainer
 }
 
@@ -460,7 +480,20 @@ async function showConfirmation(message) {
     return res
 }
 
-function removeAllElementsByQuery(query) {
+function removeAllElementsByQuery(query) { // Used to remove .popup-container
     document.querySelectorAll(query).forEach(elem => elem.remove())
     console.log("1")
+}
+
+function countElements(parentSelector) {
+    var parentElem = document.querySelector(parentSelector)
+    // var all = parentElem.getElementsByTagName("*")
+    var all = parentElem.querySelectorAll("*")
+    console.log(`Elements inside "${parentSelector}": ${all.length}`)
+}
+
+function countElementsNoSVG(parentSelector) {
+    var parentElem = document.querySelector(parentSelector)
+    var all = parentElem.querySelectorAll("*:not(svg)")
+    console.log(`Elements inside "${parentSelector}": ${all.length}`)
 }
