@@ -21,7 +21,8 @@ module.exports = {
     createSoundThumb,
     createPDFThumb,
     optimizeMP4,
-    setCurrentCommitHash
+    setCurrentCommitHash,
+    getIP
 }
 
 async function createVideoThumb(inputFile, outputFile) {
@@ -146,4 +147,11 @@ function setCurrentCommitHash() {
     var cliCommand = "git rev-parse --short HEAD"
     module.exports.currentCommitHash = execSync(cliCommand).toString().trim()
     console.log("Set short commit hash")
+}
+
+function getIP(req) {  // Give a request object, it will return the client's IP
+    return req.headers['x-forwarded-for'] ||
+    req.connection.remoteAddress ||
+    req.socket.remoteAddress ||
+    (req.connection.socket ? req.connection.socket.remoteAddress : null);
 }

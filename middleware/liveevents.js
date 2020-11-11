@@ -23,6 +23,11 @@ module.exports = {
         clients.push(newClient)
         console.log(`${newClient.id} - ${newClient.username}, is listening for server-sent-events`)
 
+        newClient.res.write(`data: ${JSON.stringify({ // ? Send a push to client when he first connects
+            type: "poll",
+            message: ""
+        })}\n\n`)
+
         req.on("close", () => {
             console.log(`${clientID} - ${username} disconnected`)
 

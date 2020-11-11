@@ -2,34 +2,46 @@ import { humanDate, generateShareXConfig, svgValues } from './clientutils.js'
 import { initSSE } from './handleevents.js'
 
 var isInEditor = false // Used to check if click events
+window.onanimationiteration = console.log
+// window.ontransitionend = console.log
+// var MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
+
+// var observer = new MutationObserver(function(mutations) {
+//   mutations.forEach(function(mutation) {
+//     console.log(mutation);
+//   });
+// });
+
+// observer.observe(document, {
+//   attributes: true,
+//   childList: true,
+//   subtree: true,
+//   characterData: true
+// });
 window.onload = function() {
     if ('serviceWorker' in navigator) { //register service worker
         navigator.serviceWorker.register('sw.js', {
             scope: '/'
         });
     }
-    getUploads() // Get uploads on dashboard load
+    // getUploads() // Get uploads on dashboard load
     initComponents() // Add event listeners to buttons and such
     initSSE()
 }
+
+window.addEventListener('DOMContentLoaded', (event) => {
+    getUploads()
+})
 
 var previousUploads = [] // Empty array to compare against in getUploads
 var gridFragment = document.createDocumentFragment() // Use gridfragment to prevent constant repainting
 export async function getUploads() {
     console.time("startrequest")
-    var gridElement = document.querySelector(".dashboard__content")
-    // caches.open('planetary-pwa').then(function(cache) {
-        
-    // })
     var response = await fetch("/uploads")
     let data = await response.json()
 
-    // data = data.reverse()
-    console.log(data)
-    console.log(previousUploads)
-
     // Check which files are actually new (From SSE for example)
-    // And only add those files
+    // And only add the new files to the dom
     console.time("filter")
     var newUploads = data.filter(({deletionkey: value1 }) => { // loop request array and grab deletion key as value1, as function function argument
         return !previousUploads.some(({deletionkey: value2}) => value2 === value1 ) // is the current filtered array entry NOT ANYWHERE in previous uploads
@@ -41,11 +53,12 @@ export async function getUploads() {
     console.time("populate")
 
 
-    // ! Create thumbnail grid-item for every item in array
+    // Using only the new uploads, append files to gridElement
     newUploads.forEach(element => {
         addImageToGrid(element)
     });
-    gridElement.prepend(gridFragment) // Consome the gridFragment and append it to the body
+    var gridElement = document.querySelector(".dashboard__content")
+    gridElement.prepend(gridFragment) // Consume the gridFragment and append it to the body
     
     console.timeEnd("startrequest")
     console.timeEnd("populate")
@@ -97,7 +110,8 @@ function addImageToGrid(element) { // Creates image element to be added to the i
         fullFileExt =  fullFileExt.toLowerCase()
         switch(fileExt) {
             case "mp4": // ? Create video player
-                summaryCover.appendChild(createIcon("film")) // Add filetype icon
+                // summaryCover.appendChild(createIcon("film")) // Add filetype icon
+                summaryCover.classList.add("type", "type__video")
 
                 thumbnailContainer.addEventListener("click", function(event) {
                     toggleVideo(event.currentTarget) // Why did no one tell me about event.currentTarget before????
@@ -116,9 +130,11 @@ function addImageToGrid(element) { // Creates image element to be added to the i
                 break;
             case "jpg": // Set background image of containerChild to the thumbnail
                 if (fullFileExt == "pdf") {
-                    summaryCover.appendChild(createIcon("file")) // Add filetype icon
+                    // summaryCover.appendChild(createIcon("file")) // Add filetype icon
+                    summaryCover.classList.add("type", "type__file")
                 } else {
-                    summaryCover.appendChild(createIcon("image")) // Add filetype icon
+                    // summaryCover.appendChild(createIcon("image")) // Add filetype icon
+                    summaryCover.classList.add("type", "type__image")
                 }
                 thumbnailContainer.addEventListener("click", function(event) {
                     openFile(event.currentTarget) // Why did no one tell me about event.currentTarget before????
@@ -128,7 +144,8 @@ function addImageToGrid(element) { // Creates image element to be added to the i
                 containerChild.src = `thumbs/${element.thumbnail}` // Set img.src for the thumbnail
                 break;
             case "opus":
-                summaryCover.appendChild(createIcon("music")) // Add filetype icon              
+                // summaryCover.appendChild(createIcon("music")) // Add filetype icon
+                summaryCover.classList.add("type", "type__sound")
 
                 thumbnailContainer.setAttribute("data-filename", element.filename) // Set Filename, used for opening in new tab
                 
@@ -144,19 +161,15 @@ function addImageToGrid(element) { // Creates image element to be added to the i
 
                 // add fancy audioplayer
                 soundContainer.addEventListener('timeupdate', function(e) {
-                    console.log(this.currentTime)
-                    console.log(this.duration)
                     // Interestingly enough, Chrome doesn't support percentages for transform scaleX, so we'll divide the percentages by 100
                     var progression = ((100 / this.duration) * this.currentTime) / 100
                     progressBar.setAttribute("style", "transform: scaleX(" + progression + ");")
-                    console.log(progression)
                 }, false)
                 thumbnailContainer.addEventListener("click", function(event) { // Toggle playstate
                     toggleMusic(event.currentTarget) // Why did no one tell me about event.currentTarget before????
                 }, false)
                 var iconBG = document.createElement("i") // Sets background of music player to music icon
-                iconBG.setAttribute("data-feather", "play")
-                iconBG.classList.add("thumbnailicon-bg")
+                iconBG.classList.add("icon-bg", "icon-bg__sound")
                 thumbnailContainer.appendChild(progressBar)
                 thumbnailContainer.appendChild(iconBG)
                 soundContainer.appendChild(soundSource)
@@ -164,7 +177,8 @@ function addImageToGrid(element) { // Creates image element to be added to the i
 
                 break;
             default:
-                summaryCover.appendChild(createIcon("file")) // Add filetype icon
+                // summaryCover.appendChild(createIcon("file")) // Add filetype icon
+                summaryCover.classList.add("type", "type__file")
 
                 thumbnailContainer.addEventListener("click", function(event) {
                     openFile(event.currentTarget) // Why did no one tell me about event.currentTarget before????
@@ -172,7 +186,9 @@ function addImageToGrid(element) { // Creates image element to be added to the i
                 thumbnailContainer.setAttribute("data-filename", element.filename) // Set Filename, used for opening in new tab
         }
     } else {
-        summaryCover.appendChild(createIcon("file")) // Add filetype icon
+        // summaryCover.appendChild(createIcon("file")) // Add filetype icon
+        summaryCover.classList.add("type", "type__file")
+
 
         thumbnailContainer.addEventListener("click", function(event) {
             openFile(event.currentTarget) // Why did no one tell me about event.currentTarget before????
@@ -228,14 +244,12 @@ function toggleMusic(elem) { // Toggles music playback
 
 function createDownloadButton(filename) {
     var dlButton = document.createElement("a")
-    dlButton.classList.add("summary-action")
+    dlButton.classList.add("icon-btn", "icon-btn__download")
 
     // Download attribute
     dlButton.setAttribute("download", filename)
     dlButton.setAttribute("href", '/u/' + filename)
     dlButton.setAttribute("target", "_blank")
-
-    dlButton.innerHTML = feather.icons["download-cloud"].toSvg()
 
     dlButton.addEventListener("click", function(event) {
         event.stopImmediatePropagation() // prevent Parent element click event being triggered
@@ -245,8 +259,7 @@ function createDownloadButton(filename) {
 
 function createShareButton(filename) {
     var shareButton = document.createElement("button")
-    shareButton.classList.add("summary-action")
-    shareButton.innerHTML = feather.icons["share-2"].toSvg()
+    shareButton.classList.add("icon-btn", "icon-btn__share")
     shareButton.addEventListener("click", function(event) {
         event.stopImmediatePropagation() // prevent Parent element click event being triggered
         console.log(event.currentTarget)
@@ -269,10 +282,8 @@ function createShareButton(filename) {
 
 function createDeleteButton(deletionkey) {
     var deleteButton = document.createElement("a")
-    deleteButton.classList.add("summary-action")
+    deleteButton.classList.add("icon-btn", "icon-btn__delete")
     
-    deleteButton.innerHTML = svgValues.iconTrash
-
     deleteButton.addEventListener("click", function(event) {
         event.stopImmediatePropagation() // prevent Parent element click event being triggered
         window.open("/delete/" + deletionkey, '_blank')

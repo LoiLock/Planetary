@@ -1,61 +1,211 @@
-/*
-Error: Undefined mixin 'small'.
-        on line 224 of scss/pages/dashboard.scss, in `small'
-        from line 224 of scss/pages/dashboard.scss
+.dashboard {
+  width: 100%;
+  height: 100%;
+  padding: 50px; }
+  .dashboard__header {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center; }
+    .dashboard__header__user__name {
+      font-weight: 700; }
+  .dashboard__filters {
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly; }
+    .dashboard__filters__group {
+      display: inline-flex;
+      gap: 10px; }
+    .dashboard__filters .editor-controls {
+      display: none;
+      gap: 10px; }
+  .dashboard__content {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, var(--grid-item-size));
+    grid-auto-rows: --grid-item-size;
+    grid-gap: 10px;
+    justify-content: center;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 50px 0; }
+    .dashboard__content::-webkit-scrollbar {
+      display: none; }
 
-219:             padding: 50px 20px;
-220:         }
-221:     }
-222: }
-223: 
-224: @include small {
-225:     body {
-226:         --grid-item-size: 150px;
-227:         .dashboard {
-228:             padding: 50px 20px;
-229:         }
+.thumbnail-container {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  border-radius: 6px;
+  position: relative;
+  cursor: pointer;
+  transition: box-shadow .2s; }
+  .thumbnail-container:hover .thumbnail-container__child, .thumbnail-container.show-info .thumbnail-container__child {
+    transform: scale(1.2); }
+  .thumbnail-container:hover .thumbnail-container__summary, .thumbnail-container.show-info .thumbnail-container__summary {
+    opacity: 1; }
+    .thumbnail-container:hover .thumbnail-container__summary h3, .thumbnail-container:hover .thumbnail-container__summary span, .thumbnail-container.show-info .thumbnail-container__summary h3, .thumbnail-container.show-info .thumbnail-container__summary span {
+      transform: translateX(0%); }
+  .thumbnail-container::before {
+    content: "";
+    display: inline-block;
+    padding-top: 100%;
+    vertical-align: top; }
+  .thumbnail-container__child {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    transition: .5s;
+    object-fit: cover;
+    object-position: center; }
+  .thumbnail-container .icon-bg {
+    background: url("../svg/play.svg") no-repeat center;
+    background-size: 50%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    color: #404040;
+    filter: invert(25%); }
+  .thumbnail-container__summary {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    background-color: rgba(10, 10, 10, 0.6);
+    transition: opacity .5s;
+    padding: var(--summary-padding);
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    color: #fff; }
+    .thumbnail-container__summary h3, .thumbnail-container__summary span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      transform: translateX(-100%);
+      transition: transform .3s; }
+    .thumbnail-container__summary h3 {
+      transition-delay: .15s; }
+    .thumbnail-container__summary span {
+      transition-delay: .25s; }
+    .thumbnail-container__summary.type::before {
+      content: "";
+      position: absolute;
+      top: calc(var(--summary-padding) + 4px);
+      left: calc(var(--summary-padding) + 4px);
+      width: 24px;
+      height: 24px;
+      background-repeat: no-repeat;
+      background-position: 0 0;
+      filter: invert(1); }
+    .thumbnail-container__summary.type__image::before {
+      background: url("../svg/image.svg"); }
+    .thumbnail-container__summary.type__video::before {
+      background: url("../svg/film.svg"); }
+    .thumbnail-container__summary.type__sound::before {
+      background: url("../svg/music.svg"); }
+    .thumbnail-container__summary.type__file::before {
+      background: url("../svg/file.svg"); }
+    .thumbnail-container__summary.type__edit::before {
+      background: url("../svg/edit-2.svg"); }
+    .thumbnail-container__summary .icon-container {
+      position: absolute;
+      display: inline-block;
+      top: var(--summary-padding);
+      left: var(--summary-padding);
+      padding: 4px; }
+      .thumbnail-container__summary .icon-container * {
+        pointer-events: none; }
+      .thumbnail-container__summary .icon-container svg {
+        height: 24px;
+        width: 24px; }
+    .thumbnail-container__summary.clipboard-copied::before {
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 24px;
+      z-index: 10;
+      content: 'Copied to clipboard';
+      display: grid;
+      place-items: center;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(49, 231, 125, 0.75) !important;
+      background-repeat: no-repeat !important;
+      filter: none !important;
+      opacity: 0;
+      animation: animateClipboard 5s forwards;
+      pointer-events: none; }
+    .thumbnail-container__summary__actions {
+      position: absolute;
+      top: var(--summary-padding);
+      right: var(--summary-padding);
+      width: calc(100% - (var(--summary-padding) * 2 ));
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: flex-end; }
+      .thumbnail-container__summary__actions .icon-btn {
+        margin-left: 5px; }
+  .thumbnail-container__video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center; }
+  .thumbnail-container.selected {
+    box-shadow: 0 0 0 4px rgba(49, 231, 125, 0.75); }
 
-Backtrace:
-scss/pages/dashboard.scss:224:in `small'
-scss/pages/dashboard.scss:224
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:331:in `block in visit_mixin'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/stack.rb:98:in `block in with_mixin'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/stack.rb:115:in `with_frame'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/stack.rb:98:in `with_mixin'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:329:in `visit_mixin'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/base.rb:36:in `visit'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:152:in `block in visit'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/stack.rb:79:in `block in with_base'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/stack.rb:115:in `with_frame'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/stack.rb:79:in `with_base'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:152:in `visit'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/base.rb:52:in `block in visit_children'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/base.rb:52:in `map'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/base.rb:52:in `visit_children'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:161:in `block in visit_children'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:173:in `with_environment'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:160:in `visit_children'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/base.rb:36:in `block in visit'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:180:in `visit_root'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/base.rb:36:in `visit'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:151:in `visit'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:8:in `visit'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/root_node.rb:36:in `css_tree'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/root_node.rb:29:in `render_with_sourcemap'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/engine.rb:368:in `_render_with_sourcemap'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/engine.rb:285:in `render_with_sourcemap'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/plugin/compiler.rb:484:in `update_stylesheet'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/plugin/compiler.rb:214:in `block in update_stylesheets'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/plugin/compiler.rb:208:in `each'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/plugin/compiler.rb:208:in `update_stylesheets'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/plugin/compiler.rb:464:in `on_file_changed'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/plugin/compiler.rb:324:in `block in watch'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/vendor/listen/lib/listen/listener.rb:252:in `on_change'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/vendor/listen/lib/listen/listener.rb:290:in `block in initialize_adapter'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/vendor/listen/lib/listen/adapters/polling.rb:48:in `poll_changed_directories'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/vendor/listen/lib/listen/adapter.rb:299:in `block in start_poller'
-*/
-body:before {
-  white-space: pre;
-  font-family: monospace;
-  content: "Error: Undefined mixin 'small'.\A         on line 224 of scss/pages/dashboard.scss, in `small'\A         from line 224 of scss/pages/dashboard.scss\A \A 219:             padding: 50px 20px;\A 220:         }\A 221:     }\A 222: }\A 223: \A 224: @include small {\A 225:     body {\A 226:         --grid-item-size: 150px;\A 227:         .dashboard {\A 228:             padding: 50px 20px;\A 229:         }"; }
+@keyframes animateClipboard {
+  0% {
+    opacity: 0; }
+  10% {
+    opacity: 1; }
+  90% {
+    opacity: 1; }
+  100% {
+    opacity: 0; } }
+.audio-progress {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  transform-origin: left;
+  transition: .35s linear; }
+
+.dashboard__content.small {
+  --grid-item-size: 150px; }
+  .dashboard__content.small .dashboard {
+    padding: 50px 20px; }
+.dashboard__content.medium {
+  --grid-item-size: 220px;
+  --summary-padding: 15px; }
+  .dashboard__content.medium .dashboard {
+    padding: 50px 20px; }
+
+@media (max-width: 768px) {
+  body {
+    --grid-item-size: 150px; }
+    body .dashboard {
+      padding: 50px 20px; } }
+@media (min-width: 768px) and (max-width: 1280px) {
+  body {
+    --grid-item-size: 220px;
+    --summary-padding: 15px; }
+    body .dashboard {
+      padding: 50px 20px; } }
+
+/*# sourceMappingURL=dashboard.css.map */

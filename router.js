@@ -6,6 +6,7 @@ var Auth =  require("./middleware/auth")
 var { currentCommitHash } =  require("./middleware/utils")
 const auth = require("./middleware/auth")
 const LiveEvents = require("./middleware/liveevents")
+var { getIP } = require("./middleware/utils")
 
 var Albums = require("./routes/albums")
 
@@ -41,4 +42,8 @@ module.exports = function(app) {
     app.get("/uploads", Auth.isTokenValid, Dashboard.getUploads) // Get uploads if JWT token is valid
 
     app.get("/events", Auth.isTokenValid, LiveEvents.handleEvent)
+    app.get("/log", (req, res) => {
+        console.log(getIP(req))
+        res.send("SERVER RESPONSE")
+    })
 }

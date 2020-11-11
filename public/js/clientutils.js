@@ -1,6 +1,7 @@
 // Contains useful conversion functions
 
 import { getUploads } from './client.js'
+import { isOnline } from './handleevents.js'
 
 export function humanDate(unixTime) { // Takes unixtime in SECONDS and returns string in format: 4 September 2020
     var dateObject = new Date(unixTime * 1000)
@@ -86,12 +87,20 @@ export function refreshDashboardContent() { // Empties dashboard, and repopulate
     getUploads()
 }
 
-
-function createThumbnailCard() {
-
+export var svgValues = { // TODO: remove, no longer needed
+    iconTrash: feather.icons.trash.toSvg()
 }
 
-
-export var svgValues = {
-    iconTrash: feather.icons.trash.toSvg()
+export function changeOnlineCheck() { // Show the user if we're online or not
+    var checkValue = document.querySelector(".is-online-check").classList.contains("online")
+    if (checkValue != isOnline) { // Only update DOM if the value is actually different
+        if (isOnline) {
+            document.querySelector(".is-online-check").classList.add("online")
+        } else {
+            document.querySelector(".is-online-check").classList.remove("online")
+        }
+    }
+    setTimeout(() => {
+        changeOnlineCheck()
+    }, 5000);
 }

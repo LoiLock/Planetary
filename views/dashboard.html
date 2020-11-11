@@ -15,6 +15,7 @@
         <!-- <p>{{ user | dump }}</p> -->
         <div class="dashboard">
             <header class="dashboard__header">
+                <span class="is-online-check"></span>
                 <nav>
     
                 </nav>
@@ -27,7 +28,7 @@
             <section class="dashboard__filters">
                 <div class="dashboard__filters__group">
                     <input class="input-file-search" type="text" placeholder="Enter keywords">
-                    <button class="start-editor icon-btn"><i data-feather="edit-2"></i></button>
+                    <button class="start-editor icon-btn icon-btn__edit"></button>
                     <span class="editor-controls">
                         <button class="submit-deletion icon-btn"><i data-feather="trash"></i></button>
                     </span>
@@ -44,7 +45,6 @@
             </section>
             <script>
                 feather.replace()
-                console.log(feather.icons)
             </script>
         </div>
     </body>
