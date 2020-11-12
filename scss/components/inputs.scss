@@ -211,6 +211,27 @@ select-album { // TODO: remove this, no longer needed
     transition: background-color .5s ease, box-shadow .5s ease;
     &.online {
         background-color: var(--color-medium-green);
-        box-shadow: 0 0 20px 0 var(--color-medium-green);
+        box-shadow: 0 0 14px 2px var(--color-medium-green);
+    }
+    &.reconnecting {
+        background-color: var(--color-medium-orange);
+        box-shadow: 0 0 0 0 rgba(255, 99, 72, 0.9);
+        transform: scale(.95);
+        animation: pulse 1.75s infinite linear;
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(.95);
+        box-shadow: 0 0 0 0 rgba(255, 99, 72, 0.9);
+    }
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 10px 10px rgba(255, 99, 72, 0.0);
+    }
+    100% {
+        transform: scale(.95);
+        box-shadow: 0 0 0 0 rgba(255, 99, 72, 0.0);
     }
 }

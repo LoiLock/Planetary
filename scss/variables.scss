@@ -6,6 +6,7 @@ $white: #fffefc;
     background-color: rgba(153, 30, 38, 0.6);
 }
 
+// https://flatuicolors.com/palette/cn
 :root {
     --grid-item-size: 300px;
     --bg-color: #fffefc;
@@ -18,4 +19,10 @@ $white: #fffefc;
     --color-light-green: #34e47d;
     --color-medium-red: #ff4757;
     --color-light-red: #ff6b81;
+    --color-medium-orange: #ff6348;
+    --color-light-orange: #ff7f50;
+    --color-medium-blue: #1e90ff;
+    --color-light-blue: #70a1ff;
+    --color-medium-melon: #ff4757;
+    --color-light-melon: #ff6b81;
 }

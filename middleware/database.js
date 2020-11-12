@@ -26,7 +26,9 @@ module.exports = {
     logUpload,
     getFileName,
     getUploads,
-    flagDelete
+    flagDelete,
+    getAllUsers,
+    getAllUploads
 }
 
 function initDB() {
@@ -156,6 +158,40 @@ async function flagDelete(deletionkey) { // Flag file as deleted
     })
     var res = await results
     return results
+}
+
+async function getAllUploads() {
+    var results = new Promise((resolve, reject) => {
+        db.all("SELECT * FROM uploads ORDER BY unixtime DESC", (error, result) => {
+            if (error) {
+                reject(error)
+            }
+            if (!result) {
+                reject("No uploads")
+            } else {
+                resolve(result)
+            }
+        })
+    })
+    var res = await results
+    return res
+}
+
+async function getAllUsers() {
+    var results = new Promise((resolve, reject) => {
+        db.all("SELECT username, sharextoken, isAdmin FROM users ORDER BY username ASC", (error, result) => {
+            if (error) {
+                reject(error)
+            }
+            if (!result) {
+                reject("No users")
+            } else {
+                resolve(result)
+            }
+        })
+    })
+    var res = await results
+    return res
 }
 
 // // tags must be an array

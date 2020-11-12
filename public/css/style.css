@@ -14,7 +14,13 @@
   --color-medium-green: #2ed573;
   --color-light-green: #34e47d;
   --color-medium-red: #ff4757;
-  --color-light-red: #ff6b81; }
+  --color-light-red: #ff6b81;
+  --color-medium-orange: #ff6348;
+  --color-light-orange: #ff7f50;
+  --color-medium-blue: #1e90ff;
+  --color-light-blue: #70a1ff;
+  --color-medium-melon: #ff4757;
+  --color-light-melon: #ff6b81; }
 
 .login-form-container {
   position: absolute;
@@ -421,8 +427,23 @@ select-album {
   transition: background-color .5s ease, box-shadow .5s ease; }
   .is-online-check.online {
     background-color: var(--color-medium-green);
-    box-shadow: 0 0 20px 0 var(--color-medium-green); }
+    box-shadow: 0 0 14px 2px var(--color-medium-green); }
+  .is-online-check.reconnecting {
+    background-color: var(--color-medium-orange);
+    box-shadow: 0 0 0 0 rgba(255, 99, 72, 0.9);
+    transform: scale(0.95);
+    animation: pulse 1.75s infinite linear; }
 
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(255, 99, 72, 0.9); }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 10px 10px rgba(255, 99, 72, 0); }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(255, 99, 72, 0); } }
 .popup-container {
   position: fixed;
   top: 50%;
@@ -450,7 +471,8 @@ body {
   background-color: var(--bg-color);
   color: var(--fg-color-text);
   font-family: 'Inter', sans-serif;
-  transition: background-color .5s, color .5s; }
+  transition: background-color .5s, color .5s;
+  will-change: color, background-color; }
   body.dark {
     --bg-color: #1d1d1d;
     --fg-color-text: #fffefc;

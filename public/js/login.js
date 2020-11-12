@@ -19,7 +19,7 @@ function getForm() {
         if (data && data.success) { // * Reload page to force redirect from server after 3 seconds
             setTimeout(() => {
                 window.location.reload() // Just force a reload, the server will check the cookie and redirect me to the dashboard if it's valid
-            }, 3000);
+            }, 1500);
         }
         var formResponseInfo = document.querySelector(".form-response-info")
 

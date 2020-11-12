@@ -1,30 +1,8 @@
-import { humanDate, generateShareXConfig, svgValues } from './clientutils.js'
+import { humanDate, generateShareXConfig } from './clientutils.js'
 import { initSSE } from './handleevents.js'
 
 var isInEditor = false // Used to check if click events
-window.onanimationiteration = console.log
-// window.ontransitionend = console.log
-// var MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
-
-// var observer = new MutationObserver(function(mutations) {
-//   mutations.forEach(function(mutation) {
-//     console.log(mutation);
-//   });
-// });
-
-// observer.observe(document, {
-//   attributes: true,
-//   childList: true,
-//   subtree: true,
-//   characterData: true
-// });
 window.onload = function() {
-    if ('serviceWorker' in navigator) { //register service worker
-        navigator.serviceWorker.register('sw.js', {
-            scope: '/'
-        });
-    }
-    // getUploads() // Get uploads on dashboard load
     initComponents() // Add event listeners to buttons and such
     initSSE()
 }
@@ -38,7 +16,7 @@ var gridFragment = document.createDocumentFragment() // Use gridfragment to prev
 export async function getUploads() {
     console.time("startrequest")
     var response = await fetch("/uploads")
-    let data = await response.json()
+    var data = await response.json()
 
     // Check which files are actually new (From SSE for example)
     // And only add the new files to the dom
@@ -71,7 +49,6 @@ export async function getUploads() {
     console.time("replaceIcons")
     feather.replace() // reload icons
     console.timeEnd("replaceIcons")
-    return data
 }
 
 function addImageToGrid(element) { // Creates image element to be added to the image grid, gridElement is the element to which the grid items will be added
@@ -119,6 +96,9 @@ function addImageToGrid(element) { // Creates image element to be added to the i
                 thumbnailContainer.setAttribute("data-filename", element.filename) // Set Filename, used for opening in new tab
 
                 var videoContainer = document.createElement("video")
+                if(fullFileExt == "gif") {
+                    videoContainer.setAttribute("loop", "")
+                }
                 videoContainer.preload = "metadata"
                 videoContainer.classList.add("thumbnail-container__video")
                 var videoSource = document.createElement("source")
@@ -316,8 +296,8 @@ function setSavedColorTheme() { // ? Load the currently saved color-theme
     var currentTheme = localStorage.getItem("color-theme")
     if (!currentTheme) { // If localstorage item for theme is empty
         console.log("empty")
-        localStorage.setItem("color-theme", "light")
-        currentTheme = "light"
+        localStorage.setItem("color-theme", "dark")
+        currentTheme = "dark"
     }
     if (currentTheme == "dark") { document.querySelector(".toggle-colortheme").classList.add("dark") } // Make sure the toggle switch is set to the right position onload as well
     document.body.classList.add(currentTheme)

@@ -25,8 +25,14 @@ self.addEventListener("install", (e) => {
 self.addEventListener('fetch', function(event) {
     var reqPath = new URL (event.request.url)
     if (reqPath.pathname.startsWith("/u/")) {
-        console.log("test")
-        fetch("/log")
+        fetch("/log", {
+            method: "POST",
+            cache: "no-cache",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ url: event.request.url })
+        })
         .then((data) => {
             return data.text()
         })
@@ -45,7 +51,7 @@ self.addEventListener('fetch', function(event) {
                     return response
                 })
             }
-            if (reqPath.pathname.startsWith("/thumbs/") || reqPath.pathname.startsWith("/svg/")) { // Handle only thumbnails and svg's
+            if (reqPath.pathname.startsWith("/thumbs/") || reqPath.pathname.startsWith("/svg/")) { // for thumbnails and SVGs, always prefer cache over network response
                 return cache.match(event.request).then((cachedThumb) => { // If cachedThumb is not undefined, serve the cached request
                     if(cachedThumb) {
                         console.log(`Serving thumbnail: ${cachedThumb.url} from cache`)
@@ -65,6 +71,7 @@ self.addEventListener('fetch', function(event) {
                 cache.put(event.request, response.clone())
                 return response
             }).catch(function() {
+                console.log(`No internet connection, serving ${event.request.url} from cache`)
                 return caches.match(event.request)
             })
         })

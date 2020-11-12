@@ -2,6 +2,7 @@ var Upload = require("./routes/upload")
 var Delete = require("./routes/delete")
 var Login = require("./routes/login")
 var Dashboard = require("./routes/dashboard")
+var Admin = require("./routes/admin")
 var Auth =  require("./middleware/auth")
 var { currentCommitHash } =  require("./middleware/utils")
 const auth = require("./middleware/auth")
@@ -42,8 +43,14 @@ module.exports = function(app) {
     app.get("/uploads", Auth.isTokenValid, Dashboard.getUploads) // Get uploads if JWT token is valid
 
     app.get("/events", Auth.isTokenValid, LiveEvents.handleEvent)
-    app.get("/log", (req, res) => {
+
+    app.get("/admin", Auth.isTokenValid, Admin.handleAdmin)
+
+    app.post("/log", (req, res) => { // Get IP of whoever visited /u/ route
+        console.log("___________________________")
         console.log(getIP(req))
-        res.send("SERVER RESPONSE")
+        console.log(req.body)
+        console.log("___________________________")
+        res.send("logged")
     })
 }

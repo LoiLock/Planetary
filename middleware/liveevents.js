@@ -7,10 +7,12 @@ module.exports = {
         console.log(req.user)
         var headers = {
             'Content-Type': 'text/event-stream',
-            'Connection': 'keep-alive',
-            'Cache-Control': 'no-cache'
+            'Cache-Control': 'no-cache',
+            'Connection': 'keep-alive'
         }
-        res.writeHead(200, headers) // Send back headers to client
+        res.status(200).set(headers) // Send back headers to client
+        // res.connection.setTimeout(86400 * 1000) // Set timeout to 24 hours
+        res.write('retry: 10000\n\n') // tell client to retry every 10 seconds if connection is lost
 
         const clientID = Date.now() // set unique id SSE client to current unixtime in MS
         const username = req.user.username // set clients username
@@ -23,10 +25,10 @@ module.exports = {
         clients.push(newClient)
         console.log(`${newClient.id} - ${newClient.username}, is listening for server-sent-events`)
 
-        newClient.res.write(`data: ${JSON.stringify({ // ? Send a push to client when he first connects
-            type: "poll",
-            message: ""
-        })}\n\n`)
+        // newClient.res.write(`data: ${JSON.stringify({ // ? Send a push to client when he first connects
+        //     type: "poll",
+        //     message: ""
+        // })}\n\n`)
 
         req.on("close", () => {
             console.log(`${clientID} - ${username} disconnected`)

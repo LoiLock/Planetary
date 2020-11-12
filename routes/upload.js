@@ -74,8 +74,8 @@ module.exports = {
 // Log file upload to database asyncrously
 // Determine whether a thumbnail can be made for the uploaded file
 async function createThumbnail(req, rndFilename, deletionKey) {
-    var imageMimes = [ 'image/png', 'image/gif', 'image/jpeg']
-    var videoMimes = [ 'video/mp4', 'video/mpeg', 'video/webm', 'video/x-matroska']
+    var imageMimes = [ 'image/png', 'image/jpeg']
+    var videoMimes = [ 'video/mp4', 'video/mpeg', 'video/webm', 'video/x-matroska', 'image/gif']
     var soundMimes = [ 'audio/mpeg', 'audio/mp3', 'audio/x-wav', 'audio/wav', 'audio/x-aiff', 'audio/opus', 'audio/ogg', 'audio/flac', 'audio/x-flac' ]
     var pdfMimes = [ 'application/pdf' ]
     console.log(req.files.uploadfile.mimetype)

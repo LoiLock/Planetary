@@ -21,6 +21,7 @@ body {
     color: var(--fg-color-text);
     font-family: 'Inter', sans-serif;
     transition: background-color .5s, color .5s;
+    will-change: color, background-color;
     &.dark {
         --bg-color: #1d1d1d;
         --fg-color-text: #fffefc;
