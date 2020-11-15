@@ -3,9 +3,10 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Planetary - Dashboard</title>
-        <meta name="description" content="Planetary dashboard">
+        <title>{{ page.title }}</title>
+        <meta name="description" content="{{ page.description }}">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        {% include "favicon_part.html" %}
         <link rel="stylesheet" href="css/style.css">
         <link rel="manifest" href="manifest.json">
         <script src="js/feather-min.js"></script>
@@ -13,37 +14,44 @@
         <script src="js/registersw.js" async defer></script>
     </head>
     <body class="dark">
-        <!-- <p>{{ user | dump }}</p> -->
+        <header class="page-header">
+            <span class="is-online-check"></span>
+            <nav>
+
+            </nav>
+            <div class="page-header__user">
+                <button class="generate-sharex-config btn-secondary">.sxcu file</button>
+                <span class="page-header__user__name">{{ user.username }}</span>
+                <button class="page-header__user__logout btn-secondary">logout</button>
+                <button class="toggle-colortheme dark"><i data-feather="moon"></i> <i data-feather="sun"></i></button>
+            </div>
+        </header>
+
         <div class="dashboard">
-            <header class="dashboard__header">
-                <span class="is-online-check"></span>
-                <nav>
-    
-                </nav>
-                <div class="dashboard__header__user">
-                    <button class="generate-sharex-config btn-secondary">Generate shareX configfile</button>
-                    <span class="dashboard__header__user__name">{{ user.username }}</span>
-                    <button class="toggle-colortheme"><i data-feather="moon"></i> <i data-feather="sun"></i></button>
-                </div>
-            </header>
+            <section class="dashboard__albums">
+                
+            </section>
             <section class="dashboard__filters">
                 <div class="dashboard__filters__group">
-                    <input class="input-file-search" type="text" placeholder="Enter keywords">
                     <button class="start-editor icon-btn icon-btn__edit"></button>
                     <span class="editor-controls">
-                        <button class="submit-deletion icon-btn"><i data-feather="trash"></i></button>
+                        <button class="submit-deletion icon-btn icon-btn__delete"></button>
+                        <select class="editor-controls__album-select" id="">
+                            <option value="" disabled selected>Choose album</option>
+                            <option value="newalbum">Create new...</option>
+                        </select>
+                        <input class="editor-controls__album-name-input" type="text" placeholder="Album name">
+                        <button class="editor-controls__submit-album icon-btn icon-btn__plus"></button>
                     </span>
                 </div>
 
 
                 <div class="dashboard__filters__group">
-                    <div class="input-container"><label for="showFilenames" class="input-label">show info</label> <button id="showFilenames" class="check-box toggle-filter" data-value="showFilenames"></button></div>
-                    <div class="input-container"><label for="hideDeleted" class="input-label">hide deleted</label> <button id="hideDeleted" class="check-box toggle-filter" data-value="hideDeleted" data-checked="true"></button></div>
+                    <div class="input-container"><button id="showFilenames" class="check-box toggle-filter" data-value="showFilenames"></button> <label for="showFilenames" class="input-label">show info</label></div>
+                    <div class="input-container"><button id="hideDeleted" class="check-box toggle-filter" data-value="hideDeleted" data-checked="true"></button> <label for="hideDeleted" class="input-label">hide deleted</label></div>
                 </div>
             </section>
-            <section class="dashboard__content">
-                
-            </section>
+            <section class="dashboard__content"></section>
             <script>
                 feather.replace()
             </script>

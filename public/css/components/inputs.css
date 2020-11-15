@@ -1,79 +1,191 @@
-/*
-Error: Undefined variable: "$white".
-        on line 20 of scss/components/inputs.scss
+input:focus, button:focus {
+  outline: none; }
 
-15:     transition: .2s;
-16:     cursor: pointer;
-17: 
-18:     &.confirm-action { // Also used for login, etc
-19:         background-color: var(--color-medium-green);
-20:         color: $white;
-21:         &:hover {
-22:             background-color: var(--color-light-green);
-23:         }
-24:     }
-25: 
+button, .btn {
+  border: 0;
+  background-color: transparent;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 3px;
+  font-size: 14px;
+  transition: .2s;
+  vertical-align: middle;
+  display: inline-block;
+  cursor: pointer; }
+  button.confirm-action, .btn.confirm-action {
+    background-color: var(--color-medium-green);
+    color: var(--color-offwhite); }
+    button.confirm-action:hover, .btn.confirm-action:hover {
+      background-color: var(--color-light-green); }
+  button.btn-danger, .btn.btn-danger {
+    background-color: var(--color-medium-red);
+    color: var(--color-offwhite); }
+    button.btn-danger:hover, .btn.btn-danger:hover {
+      background-color: var(--color-light-red); }
+  button.btn-secondary, .btn.btn-secondary {
+    background-color: none;
+    color: #5a5a5a; }
+    button.btn-secondary:hover, .btn.btn-secondary:hover {
+      color: #787878; }
 
-Backtrace:
-scss/components/inputs.scss:20
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/script/tree/variable.rb:49:in `_perform'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/script/tree/node.rb:50:in `perform'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:377:in `visit_prop'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/base.rb:36:in `visit'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:152:in `block in visit'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/stack.rb:79:in `block in with_base'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/stack.rb:115:in `with_frame'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/stack.rb:79:in `with_base'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:152:in `visit'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:412:in `block (2 levels) in visit_rule'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:412:in `map'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:412:in `block in visit_rule'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:173:in `with_environment'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:410:in `visit_rule'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/base.rb:36:in `visit'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:152:in `block in visit'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/stack.rb:79:in `block in with_base'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/stack.rb:115:in `with_frame'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/stack.rb:79:in `with_base'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:152:in `visit'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:412:in `block (2 levels) in visit_rule'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:412:in `map'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:412:in `block in visit_rule'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:173:in `with_environment'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:410:in `visit_rule'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/base.rb:36:in `visit'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:152:in `block in visit'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/stack.rb:79:in `block in with_base'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/stack.rb:115:in `with_frame'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/stack.rb:79:in `with_base'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:152:in `visit'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/base.rb:52:in `block in visit_children'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/base.rb:52:in `map'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/base.rb:52:in `visit_children'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:161:in `block in visit_children'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:173:in `with_environment'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:160:in `visit_children'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/base.rb:36:in `block in visit'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:180:in `visit_root'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/base.rb:36:in `visit'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:151:in `visit'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/visitors/perform.rb:8:in `visit'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/root_node.rb:36:in `css_tree'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/tree/root_node.rb:29:in `render_with_sourcemap'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/engine.rb:368:in `_render_with_sourcemap'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/engine.rb:285:in `render_with_sourcemap'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/plugin/compiler.rb:484:in `update_stylesheet'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/plugin/compiler.rb:214:in `block in update_stylesheets'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/plugin/compiler.rb:208:in `each'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/plugin/compiler.rb:208:in `update_stylesheets'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/plugin/compiler.rb:464:in `on_file_changed'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/lib/sass/plugin/compiler.rb:324:in `block in watch'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/vendor/listen/lib/listen/listener.rb:252:in `on_change'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/vendor/listen/lib/listen/listener.rb:290:in `block in initialize_adapter'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/vendor/listen/lib/listen/adapters/polling.rb:48:in `poll_changed_directories'
-/var/lib/gems/2.7.0/gems/sass-3.4.0/vendor/listen/lib/listen/adapter.rb:299:in `block in start_poller'
-*/
-body:before {
-  white-space: pre;
-  font-family: monospace;
-  content: "Error: Undefined variable: \"$white\".\A         on line 20 of scss/components/inputs.scss\A \A 15:     transition: .2s;\A 16:     cursor: pointer;\A 17: \A 18:     &.confirm-action { // Also used for login, etc\A 19:         background-color: var(--color-medium-green);\A 20:         color: $white;\A 21:         &:hover {\A 22:             background-color: var(--color-light-green);\A 23:         }\A 24:     }\A 25: "; }
+input[type=text], input[type=password] {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  color: var(--fg-color-text);
+  border: 0;
+  background-color: var(--input-bg);
+  padding: 6px 12px;
+  border-radius: 3px;
+  transition: .2s; }
+  input[type=text]::-webkit-input-placeholder, input[type=text]::-moz-placeholder, input[type=text]:-ms-input-placeholder, input[type=text]:-moz-placeholder, input[type=password]::-webkit-input-placeholder, input[type=password]::-moz-placeholder, input[type=password]:-ms-input-placeholder, input[type=password]:-moz-placeholder {
+    background-color: #7a7a82; }
+
+.toggle-colortheme {
+  margin-left: 0px;
+  display: inline-block;
+  vertical-align: top;
+  padding: 0;
+  width: 29px;
+  overflow: hidden;
+  white-space: nowrap; }
+  .toggle-colortheme:hover svg.feather-sun {
+    filter: drop-shadow(0 0 4px #ffecbf); }
+  .toggle-colortheme:hover svg.feather-moon {
+    filter: drop-shadow(0 0 4px #66757F); }
+  .toggle-colortheme svg {
+    width: 29px;
+    height: 29px;
+    transition: .5s ease; }
+    .toggle-colortheme svg.feather-sun {
+      color: #ffecbf;
+      transform-origin: -1.5px center;
+      filter: drop-shadow(0 0 2px #ffecbf); }
+    .toggle-colortheme svg.feather-moon {
+      color: #66757F;
+      fill: #66757F;
+      transform-origin: right center;
+      filter: drop-shadow(0 0 2px #66757F); }
+  .toggle-colortheme.dark svg {
+    transform: rotate(180deg); }
+
+button.check-box {
+  box-sizing: border-box;
+  padding: unset;
+  background-color: rgba(10, 10, 10, 0.6);
+  padding: 4px;
+  height: 32px;
+  width: 32px;
+  transition: .2s;
+  margin: 0 5px 0 0;
+  display: inline-block;
+  border-radius: 3px; }
+  button.check-box[data-checked="true"] {
+    background-color: rgba(140, 140, 140, 0.6);
+    background-color: #3742fa; }
+  button.check-box * {
+    pointer-events: none; }
+  button.check-box svg {
+    width: 24px;
+    height: 24px;
+    color: #e6e6e6; }
+  button.check-box:hover {
+    background-color: rgba(100, 100, 100, 0.6); }
+
+.input-label {
+  color: #5a5a5a;
+  transition: .2s;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer; }
+  .input-label:hover {
+    color: #787878; }
+
+.input-container {
+  display: inline-flex; }
+
+.summary-action, .icon-btn {
+  box-sizing: border-box;
+  border-radius: 3px;
+  padding: unset;
+  background-color: rgba(10, 10, 10, 0.6);
+  padding: 4px;
+  height: 32px;
+  min-height: 32px;
+  width: 32px;
+  min-width: 32px;
+  transition: .2s;
+  position: relative; }
+  .summary-action *, .icon-btn * {
+    pointer-events: none; }
+  .summary-action::before, .icon-btn::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: invert(90%); }
+  .summary-action:hover, .icon-btn:hover {
+    background-color: rgba(100, 100, 100, 0.6); }
+  .summary-action.selected, .icon-btn.selected {
+    background-color: rgba(49, 231, 125, 0.75); }
+  .summary-action__delete::before, .icon-btn__delete::before {
+    background-image: url("../svg/trash.svg"); }
+  .summary-action__share::before, .icon-btn__share::before {
+    background-image: url("../svg/share-2.svg"); }
+  .summary-action__download::before, .icon-btn__download::before {
+    background-image: url("../svg/download-cloud.svg"); }
+  .summary-action__edit::before, .icon-btn__edit::before {
+    background-image: url("../svg/edit-2.svg"); }
+  .summary-action__plus::before, .icon-btn__plus::before {
+    background-image: url("../svg/plus.svg"); }
+
+select-album {
+  border-radius: 3px; }
+
+.is-online-check {
+  position: relative;
+  display: inline-block;
+  background-color: var(--color-medium-red);
+  border-radius: 50%;
+  height: 20px;
+  width: 20px;
+  box-shadow: 0 0 8px 0 var(--color-medium-red);
+  transition: background-color .5s ease, box-shadow .5s ease; }
+  .is-online-check.online {
+    background-color: var(--color-medium-green);
+    box-shadow: 0 0 14px 2px var(--color-medium-green); }
+  .is-online-check.reconnecting {
+    background-color: var(--color-medium-orange);
+    box-shadow: 0 0 0 0 rgba(255, 99, 72, 0.9);
+    transform: scale(0.95);
+    animation: pulse 1.75s infinite linear; }
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(255, 99, 72, 0.9); }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 10px 10px rgba(255, 99, 72, 0); }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(255, 99, 72, 0); } }
+select {
+  background-color: var(--input-bg);
+  color: var(--fg-color);
+  font-family: "Inter", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  border: none;
+  border-radius: 3px;
+  padding: 6px 12px;
+  cursor: pointer; }
+
+/*# sourceMappingURL=inputs.css.map */

@@ -1,44 +1,100 @@
-.dashboard {
+.page-header {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
   width: 100%;
-  height: 100%;
-  padding: 50px; }
-  .dashboard__header {
-    display: flex;
-    flex-wrap: nowrap;
-    justify-content: space-between;
+  padding: 20px;
+  top: 0;
+  z-index: 1;
+  background-color: var(--bg-color);
+  transition: background-color .5s, color .5s; }
+  .page-header__user {
+    display: inline-flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
     align-items: center; }
-    .dashboard__header__user__name {
+    .page-header__user__name {
       font-weight: 700; }
+
+.dashboard {
+  position: relative;
+  top: 72px;
+  width: 100%;
+  padding: 20px; }
+  .dashboard__albums {
+    position: relative; }
   .dashboard__filters {
+    position: relative;
     width: 100%;
     display: flex;
-    justify-content: space-evenly; }
+    justify-content: space-between;
+    padding: 20px 40px;
+    align-items: center; }
+    @media (max-width: 768px) {
+      .dashboard__filters.dashboard__filters {
+        padding: 0 20px;
+        flex-wrap: wrap; }
+      .dashboard__filters__group {
+        min-width: 100%;
+        padding: 5px 0;
+        align-items: center; } }
     .dashboard__filters__group {
       display: inline-flex;
       gap: 10px; }
     .dashboard__filters .editor-controls {
       display: none;
       gap: 10px; }
+      .dashboard__filters .editor-controls__album-name-input {
+        max-width: 180px; }
+        @media (max-width: 768px) {
+          .dashboard__filters .editor-controls__album-name-input {
+            max-width: 100%;
+            flex: 1 1 auto; } }
+      .dashboard__filters .editor-controls__album-name-input, .dashboard__filters .editor-controls__submit-album {
+        display: none; }
   .dashboard__content {
     position: relative;
     display: grid;
     grid-template-columns: repeat(auto-fill, var(--grid-item-size));
-    grid-auto-rows: --grid-item-size;
+    grid-auto-rows: var(--grid-item-size);
     grid-gap: 10px;
     justify-content: center;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    padding: 50px 0; }
+    padding: 10px 0; }
     .dashboard__content::-webkit-scrollbar {
       display: none; }
+    @media (max-width: 768px) {
+      .dashboard__content.dashboard__content {
+        grid-gap: 7.5px; } }
+    .dashboard__content:empty {
+      height: 100%;
+      position: absolute;
+      width: calc(100% - 40px);
+      place-items: center;
+      grid-template-columns: 1fr; }
+      .dashboard__content:empty:before {
+        font-weight: 700;
+        content: "It's empty :(\00000agrab your .sxcu file in the top right\00000aand add import it into ShareX";
+        white-space: pre;
+        text-align: center;
+        color: var(--placeholder-color-text);
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 2vw; }
 
 .thumbnail-container {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
   overflow: hidden;
   border-radius: 6px;
   position: relative;
-  cursor: pointer;
-  transition: box-shadow .2s; }
+  cursor: pointer; }
+  .thumbnail-container * {
+    user-select: none; }
   .thumbnail-container:hover .thumbnail-container__child, .thumbnail-container.show-info .thumbnail-container__child {
     transform: scale(1.2); }
   .thumbnail-container:hover .thumbnail-container__summary, .thumbnail-container.show-info .thumbnail-container__summary {
@@ -71,6 +127,9 @@
     height: 100%;
     color: #404040;
     filter: invert(25%); }
+  @media (max-width: 768px) {
+    .thumbnail-container .thumbnail-container__summary {
+      display: none; } }
   .thumbnail-container__summary {
     position: absolute;
     top: 0;
@@ -186,26 +245,16 @@
   transform-origin: left;
   transition: .35s linear; }
 
-.dashboard__content.small {
-  --grid-item-size: 150px; }
-  .dashboard__content.small .dashboard {
-    padding: 50px 20px; }
-.dashboard__content.medium {
-  --grid-item-size: 220px;
-  --summary-padding: 15px; }
-  .dashboard__content.medium .dashboard {
-    padding: 50px 20px; }
-
 @media (max-width: 768px) {
   body {
-    --grid-item-size: 150px; }
+    --grid-item-size: 80px; }
     body .dashboard {
-      padding: 50px 20px; } }
+      padding: 20px 10px; } }
 @media (min-width: 768px) and (max-width: 1280px) {
   body {
-    --grid-item-size: 220px;
+    --grid-item-size: 180px;
     --summary-padding: 15px; }
     body .dashboard {
-      padding: 50px 20px; } }
+      padding: 20px; } }
 
 /*# sourceMappingURL=dashboard.css.map */

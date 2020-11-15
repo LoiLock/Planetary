@@ -9,6 +9,7 @@ module.exports = {
         // console.log(req.body)
         // console.log(req.files.uploadfile)
         // console.log(req.body.key)
+        console.log(req.body.key)
         database.isSharexTokenValid(req.body.key, async function(err, result) { // Check if token is valid
             console.log(`RESULT: ${result}`)
             console.log(result) // Username that's associated with the sharextoken
@@ -18,11 +19,11 @@ module.exports = {
                 }))
                 return
             }
-
+            console.log(req.body)
             console.log(req.files)
             // Keep file extension and generate a random filename
             var fileExt = path.extname(req.files.uploadfile.name)
-            // ! FIXME, currently this only fixes russian characters, but does not account for files without extension
+
             if (fileExt == "") { //path.extname returns an empty string for Russian characters, so use the remaining name (the extension, e.g. .mp4) as the extension
                 fileExt = req.files.uploadfile.name
             }
@@ -36,7 +37,6 @@ module.exports = {
             // 1. save the uploaded mp4 to tmp/ folder
             // 2. in optimizeMP4 save it back to public/u/ folder
             // 3. wait for this and send response back to sharex
-            // TODO: remove the tempfile, since we don't use uploadedfile.mv() the tempfile never gets deleted
             if(['video/mp4', 'video/mpeg'].includes(req.files.uploadfile.mimetype)) {
                 console.log("trying optimization")
                 console.log(rndFilename)
@@ -47,7 +47,13 @@ module.exports = {
                         DeletionURL: config.protocol + config.serverURL + "/delete/" + deletionKey
                     }))
                     createThumbnail(req, rndFilename, deletionKey) // Log upload to database and create thumbnail
-                    return // Prevent uploadedFile.mv from firing, this
+
+                    fs.unlink(req.files.uploadfile.tempFilePath, async (error) => { // Delete the file if the optimization was successful
+                        if (error) { // Temp file does not exist
+                            console.log(error)
+                        }
+                    })
+                    return // Prevent uploadedFile.mv from firing
                 } catch (error) { // something went wrong with ffmpeg video optimization
                     console.log('File upload error: ', error)
                     // Don't return, continue to uploadedFile.mv
@@ -74,7 +80,7 @@ module.exports = {
 // Log file upload to database asyncrously
 // Determine whether a thumbnail can be made for the uploaded file
 async function createThumbnail(req, rndFilename, deletionKey) {
-    var imageMimes = [ 'image/png', 'image/jpeg']
+    var imageMimes = [ 'image/png', 'image/jpeg', 'image/webp']
     var videoMimes = [ 'video/mp4', 'video/mpeg', 'video/webm', 'video/x-matroska', 'image/gif']
     var soundMimes = [ 'audio/mpeg', 'audio/mp3', 'audio/x-wav', 'audio/wav', 'audio/x-aiff', 'audio/opus', 'audio/ogg', 'audio/flac', 'audio/x-flac' ]
     var pdfMimes = [ 'application/pdf' ]
@@ -84,9 +90,6 @@ async function createThumbnail(req, rndFilename, deletionKey) {
         if (videoMimes.includes(req.files.uploadfile.mimetype)) { // If upload file has mimetype of supported video, create thumbnail
             try {
                 var rndThumbVideo = await Utils.createVideoThumb(rndFilename, Utils.rndString(16))
-                console.log("random thumbnail:")
-                console.log(rndThumbVideo)
-                console.log("random thumbnail")
                 resolve(rndThumbVideo)
             } catch (error) {
                 reject(error)
@@ -125,8 +128,8 @@ async function createThumbnail(req, rndFilename, deletionKey) {
         console.log(thumbnailResult)
         database.logUpload(req.body.key, rndFilename, deletionKey, thumbnailResult) // Log file upload with thumbnail
     } catch (error) { // ! File does not support thumbnails, or something went wrong and not thumbnail could be created
-        console.log("Error on thumbnail creation")
+        console.log("No thumbnail was created:")
         console.log(error)
-        database.logUpload(req.body.key, rndFilename, deletionKey) // Log file upload
+        database.logUpload(req.body.key, rndFilename, deletionKey) // Log file upload without thumbnail
     }
 }

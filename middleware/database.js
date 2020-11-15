@@ -28,7 +28,10 @@ module.exports = {
     getUploads,
     flagDelete,
     getAllUsers,
-    getAllUploads
+    getAllUploads,
+    getUserCount,
+    addAlbum,
+    getAlbums
 }
 
 function initDB() {
@@ -38,7 +41,12 @@ function initDB() {
                 console.error(err)
             }
         })
-        db.run("CREATE TABLE IF NOT EXISTS uploads(uploader text, filename text, unixtime text, deletionkey text, thumbnail text, isdeleted integer DEFAULT 0, tags text)", (err) => { // Create uploads table
+        db.run("CREATE TABLE IF NOT EXISTS uploads(uploader text, filename text, unixtime text, deletionkey text, thumbnail text, isdeleted integer DEFAULT 0)", (err) => { // Create uploads table
+            if (err) {
+                console.error(err)
+            }
+        })
+        db.run("CREATE TABLE IF NOT EXISTS albums(albumname text, albumcover text, owner text, public integer DEFAULT 0, slug text, files text)", (err) => { // Create albums table
             if (err) {
                 console.error(err)
             }
@@ -157,7 +165,7 @@ async function flagDelete(deletionkey) { // Flag file as deleted
         })
     })
     var res = await results
-    return results
+    return res
 }
 
 async function getAllUploads() {
@@ -194,16 +202,41 @@ async function getAllUsers() {
     return res
 }
 
-// // tags must be an array
-// async function setAlbums(deletionkey, album) { // Replaces all tags in field
-//     var results = new Promise((resolve, reject) => {
-//         db.run("UPDATE uploads SET tags = ? WHERE deletionkey = ?", deletionkey, (error) => {
-//             if(error) {
-//                 reject(error)
-//             }
-//             resolve("Successfully deleted")
-//         })
-//     })
-//     var res = await results
-//     return results
-// }
+async function getUserCount() {
+    return new Promise((resolve, reject) => {
+        db.get("SELECT COUNT(*) FROM users", (error, result) => {
+            if(error) {
+                reject(error)
+            }
+            resolve(result[Object.keys(result)[0]]) // Get value of first property
+        })
+    })
+}
+
+// ! WIP
+async function addAlbum(albumprops) { // adds album to database
+    var results = new Promise((resolve, reject) => {
+        db.run("INSERT INTO albums(albumname, owner, slug) VALUES(?,?,?)", [albumprops.albumname, albumprops.owner, albumprops.slug], (error) => {
+            if(error) {
+                reject(error)
+            }
+            resolve("Successfully added album")
+        })
+    })
+    var res = await results
+    return res
+}
+
+// tags must be an array
+async function getAlbums(username) { // Gets all the albums where the owner matches the username who requested it
+    var results = new Promise((resolve, reject) => {
+        db.all("SELECT albumname, slug, files, albumcover FROM albums WHERE owner = ?", username, (error, result) => {
+            if(error) {
+                reject(error)
+            }
+            resolve(result)
+        })
+    })
+    var res = await results
+    return res
+}

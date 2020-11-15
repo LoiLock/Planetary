@@ -17,6 +17,11 @@ function getForm() { // Attempt to register and show message from the server
         console.log(data)
         console.log(data.success)
         var formResponseInfo = document.querySelector(".form-response-info")
+        if (data && data.success) { // * Reload page to force redirect from server after 3 seconds
+            setTimeout(() => {
+                window.location.href = "/login"
+            }, 1500);
+        }
 
         formResponseInfoTimeout = setTimeout(() => { // Clear message after 5 seconds
             formResponseInfo.classList.remove("success", "fail")

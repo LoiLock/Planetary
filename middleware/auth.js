@@ -13,7 +13,6 @@ module.exports = {
         console.log(req.body)
         var sharexToken = Utils.rndString(20)
 
-        // TODO: Make this a Utils function, checks if post body fields are set or empty or less than 8 in length
         if (!req.body.password || !req.body.username) {
             return res.status(400).json({
                 success: false,
@@ -47,10 +46,11 @@ module.exports = {
             }
         } catch(error) {
             console.log(error)
+            return res.json({
+                success: false,
+                message: "Something went wrong"
+            })
         }
-        
-        // console.log(hash)
-        // TODO: Add response
     },
 
     isTokenValid: function(req, res, next) { // * Middleware for express.js, check is JWT token is valid, and if so use next() to continue to the handler function of the protected route, if not, send back to login screen
@@ -81,7 +81,6 @@ module.exports = {
     loginUser: async function(req, res) { // Gives JWT token back to user if the password hash matches the one in the database
         console.log(req.body)
 
-        // TODO: Make this a Utils function, checks if post body fields are set or empty or less than 8 in length
         if (!req.body.password || !req.body.username) {
             return res.status(400).json({
                 success: false,

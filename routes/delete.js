@@ -1,4 +1,5 @@
 const { getFileName } = require("../middleware/database")
+var config = require("../config.json")
 
 const fs = require("fs")
 var database = require("../middleware/database")
@@ -11,7 +12,11 @@ module.exports = {
 
             return res.render("delete.html", { // Return confirmation screen for file deletion
                 filename: filename,
-                deletionKey: req.params.deletionkey
+                deletionKey: req.params.deletionkey,
+                page: {
+                    title: `Delete - ${config.siteName}`,
+                    description: `Are you sure you want to delete ${filename}?`
+                }
             })
         } catch (error) { // Invalid deletionkey
             console.log(error)
@@ -35,7 +40,11 @@ module.exports = {
                     return res.render("deleted.html", {
                         filename: filename,
                         deletionKey: req.body.deletionkey,
-                        message: "Already deleted file "
+                        message: "Already deleted file ",
+                        page: {
+                            title: `Already been deleted - ${filename}`,
+                            description: `${filename} has already been deleted before`
+                        }
                     })
                 }
 
@@ -46,7 +55,11 @@ module.exports = {
                     return res.render("deleted.html", { // Show success screen if the file was successfully deleted
                         filename: filename,
                         deletionKey: req.body.deletionkey,
-                        message: flagDeleted
+                        message: flagDeleted,
+                        page: {
+                            title: `Successfully deleted - ${filename}`,
+                            description: `Successfully deleted ${filename}`
+                        }
                     })
                 } catch (error) {
                     return res.status(500).send("Something went terribly wrong")

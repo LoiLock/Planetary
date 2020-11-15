@@ -1,20 +1,13 @@
-$white: #fffefc;
-
-
-.text-bold {
-    font-weight: 700;
-    background-color: rgba(153, 30, 38, 0.6);
-}
-
 // https://flatuicolors.com/palette/cn
 :root {
-    --grid-item-size: 300px;
+    --grid-item-size: 260px;
     --bg-color: #fffefc;
     --fg-color-text: #111111;
+    --fg-color-secondary: #2f3542;
     --summary-padding: 20px;
-    --input-bg: #f3f3f4; // Primarily used for text inputs such as login and registration forms
+    --input-bg: #f3f3f4;
     --bg-color-secondary: #d8d8d8;
-    --placeholder-color-text: rgb(122, 122, 130);
+    --placeholder-color-text: rgb(117, 117, 119);
     --color-medium-green: #2ed573;
     --color-light-green: #34e47d;
     --color-medium-red: #ff4757;
@@ -25,4 +18,5 @@ $white: #fffefc;
     --color-light-blue: #70a1ff;
     --color-medium-melon: #ff4757;
     --color-light-melon: #ff6b81;
+    --color-offwhite: #fffefc;
 }

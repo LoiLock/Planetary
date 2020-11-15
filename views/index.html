@@ -3,21 +3,62 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title></title>
-        <meta name="description" content="">
+        <title>{{ page.title }}</title>
+        <meta name="description" content="{{ page.description }}">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        {% include "favicon_part.html" %}
         <link rel="stylesheet" href="css/style.css">
         <link rel="manifest" href="manifest.json">
         <script src="js/registersw.js"></script>
-        <style>
-            body {
-                display: grid;
-                place-items: center;
-                font-weight: 700;
-            }
-        </style>
     </head>
-    <body>
-        <div>{{ currentCommitHash }}</div>
+    <body class="dark">
+        <div class="homepage">
+            <header class="homepage__header">
+                <section class="homepage__header__section">
+                    <span class="planetary-logo" style="--size: 30px"></span>
+                </section>
+                <section class="homepage__header__section">
+                    <a class="btn btn-secondary" href="/login">login</a>
+                </section>
+            </header>
+            <section class="homepage__content">
+                <h1 class="header header--primary">Planetary demo website</h1>
+                <h2 class="header header--secondary">What is this?</h2>
+                <p class="paragraph paragraph--highlighted">
+                    Planetary is a self-hosted, feature-rich ShareX server written in Node.js. Its main focus is content management through the dashboard.
+                </p>
+                <h3 class="header header--tertiary">Main features:</h3>
+                <ul class="list list--highlighted">
+                    <li class="list__item">
+                        <span class="text--bold">Thumbnails:</span> video and soundfiles have smaller, 10 second clips created for them.
+                        PDFs and images are supported as well 
+                    </li>
+                    <li class="list__item">
+                        <span class="text--bold">Portable:</span> Planetary uses SQLite,
+                        so if you want to move it to a different server, just tar it!
+                    </li>
+                    <li class="list__item">
+                        <span class="text--bold">Live updating dashboard:</span> No need to refresh the dashboard when you upload a new file
+                    </li>
+                    <li class="list__item">
+                        <span class="text--bold">Experimental PWA:</span> The dashboard can be installed as an app and used when you're offline
+                    </li>
+                </ul>
+                <video width="100%" controls preload="metadata">
+                    <source src="demo.mp4" type="video/mp4">
+                </video>
+            </section>
+            <footer class="homepage__footer">
+                <ul class="homepage__footer__links">
+                    <li class="homepage__footer__links__link">Users: {{ website.UserCount }}</li>
+                    <li class="homepage__footer__links__link">Files: {{ website.FileCount }}</li>
+                    <li class="homepage__footer__links__link">Filesize: <span class="text--dotted" title="{{ website.FileSize }}KB">{{ website.FileSizeHuman }}</span></li>
+                    <li class="homepage__footer__links__link"><a class="link link--blue link--fancy-hover text--emphasized" href="https://github.com/loilock/planetary/commit/{{ website.CommitHash }}">{{ website.ShortCommitHash }}</a></li>
+                </ul>
+            </footer>
+        </div>
+        <script>
+            document.getElementsByTagName("video")[0].volume = "0.5"
+        </script>
     </body>
 </html>

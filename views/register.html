@@ -3,15 +3,14 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>
-
-        </title>
-        <meta name="description" content="">
+        <title>{{ page.title }}</title>
+        <meta name="description" content="{{ page.description }}">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        {% include "favicon_part.html" %}
         <link rel="stylesheet" href="css/style.css">
         <link rel="manifest" href="manifest.json">
     </head>
-    <body>
+    <body class="dark">
         <div class="login-form-container container-shadow">
             <h2 class="login-form-container__header">Planetary</h2>
             <div class="login-form">

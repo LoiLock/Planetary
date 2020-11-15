@@ -1,18 +1,19 @@
 const fileUpload = require("express-fileupload")
+const { TIME } = require("./utils")
 
 var clients = [] // Create list of all clients currently listening to SSE
-
+const SSE_HEADERS = {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    'Connection': 'keep-alive'
+}
 module.exports = {
     handleEvent: async function(req, res) { // Every x seconds the server checks if there's new uploads
         console.log(req.user)
-        var headers = {
-            'Content-Type': 'text/event-stream',
-            'Cache-Control': 'no-cache',
-            'Connection': 'keep-alive'
-        }
-        res.status(200).set(headers) // Send back headers to client
+        
+        res.status(200).set(SSE_HEADERS) // Send back headers to client
         // res.connection.setTimeout(86400 * 1000) // Set timeout to 24 hours
-        res.write('retry: 10000\n\n') // tell client to retry every 10 seconds if connection is lost
+        res.write('retry: 3000\n') // tell client to retry every 10 seconds if connection is lost
 
         const clientID = Date.now() // set unique id SSE client to current unixtime in MS
         const username = req.user.username // set clients username
@@ -31,7 +32,10 @@ module.exports = {
         // })}\n\n`)
 
         req.on("close", () => {
-            console.log(`${clientID} - ${username} disconnected`)
+            var firstConnStamp = clientID / 1000
+            var lastConnStamp = Date.now() / 1000
+
+            console.log(`${clientID} - ${username} disconnected, was connected for ${lastConnStamp - firstConnStamp} seconds`)
 
 
             clients = clients.filter(c => { // remove all clients with the same clientID as the client that just disconnected
@@ -43,18 +47,18 @@ module.exports = {
 }
 setInterval(() => { // send message every 10 seconds to prevent timeout
     clients.forEach(c => {
-        c.res.write(`data: ${JSON.stringify({
+        c.res.write(`id: ${Date.now()}\ndata: ${JSON.stringify({
             type: "poll",
             message: ""
         })}\n\n`)
     })
-}, 10000);
+}, 5 * TIME.SECONDS);
 
 async function sendEvent(type, username, message) { // ? Sends SSE to every client with matching username
     if (clients.some(c => c.username === username)) { // If if clients array contains client.username that matches the username
         var userClients = clients.filter(c => c.username === username)
         userClients.forEach(c => { // If user is logged in on multiple devices, loop over botch connections and send the SSE
-            c.res.write(`data: ${JSON.stringify({
+            c.res.write(`id: ${Date.now()}\ndata: ${JSON.stringify({
                 type: type,
                 message: message || ""
             })}\n\n`)

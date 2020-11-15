@@ -1,38 +1,77 @@
 @import '../responsive.scss';
-.dashboard {
+.page-header {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
     width: 100%;
-    height: 100%;
-    padding: 50px;
-    &__header {
-        display: flex;
-        flex-wrap: nowrap;
-        justify-content: space-between;
+    padding: 20px;
+    top: 0;
+    z-index: 1;
+    background-color: var(--bg-color);
+    transition: background-color .5s, color .5s;
+    &__user {
+        display: inline-flex;
+        justify-content: flex-end;
+        flex-wrap: wrap;
         align-items: center;
-        &__user {
-            &__name {
-                font-weight: 700;
-            }
+        &__name {
+            font-weight: 700;
         }
     }
+}
+.dashboard {
+    position: relative;
+    top: 72px;
+    width: 100%;
+    padding: 20px;
+    &__albums {
+        position: relative;
+    }
     &__filters {
+        position: relative;
         width: 100%;
         display: flex;
-        justify-content: space-evenly;
-        // flex-wrap: ;
+        justify-content: space-between;
+        padding: 20px 40px;
+        align-items: center;
+        @include small {
+            &#{&} {
+                $filters: &;
+                padding: 0 20px;
+                flex-wrap: wrap;
+            }
+            &__group {
+                min-width: 100%;
+                padding: 5px 0;
+                align-items: center;
+            }
+        }
         &__group {
             display: inline-flex;
-            gap: 10px; // ! VERY new property, won't work on a lot of browsers
+            gap: 10px; // * New property
         }
         .editor-controls {
             display: none;
             gap: 10px;
+            &__album-name-input {
+                max-width: 180px;
+                @include small {
+                    max-width: 100%;
+                    flex: 1 1 auto;
+                }
+            }
+            &__album-name-input, &__submit-album {
+                display: none;
+            }
         }
     }
     &__content {
         position: relative;
         display: grid;
-        grid-template-columns: repeat(auto-fill, var(--grid-item-size)); // TODO: Make the 200px a css variable to easily be able to change the grid-item size for different media queries
-        grid-auto-rows: --grid-item-size;
+        grid-template-columns: repeat(auto-fill, var(--grid-item-size));
+        grid-auto-rows: var(--grid-item-size);
         grid-gap: 10px;
         justify-content: center; // Equal spacing on either side of the grid
         scrollbar-width: none;
@@ -40,17 +79,43 @@
         &::-webkit-scrollbar {
             display: none;
         }
-        padding: 50px 0;
+        padding: 10px 0;
+        @include small {
+            &#{&} {
+                grid-gap: 7.5px;
+            }
+        }
+        &:empty { // When there's no content, show a message
+            height: 100%;
+            position: absolute;
+            width: calc(100% - 40px);
+            place-items: center;
+            grid-template-columns: 1fr;
+            &:before {
+                font-weight: 700;
+                content: "It's empty :(\00000agrab your .sxcu file in the top right\00000aand add import it into ShareX";
+                white-space: pre;
+                text-align: center;
+                color: var(--placeholder-color-text);
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                font-size: 2vw;
+            }
+        }
     }
 }
 
-.thumbnail-container {
+.thumbnail-container { // Thumbnail container styling
     box-shadow: 0 4px 6px hsla(0, 0%, 0%, 0.4);
     overflow: hidden;
     border-radius: 6px;
     position: relative;
     cursor: pointer;
-    transition: box-shadow .2s;
+    * {
+        user-select: none;
+    }
     $self: &;
     &:hover, &.show-info { // If filter showFilenames (show-info) is set, or on hover
         #{$self}__child {
@@ -63,7 +128,7 @@
             }
         }
     }
-    &::before {
+    &::before { // Always be square
         content: "";
         display: inline-block;
         padding-top: 100%;
@@ -82,7 +147,7 @@
         object-fit: cover;
         object-position: center;
     }
-    .icon-bg {
+    .icon-bg { // Play background for sound thumbnails
         background: url("../svg/play.svg") no-repeat center;
         background-size: 50%;
         position: absolute;
@@ -93,8 +158,12 @@
         color: rgb(64,64,64);
         filter: invert(25%)
     }
-
-    &__summary {
+    @include small { // Don't show summary on mobile
+        #{$self}__summary {
+            display: none;
+        }
+    }
+    &__summary { // Cover that shows when hovered over thumbnail
         position: absolute;
         top: 0;
         left: 0;
@@ -103,7 +172,6 @@
         opacity: 0;
         background-color: rgba(10, 10, 10, 0.6);
         transition: opacity .5s;
-        // transition: none !important;
         padding: var(--summary-padding);
         display: flex;
         justify-content: flex-end;
@@ -250,37 +318,37 @@
     transition: .35s linear;
 }
 
-.dashboard__content {
-    &.small {
-        --grid-item-size: 150px;
-        .dashboard {
-            padding: 50px 20px;
-        }
-    }
-    &.medium {
-        --grid-item-size: 220px;
-        --summary-padding: 15px;
-        .dashboard {
-            padding: 50px 20px;
-        }
-    }
-}
+// .dashboard__content {
+//     &.small {
+//         --grid-item-size: 150px;
+//         .dashboard {
+//             padding: 50px 20px;
+//         }
+//     }
+//     &.medium {
+//         --grid-item-size: 220px;
+//         --summary-padding: 15px;
+//         .dashboard {
+//             padding: 50px 20px;
+//         }
+//     }
+// }
 
 @include small {
     body {
-        --grid-item-size: 150px;
+        --grid-item-size: 80px;
         .dashboard {
-            padding: 50px 20px;
+            padding: 20px 10px;
         }
     }
 }
 
 @include medium {
     body {
-        --grid-item-size: 220px;
+        --grid-item-size: 180px;
         --summary-padding: 15px;
         .dashboard {
-            padding: 50px 20px;
+            padding: 20px;
         }
     }
 }

@@ -1,8 +1,16 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+@font-face {
+    font-family: "Inter";
+    font-weight: 100 900;
+    font-display: swap;
+    font-style: normal;
+    font-named-instance: 'Regular';
+    src: url("../fonts/Inter-roman.var.woff2") format("woff2");
+}
 
-// Import other page stylings and variables from variables.scss
+// Import stylesheets
 @import 'responsive.scss';
 @import 'variables.scss';
+@import 'pages/index.scss';
 @import 'pages/login.scss';
 @import 'pages/dashboard.scss';
 @import 'pages/auth.scss';
@@ -10,31 +18,31 @@
 @import 'components/popups.scss';
 
 html, body {
-    min-height: 100vh !important;
-    height: 100%;
-}
-
-body {
-    padding: 0;
     margin: 0;
+    padding: 0;
+    min-height: 100%;
+}
+body {
     background-color: var(--bg-color);
     color: var(--fg-color-text);
     font-family: 'Inter', sans-serif;
     transition: background-color .5s, color .5s;
     will-change: color, background-color;
+    height: 100vh;
     &.dark {
         --bg-color: #1d1d1d;
         --fg-color-text: #fffefc;
+        --fg-color-text-secondary: #cccbc8;
         --input-bg: #212121;
-        --bg-color-secondary: #0e0e0e
+        --bg-color-secondary: #0e0e0e;
     }
 }
 
-h1, h2,h3,h4,h5,h6, p {
+h1, h2,h3,h4,h5,h6, p, ul {
     padding: 0;
     margin: 0;
 }
-div, section, input, header, button {
+div, section, input, header, footer, button {
     box-sizing: border-box;
 }
 
@@ -42,7 +50,129 @@ a {
     text-decoration: none;
 }
 
+// Link modifiers
+.link {
+    position: relative;
+    &--blue {
+        color: var(--color-medium-green);
+        transition: .2s;
+        &:hover {
+            color: var(--color-light-green);
+        }
+    }
+    &--fancy-hover {
+        &:after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: -3px;
+            width: 0%;
+            height: 3px;
+            background-color: currentColor;
+            transition: .2s;
+        }
+        &:hover {
+            &:after {
+                width: 100%;
+            }
+        }
+    }
+}
+
 // adds a consistent box shadow to all boxes
 .container-shadow {
     box-shadow: 0 4px 6px 0 hsla(0, 0%, 0%, 0.2);
+}
+
+// Logo styling, with default size of 40px
+.planetary-logo {
+    --blur: calc((var(--size) / 100) * 2.5); // Make blur always 2.5 percent the size of the logo (1px blur for 40x40 logo)
+    display: inline-block;
+    position: relative;
+    width: 40px;
+    width: var(--size);
+    border-radius: 50%;
+    filter: blur(1px);
+    filter: blur(--blur);
+    background-image: linear-gradient(135deg, #2af598 0%, #009efd 100%);
+    &::after {
+        content: "";
+        padding-top: 100%;
+        display: block;
+    }
+}
+
+// text modifiers
+.text {
+    &--italic {
+        font-style: italic;
+    }
+    &--bold {
+        font-weight: bold;
+    }
+    &--emphasized {
+        font-weight: 600;
+    }
+    &--dotted {
+        border-bottom: 1px dotted currentColor;
+    }
+}
+
+// Header modifiers
+.header {
+    &--primary {
+        font-size: 40px;
+        margin-bottom: 10px;
+        @include small {
+            font-size: 30px;
+        }
+    }
+    &--secondary {
+        font-size: 32px;
+        margin-bottom: 8px;
+        @include small {
+            font-size: 24px;
+        }
+    }
+    &--tertiary {
+        margin-bottom: 8px;
+    }
+}
+
+// Paragraph modifiers
+.paragraph {
+    margin-bottom: 10px;
+    &:last-of-type {
+        margin-bottom: 20px;
+    }
+    &--highlighted {
+        padding: 10px 14px;
+        border-radius: 3px;
+        background-color: var(--input-bg);
+    }
+}
+
+// (Not final) UL styling
+.list {
+    text-decoration: none;
+    margin: 0;
+    padding: 0;
+    list-style-type: disc;
+    $list: &;
+    &__item {
+        margin-left: 20px;
+        margin-bottom: 6px;
+        &:last-of-type {
+            margin-bottom: unset;
+        }
+    }
+    &--highlighted {
+        padding: 12px 20px;
+        padding-left: 20px;
+        border-radius: 3px;
+        background-color: var(--input-bg);
+        #{$list}__item {
+            color: var(--fg-color-text-secondary);
+        }
+    }
 }

@@ -1,4 +1,4 @@
-import { humanDate, generateShareXConfig } from './clientutils.js'
+import { humanDate, generateShareXConfig, logout, TIME } from './clientutils.js'
 import { initSSE } from './handleevents.js'
 
 var isInEditor = false // Used to check if click events
@@ -9,6 +9,7 @@ window.onload = function() {
 
 window.addEventListener('DOMContentLoaded', (event) => {
     getUploads()
+    // getAlbums()
 })
 
 var previousUploads = [] // Empty array to compare against in getUploads
@@ -41,9 +42,6 @@ export async function getUploads() {
     console.timeEnd("startrequest")
     console.timeEnd("populate")
     console.log(document.querySelectorAll(".thumbnail-container").length)
-    countElements(".dashboard__content")
-    countElementsNoSVG(".dashboard__content")
-    countElements(".thumbnail-container")
     initFilters() // After everything is loaded, add filters
 
     console.time("replaceIcons")
@@ -75,7 +73,7 @@ function addImageToGrid(element) { // Creates image element to be added to the i
     containerChild.classList.add("thumbnail-container__child")
     buttonWrapper.classList.add("thumbnail-container__summary__actions")
 
-    thumbnailContainer.addEventListener("click", (event) => {selectThumbnailContainer(event) }, false) // first event listener will be the one for the editor, so that it can stop immediate propagation if isInEditor equals true
+    thumbnailContainer.addEventListener("click", (event) => { selectThumbnailContainer(event) }, false) // first event listener will be the one for the editor, so that it can stop immediate propagation if isInEditor equals true
 
 
     // Create video player or use default background image
@@ -200,11 +198,13 @@ function addImageToGrid(element) { // Creates image element to be added to the i
 }
 
 function openFile(elem) {
+    if(isInEditor) return;
     console.log(elem.dataset.filename)
     window.open('/u/' + elem.dataset.filename, '_blank')
 }
 
 function toggleVideo(elem) { // Toggles video playback
+    if(isInEditor) return;
     console.log(elem)
     if (elem.firstChild.paused) {
         elem.firstChild.play()
@@ -214,6 +214,7 @@ function toggleVideo(elem) { // Toggles video playback
 }
 
 function toggleMusic(elem) { // Toggles music playback
+    if(isInEditor) return;
     console.log(elem)
     if (elem.firstChild.paused) {
         elem.firstChild.play()
@@ -252,7 +253,7 @@ function createShareButton(filename) {
             setTimeout(() => {
                 summaryCover.classList.remove("clipboard-copied")
                 this.disable = false
-            }, 5000)
+            }, 5 * TIME.SECONDS)
         }, () => {
             console.log("Failed to copy URL to clipboard")
         })
@@ -294,35 +295,39 @@ function toggleColorTheme(e) { // ? Change color theme toggle switch, saves to l
 
 function setSavedColorTheme() { // ? Load the currently saved color-theme
     var currentTheme = localStorage.getItem("color-theme")
+    console.log(currentTheme)
     if (!currentTheme) { // If localstorage item for theme is empty
+        console.log("setting theme")
         console.log("empty")
         localStorage.setItem("color-theme", "dark")
         currentTheme = "dark"
     }
-    if (currentTheme == "dark") { document.querySelector(".toggle-colortheme").classList.add("dark") } // Make sure the toggle switch is set to the right position onload as well
+    if (currentTheme == "dark") { // Make sure the toggle switch is set to the right position onload as well
+        document.querySelector(".toggle-colortheme").classList.add("dark")
+    } else {
+        document.body.classList.remove("dark")
+    }
     document.body.classList.add(currentTheme)
 }
 
 
 
 
-// TODO: if applyFilter is called from anywhere else, also automatically set the checkboxes to checked
 var applyFilter = { // adds or removes classes based on the boolean "show"
-    showFilenames: function(yes) {
+    showFilenames: function(doAction) {
         var thumbnailContainers = document.getElementsByClassName("thumbnail-container")
-        console.log(thumbnailContainers.length)
         for (var i = 0; i < thumbnailContainers.length; i++) {
-            if (yes) {
+            if (doAction) {
                 thumbnailContainers[i].classList.add("show-info")
             } else {
                 thumbnailContainers[i].classList.remove("show-info")
             }
         }
     },
-    hideDeleted: function(yes) {
+    hideDeleted: function(doAction) {
         var deletedContainers = document.querySelectorAll('.thumbnail-container[data-isdeleted="true"]')
         for (var i = 0; i < deletedContainers.length; i++) {
-            if(yes) {
+            if(doAction) {
                 deletedContainers[i].style.display = "none"
             } else {
                 deletedContainers[i].style.display = "inline-block"
@@ -348,16 +353,9 @@ function initFilters() { // adds event listeners to filter values
     for (var i = 0; i < checkboxElems.length; i++) {
         var isChecked = checkboxElems[i].getAttribute("data-checked")
         var filterType = checkboxElems[i].getAttribute("data-value")
-        console.log(isChecked)
-        console.log(filterType)
         if (isChecked && isChecked == "true") {
-            console.log(isChecked)
-            console.log(filterType)
             applyFilter[filterType](isChecked)
         }
-        checkboxElems[i].addEventListener("click", function(e) {
-            handleCheckbox(e)
-        }, false)
     }
 }
 
@@ -367,6 +365,15 @@ function initComponents() { // Add events listeners to components and set other 
     document.querySelector(".toggle-colortheme").addEventListener("click", (event) => {toggleColorTheme(event)}, false)
     document.querySelector(".start-editor").addEventListener("click", (event) => { startEditor(event) }, false)
     document.querySelector(".submit-deletion").addEventListener("click", submitDeleteSelection, false)
+    document.querySelector(".editor-controls__album-select").addEventListener("change", albumSelectionHandler, false)
+    document.querySelector(".editor-controls__submit-album").addEventListener("click", submitAlbum, false)
+    document.querySelector(".page-header__user__logout").addEventListener("click", logout, false)
+    var checkboxElems = document.querySelectorAll(".toggle-filter")
+    for (var i = 0; i < checkboxElems.length; i++) {
+        checkboxElems[i].addEventListener("click", function(e) {
+            handleCheckbox(e)
+        }, false)
+    }
 }
 
 
@@ -374,14 +381,26 @@ function initComponents() { // Add events listeners to components and set other 
 // ? Here we create the dashboard editor, allows selecting multiple files and deleting them, or add them to an album
 function startEditor(e) {
     isInEditor = !isInEditor
-    console.log(isInEditor)
     var editorControls = document.querySelector(".editor-controls")
-    if (isInEditor) {
-        e.currentTarget.classList.add("selected")
+    var editorBtn = document.querySelector(".start-editor")
+    if (isInEditor) { // Pause all videos and audio players
+        editorBtn.classList.add("selected")
         editorControls.style.display = "flex"
+        var vidPlayers = document.getElementsByTagName("video")
+        var musicPlayers = document.getElementsByTagName("audio")
+        for(var i = 0; i < vidPlayers.length; i++) {
+            vidPlayers[i].pause()
+        }
+        for(var x = 0; x < musicPlayers.length; x++) {
+            musicPlayers[x].pause()
+        }
     } else {
-        e.currentTarget.classList.remove("selected")
+        editorBtn.classList.remove("selected")
         editorControls.style.display = "none"
+        var selectedThumbs = document.querySelectorAll(".thumbnail-container.selected")
+        for(var i = 0; i < selectedThumbs.length; i++) {
+            selectedThumbs[i].classList.remove("selected")
+        }
     }
 }
 
@@ -488,3 +507,72 @@ function countElementsNoSVG(parentSelector) {
     var all = parentElem.querySelectorAll("*:not(svg)")
     console.log(`Elements inside "${parentSelector}": ${all.length}`)
 }
+
+// Same function that Modernizer uses to check if a device supports touch events
+function isTouchDevice() {
+    try {
+        document.createEvent("TouchEvent")
+        return true
+    } catch {
+        return false
+    }
+}
+
+function albumSelectionHandler(e) {
+    var albumSelection = e.target
+    var selectedOption = albumSelection.value
+    console.log(selectedOption)
+    var albumNameInput = document.querySelector(".editor-controls__album-name-input")
+    albumNameInput.addEventListener("paste", validateAlbumName, false)
+    albumNameInput.addEventListener("input", validateAlbumName, false)
+    if(selectedOption == "newalbum") {
+        albumNameInput.style.display = "block"
+    } else {
+        albumNameInput.style.display = "none"
+    }
+}
+
+
+function validateAlbumName(e) {
+    var inputStr = e.target.value
+    var submitAlbumBtn = document.querySelector(".editor-controls__submit-album")
+    if (inputStr.match(/^[a-z0-9]+$/i) && inputStr.length <= 14) {
+        submitAlbumBtn.style.display = "block"
+        e.target.style.color = "var(--fg-color-text)"
+    } else {
+        submitAlbumBtn.style.display = "none"
+        e.target.style.color = "var(--color-medium-red)"
+    }
+    if (inputStr.length == 0) {
+        e.target.style.color = "var(--fg-color-text)"
+    }
+}
+
+async function submitAlbum() {
+    var albumName = document.querySelector(".editor-controls__album-name-input").value
+
+    var response = await fetch("/albums/add", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+            "Content-type": "application/json"
+        },
+        body: JSON.stringify({
+            albumname: albumName
+        })
+    })
+    // TODO: show feedback in UI
+    var data = await response.json()
+    console.log(data)
+}
+
+
+
+// async function getAlbums() {
+//     var response = await fetch("/albums/get", {
+//         credentials: "include",
+//     })
+
+//     var data = await response.json()
+//     console.log(data)
+// }

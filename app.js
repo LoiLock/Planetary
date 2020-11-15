@@ -3,9 +3,11 @@ const app = express()
 var config = require("./config.json")
 const fileUpload = require("express-fileupload")
 var cookieParser = require('cookie-parser')
+var nunjucks = require("nunjucks")
 
-var Utils = require("./middleware/utils")
-Utils.setCurrentCommitHash()
+// ? Start update background task to update site info
+const { updateSiteInfo } = require("./middleware/tasks")
+updateSiteInfo()
 
 const database = require("./middleware/database")
 
@@ -13,7 +15,7 @@ const database = require("./middleware/database")
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 app.use(fileUpload({
-    safeFileNames: true,
+    safeFileNames: true, // ! Breaks files with non-alphanumeric characters (Like files with only russian characters), needs further testing
     preserveExtension: 4,
     limits: {
         fileSize: config.fileSizeLimitMB * 1024 * 1024
@@ -24,8 +26,6 @@ app.use(fileUpload({
 
 app.use(cookieParser()) // Easy cookie parsing for JWT
 
-var nunjucks = require("nunjucks")
-const utils = require("./middleware/utils")
 const port = process.env.PORT || 3000
 
 nunjucks.configure('views', {

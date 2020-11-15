@@ -4,13 +4,51 @@
     "lang": "en-US",
     "start_url": "/dashboard",
     "display": "standalone",
-    "background_color": "white",
-    "theme_color": "white",
+    "background_color": "#1d1d1d",
+    "theme_color": "#1d1d1d",
     "icons": [
         {
-          "src": "icon-270.png",
-          "sizes": "270x270",
+          "src": "tn_logo_64.png",
+          "sizes": "64x64",
+          "type": "image/png"
+        },
+        {
+          "src": "tn_logo_96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        },
+        {
+          "src": "tn_logo_128.png",
+          "sizes": "128x128",
+          "type": "image/png"
+        },
+        {
+          "src": "tn_logo_256.png",
+          "sizes": "256x256",
+          "type": "image/png"
+        },
+        {
+          "src": "tn_logo_512.png",
+          "sizes": "512x512",
           "type": "image/png"
         }
+    ],
+    "shortcuts" : [
+      {
+        "name": "Home",
+        "url": "/"
+      },
+      {
+        "name": "Dashboard",
+        "url": "/dashboard"
+      },
+      {
+        "name": "Login",
+        "url": "/login"
+      },
+      {
+        "name": "Register",
+        "url": "/register"
+      }
     ]
 }

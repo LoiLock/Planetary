@@ -4,8 +4,6 @@ var sharp =  require('sharp')
 var fs = require('fs')
   , gm = require('gm').subClass({imageMagick: true});
 
-var { execSync } =  require("child_process")
-
 
 module.exports = {
     rndString: function(length) {
@@ -21,8 +19,13 @@ module.exports = {
     createSoundThumb,
     createPDFThumb,
     optimizeMP4,
-    setCurrentCommitHash,
     getIP
+}
+
+module.exports.TIME = {
+    SECONDS: 1000,
+    MINUTES: 60 * 1000,
+    HOUR: 60 * 60 * 1000
 }
 
 async function createVideoThumb(inputFile, outputFile) {
@@ -33,6 +36,7 @@ async function createVideoThumb(inputFile, outputFile) {
         .outputOptions("-maxrate 600k")
         .outputOptions("-bufsize 1M")
         .outputOptions("-movflags +faststart")
+        .outputOptions("-pix_fmt yuv420p") // Mainly for gifs, firefox doesn't support it
         .audioCodec('aac')
         .audioBitrate('96k')
         .videoFilters('setdar=1:1')
@@ -49,12 +53,13 @@ async function createVideoThumb(inputFile, outputFile) {
             resolve(outputFile + '.mp4') // resolve with random filename
         })
         .save('public/thumbs/' + outputFile + '.mp4')
-        // .videoBitrate('450k')
     })
+
     var res = await data
     return res
 }
 
+// Assumes the server has libvips installed, otherwise it wll error out and continue as if it were a regular file
 async function createImageThumb(inputFile, outputFile) {
     var data = new Promise((resolve, reject) => {
         sharp('public/u/' + inputFile).jpeg({
@@ -72,6 +77,7 @@ async function createImageThumb(inputFile, outputFile) {
             resolve(outputFile + '.jpg')
         })
     })
+
     var res = await data
     return res
 }
@@ -94,13 +100,14 @@ async function createSoundThumb(inputFile, outputFile) {
         })
         .save('public/thumbs/' + outputFile + '.opus')
     })
+
     var res = await data
     return res
 }
 
+// Assumes the server has graphicsmagick or imagemagick 7 installed, other wise it will error out and continue as if it were a regular file
 async function createPDFThumb(inputFile, outputFile) {
     var data = new Promise((resolve, reject) => {
-        console.log("sdkfhsdjfhskjdf")
         gm('public/u/' + inputFile + '[0]')
         .setFormat("jpg")
         .resize(250)
@@ -138,18 +145,13 @@ async function optimizeMP4(tempfile, filename) {
         })
         .save('public/u/' + filename)
     })
+
     var res = await data
     return res
 }
 
-// Gets the current (short) commit hash and sets it as an environment value
-function setCurrentCommitHash() {
-    var cliCommand = "git rev-parse --short HEAD"
-    module.exports.currentCommitHash = execSync(cliCommand).toString().trim()
-    console.log("Set short commit hash")
-}
 
-function getIP(req) {  // Give a request object, it will return the client's IP
+function getIP (req) {  // Give a request object, it will return the client's IP
     return req.headers['x-forwarded-for'] ||
     req.connection.remoteAddress ||
     req.socket.remoteAddress ||

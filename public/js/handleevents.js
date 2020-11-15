@@ -12,7 +12,6 @@ export function initSSE() {
     const eventSource = new EventSource("/events", {
         withCredentials: true
     }) // Send credentials (JWT cookie)
-
     eventSource.onmessage = ((event) => {
         gotActivity()
         isOnline = true
@@ -25,12 +24,17 @@ export function initSSE() {
         changeOnlineCheck()
         console.info("Connected to server")
     })
-    eventSource.onerror = (() => {
+    eventSource.onerror = ((event) => {
         eventSource.close()
         isOnline = false
         isReconnecting = true
         changeOnlineCheck() // If we've made a connection before, and will soon be attempting to reconnect again
+        console.log(event.target.readyState)
         console.warn("Lost connection to server")
+    })
+    eventSource.addEventListener("error", function(event) {
+        console.log(event)
+        console.log(event.target.readyState)
     })
 }
 

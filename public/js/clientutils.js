@@ -20,8 +20,8 @@ export function generateShareXConfig() { // Gets JWT token from localstorage, cr
     var RequestURL = `${protocol}//${domainName}/upload`
     var sharexConfig = // Define sharex structure
     {
-        Name: domainName, // TODO: Set this to websitename
-        DestinationType: "ImageUploader, TextUploader, FileUploader",
+        Name: domainName,
+        DestinationType: "ImageUploader, FileUploader",
         RequestType: "POST",
         RequestURL,
         FileFormName: "uploadfile",
@@ -46,7 +46,6 @@ export function getCookieByName(name) { // Get cookie by name
 
 
 function createTextFile(filename, fileContent) { // Create and save file with content
-
     // Create temporary element, set data string as href, add download attribute, open this, remove temporary element
     var tempElem = document.createElement("a")
     tempElem.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(fileContent))
@@ -77,8 +76,6 @@ export function showNotification(title, notifyObj) { // notifyObj contains objec
             }
         });
     }
-
-    // TODO: If the user has denied the notifications, stop bothering them
 }
 export function changeOnlineCheck() { // Show the user if we're online or not
     if (isReconnecting && !isOnline) {
@@ -97,5 +94,17 @@ export function changeOnlineCheck() { // Show the user if we're online or not
     }
     setTimeout(() => {
         changeOnlineCheck()
-    }, 5000);
+    }, 5 * TIME.SECONDS);
+}
+
+export function logout() { // Just remove the token cookie
+    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC;"
+    window.location.reload()
+}
+
+
+export const TIME = {
+    SECONDS: 1000,
+    MINUTES: 60 * 1000,
+    HOUR: 60 * 60 * 1000
 }

@@ -11,13 +11,15 @@ button, .btn { // General button styling
     font-weight: 700;
     padding: 6px 12px;
     border-radius: 3px;
-    font-size: 14px; // Might chang eback to 16 in the future
+    font-size: 14px;
     transition: .2s;
+    vertical-align: middle;
+    display: inline-block;
     cursor: pointer;
 
     &.confirm-action { // Also used for login, etc
         background-color: var(--color-medium-green);
-        color: $white;
+        color: var(--color-offwhite);
         &:hover {
             background-color: var(--color-light-green);
         }
@@ -25,7 +27,7 @@ button, .btn { // General button styling
 
     &.btn-danger { // used for deletion and other irreversable actions
         background-color: var(--color-medium-red);
-        color: $white;
+        color: var(--color-offwhite);
         &:hover {
             background-color: var(--color-light-red);
         }
@@ -39,7 +41,7 @@ button, .btn { // General button styling
     }
 }
 
-input[type=text], input[type=password] {
+input[type=text], input[type=password] { // Default text input styling
     font-family: 'Inter', sans-serif;
     font-weight: 700;
 
@@ -55,14 +57,14 @@ input[type=text], input[type=password] {
 }
 
 .toggle-colortheme { // Toggle switch for dark/light theme
-    margin-left: 10px;
+    margin-left: 0px;
     display: inline-block;
     vertical-align: top;
     padding: 0;
     width: 29px;
     overflow: hidden;
     white-space: nowrap;
-    &:hover { // TODO: Fix the drop-shadow clipping the overflow borders
+    &:hover {
         svg {
             &.feather-sun {
                 filter: drop-shadow(0 0 4px #ffecbf);
@@ -98,7 +100,7 @@ input[type=text], input[type=password] {
 
 
 // ? Style checkboxes
-button.check-box {
+button.check-box { // TODO: Change styling
     box-sizing: border-box;
     padding: unset;
     background-color: rgba(10, 10, 10, 0.6);
@@ -106,7 +108,7 @@ button.check-box {
     height: 32px;
     width: 32px;
     transition: .2s;
-    margin: 0 5px;
+    margin: 0 5px 0 0;
     display: inline-block;
     border-radius: 3px;
     &[data-checked="true"] {
@@ -126,7 +128,7 @@ button.check-box {
     }
 }
 
-.input-label {
+.input-label { // Default styling for labels
     color: rgb(90, 90, 90);
     transition: .2s;
     font-family: 'Inter', sans-serif;
@@ -140,7 +142,7 @@ button.check-box {
     }
 }
 
-.input-container { // ? Ties inputs together for justifi-content: space-evenly
+.input-container { // ? Ties inputs together
     display: inline-flex;
 }
 
@@ -151,7 +153,9 @@ button.check-box {
     background-color: rgba(10, 10, 10, 0.6);
     padding: 4px;
     height: 32px;
+    min-height: 32px;
     width: 32px;
+    min-width: 32px;
     transition: .2s;
     position: relative;
     * {
@@ -194,13 +198,18 @@ button.check-box {
             background-image: url("../svg/edit-2.svg");
         }
     }
+    &__plus {
+        &::before {
+            background-image: url("../svg/plus.svg");
+        }
+    }
 }
 
 select-album { // TODO: remove this, no longer needed
     border-radius: 3px;
 }
 
-.is-online-check {
+.is-online-check { // Dot in the top-left
     position: relative;
     display: inline-block;
     background-color: var(--color-medium-red);
@@ -221,7 +230,7 @@ select-album { // TODO: remove this, no longer needed
     }
 }
 
-@keyframes pulse {
+@keyframes pulse { // Pulse animation for reconnecting
     0% {
         transform: scale(.95);
         box-shadow: 0 0 0 0 rgba(255, 99, 72, 0.9);
@@ -234,4 +243,16 @@ select-album { // TODO: remove this, no longer needed
         transform: scale(.95);
         box-shadow: 0 0 0 0 rgba(255, 99, 72, 0.0);
     }
+}
+
+select { // Default select input
+    background-color: var(--input-bg);
+    color: var(--fg-color);
+    font-family: "Inter", sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    border: none;
+    border-radius: 3px;
+    padding: 6px 12px;
+    cursor: pointer;
 }

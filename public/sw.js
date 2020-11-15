@@ -24,6 +24,9 @@ self.addEventListener("install", (e) => {
 
 self.addEventListener('fetch', function(event) {
     var reqPath = new URL (event.request.url)
+    if (reqPath.pathname.startsWith("/events")) return;
+    
+    // ^ Check if it's an event stream, if so let the browser handle it and not the service worker.
     if (reqPath.pathname.startsWith("/u/")) {
         fetch("/log", {
             method: "POST",
