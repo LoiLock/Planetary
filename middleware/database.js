@@ -1,7 +1,6 @@
 const sqlite3 = require("sqlite3").verbose()
 
 var { sendEvent } = require("../middleware/liveevents")
-const { updateSiteInfo } = require("./tasks")
 // ? Start update background task to update site info
 const db = new sqlite3.Database("./db/planetary.db", (err) => {
     if (err) {
@@ -9,7 +8,6 @@ const db = new sqlite3.Database("./db/planetary.db", (err) => {
     }
 
     console.log("Connected to the database")
-    updateSiteInfo()
 })
 
 var self = module.exports = {
@@ -28,7 +26,7 @@ var self = module.exports = {
     getAlbums
 }
 
-function initDB() {
+async function initDB() {
     db.serialize(() => { // Run sqlite operation in serial order
         db.run("CREATE TABLE IF NOT EXISTS users(username text, phash text, sharextoken text, isAdmin integer)", (err) => { // Create users table
             if (err) {

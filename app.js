@@ -5,6 +5,7 @@ const fileUpload = require("express-fileupload")
 var cookieParser = require('cookie-parser')
 var nunjucks = require("nunjucks")
 
+const { updateSiteInfo } = require("./middleware/tasks")
 const database = require("./middleware/database")
 
 // Allows reading json post bodies
@@ -35,10 +36,10 @@ app.use(express.static('public'))
 require('./router')(app);
 
 // Initialize database if not created yet:
-database.initDB()
-
-app.listen(port, () => {
+app.listen(port, async () => {
     console.log(`Planetary started on ${port}`);
+    await database.initDB()
+    updateSiteInfo()
     // Turn off any login in production
     if (process.env.NODE_ENV && process.env.NODE_ENV.trim().toLowerCase() == "production") {
         console.log = function() {}
