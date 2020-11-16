@@ -17,6 +17,7 @@ app.use(fileUpload({
     limits: {
         fileSize: config.fileSizeLimitMB * 1024 * 1024
     },
+    abortOnLimit: true,
     useTempFiles : true, // Allows for much larger file uploads and saves ram
     tempFileDir : 'tmp/'
 }));

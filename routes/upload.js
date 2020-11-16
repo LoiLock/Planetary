@@ -8,12 +8,7 @@ module.exports = {
     handleUpload: async function(req, res) {
         console.log(req.body)
         console.log(req.files.uploadfile)
-        if (((req.files && req.files.uploadfile) && // If file is bigger than allowed
-        req.files.uploadfile.size > config.fileSizeLimitMB * 1024 * 1024)) {
-            res.json({
-                success: false,
-            })
-        }
+
         database.isSharexTokenValid(req.body.key, async function(err, result) { // Check if token is valid
             console.log(`RESULT: ${result}`)
             console.log(result) // Username that's associated with the sharextoken
