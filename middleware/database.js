@@ -1,8 +1,8 @@
 const sqlite3 = require("sqlite3").verbose()
 
 var { sendEvent } = require("../middleware/liveevents")
+const { updateSiteInfo } = require("./tasks")
 // ? Start update background task to update site info
-const { updateSiteInfo } = require("./middleware/tasks")
 const db = new sqlite3.Database("./db/planetary.db", (err) => {
     if (err) {
         console.error(err)
