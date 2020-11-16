@@ -211,7 +211,7 @@ function createDownloadButton(filename) {
     dlButton.setAttribute("download", filename)
     dlButton.setAttribute("href", '/u/' + filename)
     dlButton.setAttribute("target", "_blank")
-    shareButton.setAttribute("aria-label", "Download file")
+    dlButton.setAttribute("aria-label", "Download file")
 
     dlButton.addEventListener("click", function(event) {
         event.stopImmediatePropagation() // prevent Parent element click event being triggered
