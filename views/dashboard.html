@@ -9,7 +9,6 @@
         {% include "favicon_part.html" %}
         <link rel="stylesheet" href="css/style.css">
         <link rel="manifest" href="manifest.json">
-        <script src="js/feather-min.js"></script>
         <script type="module" src="js/client.js"></script>
         <script src="js/registersw.js" async defer></script>
     </head>
@@ -23,7 +22,7 @@
                 <button class="generate-sharex-config btn-secondary">.sxcu file</button>
                 <span class="page-header__user__name">{{ user.username }}</span>
                 <button class="page-header__user__logout btn-secondary">logout</button>
-                <button class="toggle-colortheme dark"><i data-feather="moon"></i> <i data-feather="sun"></i></button>
+                <button class="toggle-colortheme dark"><span class="icon icon__moon"></span> <span class="icon icon__sun"></span></button>
             </div>
         </header>
 
@@ -52,9 +51,6 @@
                 </div>
             </section>
             <section class="dashboard__content"></section>
-            <script>
-                feather.replace()
-            </script>
         </div>
     </body>
 </html>

@@ -10,15 +10,7 @@ const db = new sqlite3.Database("./db/planetary.db", (err) => {
     console.log("Connected to the database")
 })
 
-// (async () => {
-//     // open the database
-//     const db = await open({
-//       filename: './db/planetary.db',
-//       driver: sqlite3.Database
-//     })
-// })()
-
-module.exports = {
+var self = module.exports = {
     addUser,
     initDB,
     isSharexTokenValid,
@@ -55,8 +47,14 @@ function initDB() {
 }
 
 async function addUser(username, passwordhash, sharextoken) {
+    // ? If user added is the first user, make him the admin
+    var userCount = await self.getUserCount()
+    var isAdmin = 0
+    if (userCount === 0) {
+        isAdmin = 1
+    }
     var result = new Promise((resolve, reject) => {
-        db.run("INSERT INTO users(username, phash, sharextoken, isAdmin) VALUES(?,?,?,?)", [username, passwordhash, sharextoken, 0], (error) => {
+        db.run("INSERT INTO users(username, phash, sharextoken, isAdmin) VALUES(?,?,?,?)", [username, passwordhash, sharextoken, isAdmin], (error) => {
             if(error) {
                 reject(error)
             }

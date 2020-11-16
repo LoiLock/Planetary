@@ -1,6 +1,9 @@
 {
     "protocol": "http://",
     "serverURL": "localhost:3000",
+    "port": 3000,
     "fileSizeLimitMB": 1024,
-    "secretToken": "slmJoJMHC9x235zKlDPBXFoxFgoEVEcXoMzWrJmiOIJHGhteBXmoklvZOHoHDr4D"
+    "secretToken": "slmJoJMHC9x235zKlDPBXFoxFgoEVEcXoMzWrJmiOIJHGhteBXmoklvZOHoHDr4D",
+    "siteName": "Planetary",
+    "siteDescription": "Self-hosted ShareX server"
 }

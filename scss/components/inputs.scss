@@ -65,24 +65,25 @@ input[type=text], input[type=password] { // Default text input styling
     overflow: hidden;
     white-space: nowrap;
     &:hover {
-        svg {
-            &.feather-sun {
+        .icon {
+            &.icon__sun {
                 filter: drop-shadow(0 0 4px #ffecbf);
+                
             }
-            &.feather-moon {
+            &.icon__moon {
                 filter: drop-shadow(0 0 4px #66757F);
             }
         }
     }
-    svg { // set the transform origin to the center of the actual button. This way the svg's rotate around the center of the switch
+    .icon { // set the transform origin to the center of the actual button. This way the svg's rotate around the center of the switch
         width: 29px;
         height: 29px;
-        &.feather-sun {
+        &.icon__sun {
             color: #ffecbf;
             transform-origin: -1.5px center;
             filter: drop-shadow(0 0 2px #ffecbf);
         }
-        &.feather-moon {
+        &.icon__moon {
             color: #66757F;
             fill: #66757F;
             transform-origin: right center;
@@ -91,7 +92,7 @@ input[type=text], input[type=password] { // Default text input styling
         transition: .5s ease;
     }
     &.dark {
-        svg {
+        .icon {
             transform: rotate(180deg);
         }
     }
@@ -201,6 +202,35 @@ button.check-box { // TODO: Change styling
     &__plus {
         &::before {
             background-image: url("../svg/plus.svg");
+        }
+    }
+}
+.icon {
+    position: relative;
+    display: inline-block;
+    height: 32px;
+    width: 32px;
+    &::before {
+        content: "";
+        display: inline-block;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+    &__moon {
+        &::before {
+            background-image: url("../svg/moon.svg");
+            filter: invert(100%) brightness(40%);
+        }
+    }
+    &__sun {
+        &::before {
+            background-image: url("../svg/sun.svg");
+            filter: invert(90%) brightness(90%);
         }
     }
 }

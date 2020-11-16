@@ -1,17 +1,21 @@
-# WIP
-## Works:
-- Login with JWT
-- Registration (No limits currently)
-- Awful
-- File uploading and logging in database
-- File Deletion with confirmation screen
+<p align="center">
+  <img width="100" height="100" src="public/tn_logo_128.png">
+</p>
+# Planetary - ShareX server
 
-## Does not work:
-- PWA gallery
-- Dashboard "exists" but there's nothing of value there
 
-Also, DB calls are super inconsistent (at least parameterized I guess...) Due to me figuring out late in the project that the standard sqlite package isn't async. Will fix this later... The best example of what that will look like is in delete.js
+### TODO:
+- Albums. There's some snippets of it in the codebase already, al though it doesn't work yet.
+- Admin panel
+- Profile settings page
+- Clean up the sometimes absolutely horrible to read code
+- Improve SSE
 
 
 ## Setup:
-head /dev/urandom | tr -dc A-Za-z0-9 | head -c 64 ; echo ''
+- `mkdir planetary && cd planetary`
+- `git clone https://github.com/LoiLock/Planetary.git .` - Clone repository
+- `npm i` - Install dependencies
+- `node setup.js` - Simple setup wizard
+- `npm start` - Start it
+The first user will also have admin rights

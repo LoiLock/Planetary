@@ -40,10 +40,10 @@ export function initSSE() {
 
 function handleEvent(event) {
     var data = JSON.parse(event.data)
-    console.log(data)
+    // console.log(data)
     switch(data.type) {
         case "poll": // Ignore polls
-            break;
+        break;
         case "message":
             showNotification("Message:", {
                 body: data.message

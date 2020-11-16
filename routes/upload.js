@@ -6,10 +6,14 @@ var database = require("../middleware/database")
 
 module.exports = {
     handleUpload: async function(req, res) {
-        // console.log(req.body)
-        // console.log(req.files.uploadfile)
-        // console.log(req.body.key)
-        console.log(req.body.key)
+        console.log(req.body)
+        console.log(req.files.uploadfile)
+        if (!((req.files && req.files.uploadfile) &&
+        req.files.uploadfile.size < config.fileSizeLimitMB * 1024 * 1024)) {
+            res.json({
+                success: false,
+            })
+        }
         database.isSharexTokenValid(req.body.key, async function(err, result) { // Check if token is valid
             console.log(`RESULT: ${result}`)
             console.log(result) // Username that's associated with the sharextoken
@@ -17,7 +21,7 @@ module.exports = {
                 res.send(JSON.stringify({
                     Url: config.protocol + config.serverURL + "/u/" + 'invalidtoken.png'
                 }))
-                return
+                return res.status(413).send('File is too large')
             }
             console.log(req.body)
             console.log(req.files)

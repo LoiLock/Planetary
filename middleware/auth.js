@@ -9,9 +9,8 @@ var database = require("./database")
 
 
 module.exports = {
-    registerUser: async function(req, res) { // ? Create hash, create sharex token, send to database
-        console.log(req.body)
-        var sharexToken = Utils.rndString(20)
+    registerUser: async function(req, res) { // ? Create hash, create sharex token, add to database
+        var sharexToken = Utils.rndString(20) // Random ShareX token
 
         if (!req.body.password || !req.body.username) {
             return res.status(400).json({
@@ -27,10 +26,10 @@ module.exports = {
         }
 
         try {
-            hash = await argon2.hash(req.body.password, { type: argon2id, timeCost: 30, memoryCost: 1 << 14 }) // Hash users password
+            hash = await argon2.hash(req.body.password, { type: argon2id, timeCost: 30, memoryCost: 1 << 14 }) // Hash password
             var username = req.body.username
             username = username.toLowerCase()
-            try {
+            try { // Attempt to add to database, send response to client based on success
                 var result = await database.addUser(username, hash, sharexToken)
                 if (result) {
                     return res.json({
@@ -102,7 +101,7 @@ module.exports = {
                 })
                 return
             }
-            console.log("USEROBJECT:")
+            console.log("User object:")
             console.log(user)
             try {
                 if (await argon2.verify(user.phash, req.body.password, { type: argon2id, timeCost: 30, memoryCost: 1 << 14 })) {
@@ -129,9 +128,5 @@ module.exports = {
 
             }
         })
-    },
-    generateJWT: function(userObject) { // Sign a JWT token
-        console.log("reached")
-        return 
     }
 }

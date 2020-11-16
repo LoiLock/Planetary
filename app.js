@@ -26,7 +26,7 @@ app.use(fileUpload({
 
 app.use(cookieParser()) // Easy cookie parsing for JWT
 
-const port = process.env.PORT || 3000
+const port = process.env.PORT || config.port || 3000
 
 nunjucks.configure('views', {
     autoescape: true,
@@ -43,4 +43,9 @@ database.initDB()
 
 app.listen(port, () => {
     console.log(`Planetary started on ${port}`);
+    // Turn off any login in production
+    if (process.env.NODE_ENV && process.env.NODE_ENV.trim().toLowerCase() == "production") {
+        console.log = function() {}
+        console.error = function() {}
+    }
 })

@@ -13,44 +13,32 @@ window.addEventListener('DOMContentLoaded', (event) => {
 })
 
 var previousUploads = [] // Empty array to compare against in getUploads
-var gridFragment = document.createDocumentFragment() // Use gridfragment to prevent constant repainting
 export async function getUploads() {
-    console.time("startrequest")
     var response = await fetch("/uploads")
     var data = await response.json()
 
     // Check which files are actually new (From SSE for example)
     // And only add the new files to the dom
-    console.time("filter")
     var newUploads = data.filter(({deletionkey: value1 }) => { // loop request array and grab deletion key as value1, as function function argument
         return !previousUploads.some(({deletionkey: value2}) => value2 === value1 ) // is the current filtered array entry NOT ANYWHERE in previous uploads
     })
-    console.timeEnd("filter")
-
     previousUploads = data
     console.log(newUploads)
-    console.time("populate")
 
 
     // Using only the new uploads, append files to gridElement
+    var gridFragment = document.createDocumentFragment() // Create temporary document fragment
     newUploads.forEach(element => {
-        addImageToGrid(element)
+        gridFragment.prepend(thumbnailContainer(element))
     });
     var gridElement = document.querySelector(".dashboard__content")
     gridElement.prepend(gridFragment) // Consume the gridFragment and append it to the body
     
-    console.timeEnd("startrequest")
-    console.timeEnd("populate")
     console.log(document.querySelectorAll(".thumbnail-container").length)
     initFilters() // After everything is loaded, add filters
-
-    console.time("replaceIcons")
-    feather.replace() // reload icons
-    console.timeEnd("replaceIcons")
 }
 
-function addImageToGrid(element) { // Creates image element to be added to the image grid, gridElement is the element to which the grid items will be added
-    console.time("singlecomponent")
+function thumbnailContainer(element) { // Creates image element to be added to the image grid, gridElement is the element to which the grid items will be added
     var thumbnailContainer = document.createElement("div") // Container for the actual image grid item
     var containerChild = document.createElement("img") // background image or video or audio
 
@@ -80,12 +68,10 @@ function addImageToGrid(element) { // Creates image element to be added to the i
     if (element.thumbnail && element.thumbnail != "") { // If the file has a thumbnail
         var fileExt = element.thumbnail.split('.').pop()
         fileExt = fileExt.toLowerCase()
-        // console.log(fileExt)
         var fullFileExt = element.filename.split('.').pop() // The file extension of the FILE not the thumbnail
         fullFileExt =  fullFileExt.toLowerCase()
-        switch(fileExt) {
+        switch(fileExt) { // Add the appropriate icon and child elements to the thumbnailContainer
             case "mp4": // ? Create video player
-                // summaryCover.appendChild(createIcon("film")) // Add filetype icon
                 summaryCover.classList.add("type", "type__video")
 
                 thumbnailContainer.addEventListener("click", function(event) {
@@ -108,10 +94,8 @@ function addImageToGrid(element) { // Creates image element to be added to the i
                 break;
             case "jpg": // Set background image of containerChild to the thumbnail
                 if (fullFileExt == "pdf") {
-                    // summaryCover.appendChild(createIcon("file")) // Add filetype icon
                     summaryCover.classList.add("type", "type__file")
                 } else {
-                    // summaryCover.appendChild(createIcon("image")) // Add filetype icon
                     summaryCover.classList.add("type", "type__image")
                 }
                 thumbnailContainer.addEventListener("click", function(event) {
@@ -122,7 +106,6 @@ function addImageToGrid(element) { // Creates image element to be added to the i
                 containerChild.src = `thumbs/${element.thumbnail}` // Set img.src for the thumbnail
                 break;
             case "opus":
-                // summaryCover.appendChild(createIcon("music")) // Add filetype icon
                 summaryCover.classList.add("type", "type__sound")
 
                 thumbnailContainer.setAttribute("data-filename", element.filename) // Set Filename, used for opening in new tab
@@ -155,7 +138,6 @@ function addImageToGrid(element) { // Creates image element to be added to the i
 
                 break;
             default:
-                // summaryCover.appendChild(createIcon("file")) // Add filetype icon
                 summaryCover.classList.add("type", "type__file")
 
                 thumbnailContainer.addEventListener("click", function(event) {
@@ -164,7 +146,6 @@ function addImageToGrid(element) { // Creates image element to be added to the i
                 thumbnailContainer.setAttribute("data-filename", element.filename) // Set Filename, used for opening in new tab
         }
     } else {
-        // summaryCover.appendChild(createIcon("file")) // Add filetype icon
         summaryCover.classList.add("type", "type__file")
 
 
@@ -194,18 +175,16 @@ function addImageToGrid(element) { // Creates image element to be added to the i
     }
     thumbnailContainer.appendChild(summaryCover)
     // fragment.append(thumbnailContainer)
-    gridFragment.prepend(thumbnailContainer)
+    return thumbnailContainer
 }
 
 function openFile(elem) {
     if(isInEditor) return;
-    console.log(elem.dataset.filename)
     window.open('/u/' + elem.dataset.filename, '_blank')
 }
 
 function toggleVideo(elem) { // Toggles video playback
     if(isInEditor) return;
-    console.log(elem)
     if (elem.firstChild.paused) {
         elem.firstChild.play()
     } else {
@@ -215,7 +194,6 @@ function toggleVideo(elem) { // Toggles video playback
 
 function toggleMusic(elem) { // Toggles music playback
     if(isInEditor) return;
-    console.log(elem)
     if (elem.firstChild.paused) {
         elem.firstChild.play()
     } else {
@@ -238,12 +216,11 @@ function createDownloadButton(filename) {
     return dlButton
 }
 
-function createShareButton(filename) {
+function createShareButton(filename) { // Creates button that copies the filename to the user's clipboard
     var shareButton = document.createElement("button")
     shareButton.classList.add("icon-btn", "icon-btn__share")
     shareButton.addEventListener("click", function(event) {
         event.stopImmediatePropagation() // prevent Parent element click event being triggered
-        console.log(event.currentTarget)
         this.disable = true
         var summaryCover = event.currentTarget.parentNode.parentNode
         var fullURL = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '') + '/u/' + filename
@@ -261,7 +238,7 @@ function createShareButton(filename) {
     return shareButton
 }
 
-function createDeleteButton(deletionkey) {
+function createDeleteButton(deletionkey) { // Sends user to deletionpage
     var deleteButton = document.createElement("a")
     deleteButton.classList.add("icon-btn", "icon-btn__delete")
     
@@ -270,14 +247,6 @@ function createDeleteButton(deletionkey) {
         window.open("/delete/" + deletionkey, '_blank')
     }, false)
     return deleteButton
-}
-
-function createIcon(iconName) {
-    var iconContainer = document.createElement("div")
-    iconContainer.classList.add("icon-container")
-    iconContainer.innerHTML = feather.icons[iconName].toSvg()
-    iconContainer.style.pointerEvents = "none"
-    return iconContainer
 }
 
 
@@ -305,6 +274,7 @@ function setSavedColorTheme() { // ? Load the currently saved color-theme
     if (currentTheme == "dark") { // Make sure the toggle switch is set to the right position onload as well
         document.querySelector(".toggle-colortheme").classList.add("dark")
     } else {
+        document.querySelector(".toggle-colortheme").classList.remove("dark")
         document.body.classList.remove("dark")
     }
     document.body.classList.add(currentTheme)
