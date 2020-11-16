@@ -7,6 +7,7 @@ var nunjucks = require("nunjucks")
 
 const { updateSiteInfo } = require("./middleware/tasks")
 const database = require("./middleware/database")
+const { TIME } = require("./middleware/utils")
 
 // Allows reading json post bodies
 app.use(express.json())
@@ -19,7 +20,8 @@ app.use(fileUpload({
     },
     abortOnLimit: true,
     useTempFiles : true, // Allows for much larger file uploads and saves ram
-    tempFileDir : 'tmp/'
+    tempFileDir : 'tmp/',
+    uploadTimeout: 3 * TIME.MINUTES // Allow receiving data for 3 minutes incase of big uploads
 }));
 
 app.use(cookieParser()) // Easy cookie parsing for JWT
