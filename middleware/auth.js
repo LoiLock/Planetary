@@ -18,6 +18,12 @@ module.exports = {
                 message: "Missing fields"
             })
         }
+        if(req.body.username.toLowerCase() == "imported") { // Don't allow registration with username "imported"
+            return res.json({
+                success: false,
+                message: "Reserved username"
+            })
+        }
         if(req.body.password == "" || req.body.password.length < 8) {
             return res.json({
                 success: false,
@@ -86,12 +92,19 @@ module.exports = {
                 message: "Missing fields"
             })
         }
+        if(req.body.username.toLowerCase() == "imported") { // Don't allow login to "imported"
+            return res.json({
+                success: false,
+                message: "Reserved username"
+            })
+        }
         if(req.body.password == "" || req.body.password.length < 8) {
             return res.json({
                 success: false,
                 message: "Invalid login"
             })
         }
+        
 
         database.verifyUser((req.body.username).toLowerCase(), async function(user) { // returns a 'user' object, if this is empty, the user does not exist. If it does exist > verify passwordhash
             if (!user) {

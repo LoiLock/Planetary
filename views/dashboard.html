@@ -9,10 +9,10 @@
         {% include "favicon_part.html" %}
         <link rel="stylesheet" href="css/style.css">
         <link rel="manifest" href="manifest.json">
-        <script type="module" src="js/client.js"></script>
+        <script type="module" src="{{ jsPath }}"></script>
         <script src="js/registersw.js" async defer></script>
     </head>
-    <body class="dark">
+    <body class="dark preload">
         <header class="page-header">
             <span class="is-online-check"></span>
             <nav>
@@ -22,7 +22,7 @@
                 <button class="generate-sharex-config btn-secondary">.sxcu file</button>
                 <span class="page-header__user__name">{{ user.username }}</span>
                 <button class="page-header__user__logout btn-secondary">logout</button>
-                <button class="toggle-colortheme dark"><span class="icon icon__moon"></span> <span class="icon icon__sun"></span></button>
+                <button class="toggle-colortheme dark" aria-label="Toggle color-theme"><span class="icon icon__moon"></span> <span class="icon icon__sun"></span></button>
             </div>
         </header>
 
@@ -32,7 +32,7 @@
             </section>
             <section class="dashboard__filters">
                 <div class="dashboard__filters__group">
-                    <button class="start-editor icon-btn icon-btn__edit"></button>
+                    <button class="start-editor icon-btn icon-btn__edit" aria-label="Start editor"></button>
                     <span class="editor-controls">
                         <button class="submit-deletion icon-btn icon-btn__delete"></button>
                         <select class="editor-controls__album-select" id="">
@@ -46,8 +46,8 @@
 
 
                 <div class="dashboard__filters__group">
-                    <div class="input-container"><button id="showFilenames" class="check-box toggle-filter" data-value="showFilenames"></button> <label for="showFilenames" class="input-label">show info</label></div>
-                    <div class="input-container"><button id="hideDeleted" class="check-box toggle-filter" data-value="hideDeleted" data-checked="true"></button> <label for="hideDeleted" class="input-label">hide deleted</label></div>
+                    <div class="input-container"><button id="showFilenames" class="check-box toggle-filter" data-value="showFilenames" aria-label="Show file info"></button> <label for="showFilenames" class="input-label">show info</label></div>
+                    <div class="input-container"><button id="hideDeleted" class="check-box toggle-filter" data-value="hideDeleted" data-checked="true" aria-label="Hide deleted files"></button> <label for="hideDeleted" class="input-label">hide deleted</label></div>
                 </div>
             </section>
             <section class="dashboard__content"></section>

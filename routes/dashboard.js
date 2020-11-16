@@ -9,7 +9,8 @@ module.exports = {
             page: {
                 title: `Dashboard - ${config.siteName}`,
                 description: `Manage your uploads`
-            }
+            },
+            jsPath: process.env.NODE_ENV == "production" ? "js/dist/dist.js" : "js/client.js"
         })
     },
     // ? Get all uploads for user

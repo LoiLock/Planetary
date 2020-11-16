@@ -21,3 +21,11 @@
 - `npm start` - Start it
 
 The first user will also have admin rights
+
+### Import files from a previous server:
+Planetary supports importing files from previous ShareX servers.
+
+**Make sure you have started Planetary at least once before and that the filenames do consist of only alphanumeric characters**
+##### Import files:
+- Place the files you want to import in `public/u/`
+- In the root directory of Planetary run: `node import.js`

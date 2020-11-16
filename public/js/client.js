@@ -9,6 +9,7 @@ window.onload = function() {
 
 window.addEventListener('DOMContentLoaded', (event) => {
     getUploads()
+    document.body.classList.remove("preload") // Prevent any transitions firing on page load
     // getAlbums()
 })
 
@@ -103,6 +104,7 @@ function thumbnailContainer(element) { // Creates image element to be added to t
                 }, false)
                 thumbnailContainer.setAttribute("data-filename", element.filename) // Set Filename, used for opening in new tab
                 containerChild.setAttribute("loading", "lazy") // Use lazy loading where possible
+                containerChild.setAttribute("alt", element.thumbnail) // Use lazy loading where possible
                 containerChild.src = `thumbs/${element.thumbnail}` // Set img.src for the thumbnail
                 break;
             case "opus":
@@ -209,6 +211,7 @@ function createDownloadButton(filename) {
     dlButton.setAttribute("download", filename)
     dlButton.setAttribute("href", '/u/' + filename)
     dlButton.setAttribute("target", "_blank")
+    shareButton.setAttribute("aria-label", "Download file")
 
     dlButton.addEventListener("click", function(event) {
         event.stopImmediatePropagation() // prevent Parent element click event being triggered
@@ -219,6 +222,7 @@ function createDownloadButton(filename) {
 function createShareButton(filename) { // Creates button that copies the filename to the user's clipboard
     var shareButton = document.createElement("button")
     shareButton.classList.add("icon-btn", "icon-btn__share")
+    shareButton.setAttribute("aria-label", "Copy link to file")
     shareButton.addEventListener("click", function(event) {
         event.stopImmediatePropagation() // prevent Parent element click event being triggered
         this.disable = true
