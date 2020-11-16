@@ -8,8 +8,8 @@ module.exports = {
     handleUpload: async function(req, res) {
         console.log(req.body)
         console.log(req.files.uploadfile)
-        if (!((req.files && req.files.uploadfile) &&
-        req.files.uploadfile.size < config.fileSizeLimitMB * 1024 * 1024)) {
+        if (((req.files && req.files.uploadfile) && // If file is bigger than allowed
+        req.files.uploadfile.size > config.fileSizeLimitMB * 1024 * 1024)) {
             res.json({
                 success: false,
             })
