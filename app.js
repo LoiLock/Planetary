@@ -5,10 +5,6 @@ const fileUpload = require("express-fileupload")
 var cookieParser = require('cookie-parser')
 var nunjucks = require("nunjucks")
 
-// ? Start update background task to update site info
-const { updateSiteInfo } = require("./middleware/tasks")
-updateSiteInfo()
-
 const database = require("./middleware/database")
 
 // Allows reading json post bodies
