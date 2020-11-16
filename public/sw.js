@@ -24,36 +24,13 @@ self.addEventListener("install", (e) => {
 
 self.addEventListener('fetch', function(event) {
     var reqPath = new URL (event.request.url)
-    if (reqPath.pathname.startsWith("/events")) return;
-    
     // ^ Check if it's an event stream, if so let the browser handle it and not the service worker.
-    if (reqPath.pathname.startsWith("/u/")) {
-        fetch("/log", {
-            method: "POST",
-            cache: "no-cache",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ url: event.request.url })
-        })
-        .then((data) => {
-            return data.text()
-        })
-        .then((data) => {
-            console.log(data)
-        })
-    }
+    if (reqPath.pathname.startsWith("/events") || reqPath.pathname.startsWith("/u/")) return;    
 
     // ! It is very possible that the user will get lots of errors in the console when he's offline, this means that the thumbnails haven't been cached due to lazyloading
     event.respondWith(
         caches.open(cacheName).then(cache => {
             var reqPath = new URL(event.request.url)
-            if (reqPath.pathname.startsWith("/u/") || reqPath.pathname.startsWith("/events")) { // Do not cache requests in these paths
-                console.log(`Not caching ${reqPath.pathname}`)
-                return fetch(event.request).then((response) => {
-                    return response
-                })
-            }
             if (reqPath.pathname.startsWith("/thumbs/") || reqPath.pathname.startsWith("/svg/")) { // for thumbnails and SVGs, always prefer cache over network response
                 return cache.match(event.request).then((cachedThumb) => { // If cachedThumb is not undefined, serve the cached request
                     if(cachedThumb) {
