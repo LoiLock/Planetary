@@ -19,4 +19,5 @@
 - `npm i` - Install dependencies
 - `node setup.js` - Simple setup wizard
 - `npm start` - Start it
+
 The first user will also have admin rights
