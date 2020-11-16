@@ -17,7 +17,7 @@
 - `mkdir planetary && cd planetary`
 - `git clone https://github.com/LoiLock/Planetary.git .` - Clone repository
 - `npm i` - Install dependencies
-- `node setup.js` - Simple setup wizard
+- `node setup.js` - Start setup wizard
 - `npm start` - Start it
 
 The first user will also have admin rights
