@@ -16,46 +16,38 @@ export function initSSE() {
         gotActivity()
         isOnline = true
         changeOnlineCheck()
-        handleEvent(event)
     })
-    eventSource.onopen = ((event) => {
+    eventSource.onopen = (() => {
         gotActivity()
         isOnline = true
         changeOnlineCheck()
         console.info("Connected to server")
+    })
+    // Received poll event
+    eventSource.addEventListener("poll", () => {
+        console.info("Received poll")
+    })
+    // Received fileupload event
+    eventSource.addEventListener("fileupload", (event) => {
+        console.info("Received fileupload")
+        var data = JSON.parse(event.data)
+        showNotification("New file uploaded:", {
+            body: data.message
+        })
+        getUploads()
     })
     eventSource.onerror = ((event) => {
         eventSource.close()
         isOnline = false
         isReconnecting = true
         changeOnlineCheck() // If we've made a connection before, and will soon be attempting to reconnect again
-        console.log(event.target.readyState)
+        console.warn(event.target.readyState)
         console.warn("Lost connection to server")
     })
     eventSource.addEventListener("error", function(event) {
         console.log(event)
         console.log(event.target.readyState)
     })
-}
-
-function handleEvent(event) {
-    var data = JSON.parse(event.data)
-    // console.log(data)
-    switch(data.type) {
-        case "poll": // Ignore polls
-        break;
-        case "message":
-            showNotification("Message:", {
-                body: data.message
-            })
-            break;
-        case "fileupload":
-            showNotification("New file uploaded:", {
-                body: data.message
-            })
-            getUploads()
-            break;
-    }
 }
 
 var keepaliveSecs = 20;

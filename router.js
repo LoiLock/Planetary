@@ -11,6 +11,7 @@ var { getIP } = require("./middleware/utils")
 var config = require("./config.json")
 
 var Albums = require("./routes/albums")
+const { ratelimit } = require("./middleware/ratelimit")
 
 // var { ratelimit } = require("./middleware/ratelimit")
 
@@ -26,7 +27,7 @@ module.exports = function(app) {
     })
     
     app.get("/login", Auth.isTokenValid, Login.renderLoginPage)
-    app.post("/login", Auth.loginUser)
+    app.post("/login", ratelimit, Auth.loginUser)
 
 
     app.get("/register", (req, res) => {
@@ -39,9 +40,8 @@ module.exports = function(app) {
     })
     
     // ? User registers using username and password, check if user already exists, password gets hashed using argon2id. Gets stored in sqlite,
-    app.post("/register", Auth.registerUser)
+    app.post("/register", ratelimit, Auth.registerUser)
 
-    
     app.post("/upload", Upload.handleUpload)
     
     // Handle sending of deletion page and confirmation page, and actual deletion on post with the right key provided
@@ -59,12 +59,4 @@ module.exports = function(app) {
     app.get("/events", Auth.isTokenValid, LiveEvents.handleEvent)
 
     app.get("/admin", Auth.isTokenValid, Admin.handleAdmin)
-
-    app.post("/log", (req, res) => { // Get IP of whoever visited /u/ route
-        console.log("___________________________")
-        console.log(getIP(req))
-        console.log(req.body)
-        console.log("___________________________")
-        res.send("logged")
-    })
 }

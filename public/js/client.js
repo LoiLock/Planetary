@@ -14,7 +14,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 })
 
 var previousUploads = [] // Empty array to compare against in getUploads
-export async function getUploads() {
+export async function getUploads() { // Get all the uploads, compare them to the previous upload array, and only add the new uploads
     var response = await fetch("/uploads")
     var data = await response.json()
 
@@ -24,8 +24,6 @@ export async function getUploads() {
         return !previousUploads.some(({deletionkey: value2}) => value2 === value1 ) // is the current filtered array entry NOT ANYWHERE in previous uploads
     })
     previousUploads = data
-    console.log(newUploads)
-
 
     // Using only the new uploads, append files to gridElement
     var gridFragment = document.createDocumentFragment() // Create temporary document fragment
@@ -35,7 +33,6 @@ export async function getUploads() {
     var gridElement = document.querySelector(".dashboard__content")
     gridElement.prepend(gridFragment) // Consume the gridFragment and append it to the body
     
-    console.log(document.querySelectorAll(".thumbnail-container").length)
     initFilters() // After everything is loaded, add filters
 }
 
@@ -229,14 +226,13 @@ function createShareButton(filename) { // Creates button that copies the filenam
         var summaryCover = event.currentTarget.parentNode.parentNode
         var fullURL = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '') + '/u/' + filename
         navigator.clipboard.writeText(fullURL).then(() => {
-            console.log("Copied URL to clipboard")
             summaryCover.classList.add("clipboard-copied")
             setTimeout(() => {
                 summaryCover.classList.remove("clipboard-copied")
                 this.disable = false
             }, 5 * TIME.SECONDS)
         }, () => {
-            console.log("Failed to copy URL to clipboard")
+            // ! failed to copy url to clipboard
         })
     }, false)
     return shareButton
@@ -255,7 +251,7 @@ function createDeleteButton(deletionkey) { // Sends user to deletionpage
 
 
 
-function toggleColorTheme(e) { // ? Change color theme toggle switch, saves to localstorage
+function toggleColorTheme(e) { // ? Change color theme toggle switch, save to localstorage
     document.body.classList.toggle("dark")
     e.currentTarget.classList.toggle("dark")
     if(e.currentTarget.classList.contains("dark")) {
@@ -263,15 +259,11 @@ function toggleColorTheme(e) { // ? Change color theme toggle switch, saves to l
     } else {
         localStorage.setItem("color-theme", "light")
     }
-    console.log(e.currentTarget)
 }
 
 function setSavedColorTheme() { // ? Load the currently saved color-theme
     var currentTheme = localStorage.getItem("color-theme")
-    console.log(currentTheme)
     if (!currentTheme) { // If localstorage item for theme is empty
-        console.log("setting theme")
-        console.log("empty")
         localStorage.setItem("color-theme", "dark")
         currentTheme = "dark"
     }
@@ -411,7 +403,16 @@ async function submitDeleteSelection() { // Submits selected files as an array o
                 })
             })
             var data = await response.json()
-            console.log(data)
+            if(data && data.success) { // If deletion was successful
+                for (var i = 0; i < fileContainers.length; i++) { // Set attribute and styling of deleted files
+                    fileContainers[i].setAttribute("data-isdeleted", "true")
+                    fileContainers[i].getElementsByClassName("thumbnail-container__summary")[0].style.backgroundColor = "rgba(153, 30, 38, 0.3)"
+                }
+                var hideDeletedFiles = document.getElementById("hideDeleted").getAttribute("data-checked")
+                if(hideDeletedFiles === "true") { // If hidedeleted is checked
+                    applyFilter["hideDeleted"](true)
+                }
+            }
         }
     })
     .catch((result) => {
@@ -420,7 +421,7 @@ async function submitDeleteSelection() { // Submits selected files as an array o
 }
 
 
-async function showConfirmation(message) {
+async function showConfirmation(message) { // Creates confirmation popup for file deletion
     removeAllElementsByQuery(".popup-container")
     var popupContainer = document.createElement("div")
     popupContainer.classList.add("popup-container")
@@ -448,7 +449,6 @@ async function showConfirmation(message) {
     popupContainer.appendChild(confirmBtn)
     popupContainer.appendChild(cancelBtn)
     document.body.appendChild(popupContainer)
-    console.log("2")
 
 
     var result = new Promise((resolve, reject) => {
@@ -466,36 +466,11 @@ async function showConfirmation(message) {
 
 function removeAllElementsByQuery(query) { // Used to remove .popup-container
     document.querySelectorAll(query).forEach(elem => elem.remove())
-    console.log("1")
-}
-
-function countElements(parentSelector) {
-    var parentElem = document.querySelector(parentSelector)
-    // var all = parentElem.getElementsByTagName("*")
-    var all = parentElem.querySelectorAll("*")
-    console.log(`Elements inside "${parentSelector}": ${all.length}`)
-}
-
-function countElementsNoSVG(parentSelector) {
-    var parentElem = document.querySelector(parentSelector)
-    var all = parentElem.querySelectorAll("*:not(svg)")
-    console.log(`Elements inside "${parentSelector}": ${all.length}`)
-}
-
-// Same function that Modernizer uses to check if a device supports touch events
-function isTouchDevice() {
-    try {
-        document.createEvent("TouchEvent")
-        return true
-    } catch {
-        return false
-    }
 }
 
 function albumSelectionHandler(e) {
     var albumSelection = e.target
     var selectedOption = albumSelection.value
-    console.log(selectedOption)
     var albumNameInput = document.querySelector(".editor-controls__album-name-input")
     albumNameInput.addEventListener("paste", validateAlbumName, false)
     albumNameInput.addEventListener("input", validateAlbumName, false)
@@ -507,10 +482,12 @@ function albumSelectionHandler(e) {
 }
 
 
+// ! WIP Not implemented
+
 function validateAlbumName(e) {
     var inputStr = e.target.value
     var submitAlbumBtn = document.querySelector(".editor-controls__submit-album")
-    if (inputStr.match(/^[a-z0-9]+$/i) && inputStr.length <= 14) {
+    if (inputStr.match(/^[a-z0-9]+$/i) && inputStr.length <= 14) { // Validate user input and change the input color
         submitAlbumBtn.style.display = "block"
         e.target.style.color = "var(--fg-color-text)"
     } else {
@@ -522,7 +499,7 @@ function validateAlbumName(e) {
     }
 }
 
-async function submitAlbum() {
+async function submitAlbum() { // Not implemented yet
     var albumName = document.querySelector(".editor-controls__album-name-input").value
 
     var response = await fetch("/albums/add", {

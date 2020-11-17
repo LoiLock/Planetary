@@ -1,7 +1,7 @@
-const { getIP } = require("./utils")
+const { getIP, TIME } = require("./utils")
 
-var connectedClients = new Map() // Map with ["Client IP", "first connection timestamp", "connection count"]
-var rLimit = 10 * 1000
+var connectedClients = new Map() // Map with ["Client IP", [..."connection timestamp"] ]
+var rLimit = 10 * TIME.SECONDS
 module.exports = {
     ratelimit: async (req, res, next) => {
         var clientIP = getIP(req)
@@ -10,9 +10,9 @@ module.exports = {
 
         connectedClients.forEach((client, key) => { // remove clients from map that haven't connected in the last 10 seconds
             var hasNewConnections = client.some((tStamp) => { // Remove clients that don't have any connections associated with their IP in the last 10 seconds
-                return (tStamp + rLimit) > timeNow
+                return (tStamp + rLimit) > timeNow // Has at least 1 connection made within the last 10 seconds
             })
-            if(!hasNewConnections) {
+            if(!hasNewConnections) { // Remove client from map otherwise
                 connectedClients.delete(key)
             }
         })

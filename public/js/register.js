@@ -14,8 +14,6 @@ function getForm() { // Attempt to register and show message from the server
     var password = document.querySelector(".login-form__password").value;
     register(username, password)
     .then(data => {
-        console.log(data)
-        console.log(data.success)
         var formResponseInfo = document.querySelector(".form-response-info")
         if (data && data.success) { // * Reload page to force redirect from server after 3 seconds
             setTimeout(() => {

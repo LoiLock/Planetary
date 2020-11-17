@@ -8,7 +8,6 @@ module.exports = {
             users,
             uploads
         }
-        // console.log(dbCollection)
         res.render("admin.html", { db: dbCollection})
     }
 }

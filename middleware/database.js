@@ -7,7 +7,7 @@ const db = new sqlite3.Database("./db/planetary.db", (err) => {
         console.error(err)
     }
 
-    console.log("Connected to the database")
+    console.info("Connected to the database")
 })
 
 var self = module.exports = {
@@ -77,6 +77,7 @@ function verifyUser(username, callback) { // returns passwordhash, isAdmin and o
     })
 }
 
+// TODO: make promise
 // ? Returns object with a boolean true and the username if the sharex token is found
 function isSharexTokenValid(sharextoken, callback) { // returns error (could be null) and object if valid and username
     var res;
@@ -90,13 +91,13 @@ function isSharexTokenValid(sharextoken, callback) { // returns error (could be 
         }
         else {
             if (!result) { // If username is NOT found that has matching sharextoken
-                console.log("Sharextoken NOT found")
+                console.info("Sharextoken NOT found:", sharextoken)
                 callback(null, {
                     valid: false,
                     username: null
                 })
             } else {
-                console.log("Sharextoken FOUND")
+                console.info("Sharextoken FOUND", sharextoken)
                 callback(null, {
                     valid: true,
                     username: result.username
@@ -153,7 +154,7 @@ async function getUploads(username) { // Get all uploads for a given user
     return res
 }
 
-async function flagDelete(deletionkey) { // Flag file as deleted
+async function flagDelete(deletionkey) { // Flag file as deleted by deletionkey
     var results = new Promise((resolve, reject) => {
         db.run("UPDATE uploads SET isdeleted = 1 WHERE deletionkey = ?", deletionkey, (error) => {
             if(error) {
@@ -166,7 +167,7 @@ async function flagDelete(deletionkey) { // Flag file as deleted
     return res
 }
 
-async function getAllUploads() {
+async function getAllUploads() { // ? For admin panel, not yet implemented
     var results = new Promise((resolve, reject) => {
         db.all("SELECT * FROM uploads ORDER BY unixtime DESC", (error, result) => {
             if (error) {
@@ -183,7 +184,7 @@ async function getAllUploads() {
     return res
 }
 
-async function getAllUsers() {
+async function getAllUsers() { // ? For admin panel, not yet implemented
     var results = new Promise((resolve, reject) => {
         db.all("SELECT username, sharextoken, isAdmin FROM users ORDER BY username ASC", (error, result) => {
             if (error) {
@@ -200,7 +201,7 @@ async function getAllUsers() {
     return res
 }
 
-async function getUserCount() {
+async function getUserCount() { // Get user count
     return new Promise((resolve, reject) => {
         db.get("SELECT COUNT(*) FROM users", (error, result) => {
             if(error) {
@@ -212,7 +213,7 @@ async function getUserCount() {
 }
 
 // ! WIP
-async function addAlbum(albumprops) { // adds album to database
+async function addAlbum(albumprops) { // ? adds album to database, not yet implemented
     var results = new Promise((resolve, reject) => {
         db.run("INSERT INTO albums(albumname, owner, slug) VALUES(?,?,?)", [albumprops.albumname, albumprops.owner, albumprops.slug], (error) => {
             if(error) {
@@ -226,7 +227,7 @@ async function addAlbum(albumprops) { // adds album to database
 }
 
 // tags must be an array
-async function getAlbums(username) { // Gets all the albums where the owner matches the username who requested it
+async function getAlbums(username) { // ? Gets all the albums where the owner matches the username who requested it, not yet implemented
     var results = new Promise((resolve, reject) => {
         db.all("SELECT albumname, slug, files, albumcover FROM albums WHERE owner = ?", username, (error, result) => {
             if(error) {

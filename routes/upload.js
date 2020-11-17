@@ -11,7 +11,7 @@ module.exports = {
 
         database.isSharexTokenValid(req.body.key, async function(err, result) { // Check if token is valid
             console.log(`RESULT: ${result}`)
-            console.log(result) // Username that's associated with the sharextoken
+            console.log(result.username) // User that's associated with the sharextoken
             if(result.valid == false || err) { // If token is invalid or something went wrong
                 res.send(JSON.stringify({
                     Url: config.protocol + config.serverURL + "/u/" + 'invalidtoken.png'
@@ -41,6 +41,7 @@ module.exports = {
                 console.log(rndFilename)
                 try {
                     var filename = await Utils.optimizeMP4(req.files.uploadfile.tempFilePath, rndFilename) // Express file-upload provides a tempfile
+                    console.info(`${result.username} uploaded file: ${rndFilename}`)
                     res.send(JSON.stringify({
                         Url: config.protocol + config.serverURL + "/u/" + filename,
                         DeletionURL: config.protocol + config.serverURL + "/delete/" + deletionKey
@@ -60,18 +61,17 @@ module.exports = {
             }
 
             uploadedFile.mv('public/u/' + rndFilename, function(error) {
-                console.log("Fired")
                 if (error) {
                     console.log('File upload error: ', error)
                     return res.status(500).send('Something went wrong during the file upload')
                 }
+                console.info(`${result.username} uploaded file: ${rndFilename}`)
                 res.send(JSON.stringify({
                     Url: config.protocol + config.serverURL + "/u/" + rndFilename,
                     DeletionURL: config.protocol + config.serverURL + "/delete/" + deletionKey
                 }))
                 createThumbnail(req, rndFilename, deletionKey) // Log upload to database and create thumbnail
             })
-            
         })
     }
 }

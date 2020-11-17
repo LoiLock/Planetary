@@ -13,7 +13,7 @@ const { TIME } = require("./middleware/utils")
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 app.use(fileUpload({
-    safeFileNames: true, // ! Breaks files with non-alphanumeric characters (Like files with only russian characters), needs further testing
+    safeFileNames: true, // ? Breaks files with ONLY non-alphanumeric characters, needs further testing
     preserveExtension: 4,
     limits: {
         fileSize: config.fileSizeLimitMB * 1024 * 1024
@@ -43,7 +43,7 @@ app.listen(port, async () => {
     console.log(`Planetary started on ${port}`);
     await database.initDB()
     updateSiteInfo()
-    // Turn off any login in production
+    // Turn off any logging in production, only show console.info and console.warn
     if (process.env.NODE_ENV && process.env.NODE_ENV.trim().toLowerCase() == "production") {
         console.log = function() {}
         console.error = function() {}

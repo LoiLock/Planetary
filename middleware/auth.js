@@ -38,6 +38,7 @@ module.exports = {
             try { // Attempt to add to database, send response to client based on success
                 var result = await database.addUser(username, hash, sharexToken)
                 if (result) {
+                    console.info("Registered:", username)
                     return res.json({
                         success: true,
                         message: "Registered successfully"
@@ -50,7 +51,6 @@ module.exports = {
                 })
             }
         } catch(error) {
-            console.log(error)
             return res.json({
                 success: false,
                 message: "Something went wrong"
@@ -84,8 +84,6 @@ module.exports = {
     },
 
     loginUser: async function(req, res) { // Gives JWT token back to user if the password hash matches the one in the database
-        console.log(req.body)
-
         if (!req.body.password || !req.body.username) {
             return res.status(400).json({
                 success: false,
@@ -114,18 +112,15 @@ module.exports = {
                 })
                 return
             }
-            console.log("User object:")
-            console.log(user)
             try {
                 if (await argon2.verify(user.phash, req.body.password, { type: argon2id, timeCost: 30, memoryCost: 1 << 14 })) {
                     // passwords matched, generate JWT token
-                    console.log("reached")
                     var JWTtoken = jwt.sign({username: user.username, isAdmin: user.isAdmin, sharextoken: user.sharextoken}, config.secretToken, { expiresIn: "1h" })
-                    console.log(JWTtoken)
                     // set cookie
                     res.cookie("token", JWTtoken, {
                         expiresIn: 60 * 60 * 1000 // Cookie expires after 1 hour, just like the JWT token
                     })
+                    console.info("User logged in:", user.username)
                     return res.json({
                         success: true,
                         message: "Logged in. Redirecting..."

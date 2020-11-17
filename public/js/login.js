@@ -14,8 +14,6 @@ function getForm() {
     var password = document.querySelector(".login-form__password").value;
     signin(username, password)
     .then(data => {
-        console.log(data)
-        console.log(data.success)
         if (data && data.success) { // * Reload page to force redirect from server after 3 seconds
             setTimeout(() => {
                 window.location.reload() // Just force a reload, the server will check the cookie and redirect me to the dashboard if it's valid
@@ -39,13 +37,12 @@ function getForm() {
     })
 }
 
-// If successfull, server returns JWT token which will be set as cookie to be accessed from the server
+// If successfull, server returns JWT token set as a cookie
 async function signin(username, password) {
     var reqBody = {
         username: username,
         password: password
     }
-    // console.log(JSON.stringify(reqBody))
     const response = await fetch("/login", {
         method: "POST",
         headers: {

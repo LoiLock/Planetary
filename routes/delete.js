@@ -32,7 +32,7 @@ module.exports = {
             return res.send("Invalid deletionkey")
         }
         if(filename) { // If filename for file with deletionkey was found, delete the file
-            console.log(`Deleting: ${filename}`)
+            console.info(`Deleting: ${filename}`)
 
             fs.unlink(`./public/u/${filename}`, async (error) => { // Delete file async
                 if (error) { // File does not exist, or something else
@@ -48,7 +48,7 @@ module.exports = {
                     })
                 }
 
-                console.log(`Successfully deleted: ${filename}`)
+                console.info(`Successfully deleted: ${filename}`)
 
                 try {
                     var flagDeleted = await database.flagDelete(req.body.deletionkey)
@@ -77,6 +77,7 @@ module.exports = {
             }
         }
         return res.json({
+            success: true,
             message: "Deleted the file(s)"
         })
     }
