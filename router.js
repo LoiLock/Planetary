@@ -18,12 +18,15 @@ const { ratelimit } = require("./middleware/ratelimit")
 module.exports = function(app) {
     app.get("/", (req, res) => {
         res.render("index.html", {
-            website: latestSiteInfo(),
             page: {
                 title: config.siteName,
                 description: config.siteDescription
             }
         })
+    })
+
+    app.get("/info", (req, res) => {
+        return res.json(latestSiteInfo())
     })
     
     app.get("/login", Auth.isTokenValid, Login.renderLoginPage)

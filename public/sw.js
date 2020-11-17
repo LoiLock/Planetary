@@ -19,13 +19,22 @@ self.addEventListener("install", (e) => {
         caches.open(cacheName).then((cache) => {
             return cache.addAll(filesToCache)
         })
+        .then(() => {
+            // Everything is cached, serviceworker is ready to be used
+            return self.skipWaiting();
+        })
     )
 })
+
+self.addEventListener('activate', function(event) {
+    // Prevent needing to refresh page to activate serviceworker
+    event.waitUntil(self.clients.claim());
+});
 
 self.addEventListener('fetch', function(event) {
     var reqPath = new URL (event.request.url)
     // Check if it's an event stream, if so let the browser handle it and not the service worker.
-    if (reqPath.pathname.startsWith("/events") || reqPath.pathname.startsWith("/u/")) return;    
+    if (reqPath.pathname.startsWith("/events") || reqPath.pathname.startsWith("/u/") || reqPath.pathname.startsWith("/info")) return;
 
     // ! It is very possible that the user will get lots of errors in the console when he's offline, this means that the thumbnails haven't been cached due to lazyloading
     event.respondWith(
