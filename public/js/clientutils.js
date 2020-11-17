@@ -59,6 +59,7 @@ function createTextFile(filename, fileContent) { // Create and save file with co
 }
 
 export function showNotification(title, notifyObj) { // notifyObj contains object with various fields to customize notifications
+    console.log("fired")
     if (!("Notification" in window)) {
         // ! Browser does not support notifications;
     }
