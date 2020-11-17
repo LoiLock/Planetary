@@ -11,3 +11,5 @@ public/thumbs/
 public/u/
 tmp/
 config.json
+public/js/dist/*
+public/css/*
