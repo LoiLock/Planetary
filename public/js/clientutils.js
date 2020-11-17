@@ -59,19 +59,18 @@ function createTextFile(filename, fileContent) { // Create and save file with co
 }
 
 export function showNotification(title, notifyObj) { // notifyObj contains object with various fields to customize notifications
-    console.log("fired")
     if (!("Notification" in window)) {
         // ! Browser does not support notifications;
     }
     // Check if we have the permission to send notifications
     else if (Notification.permission === "granted") {
-        // If it's okay let's create a notification
+        // We have permission, send notification
         var notification = new Notification(title, notifyObj);
     }
     // No permission to send notifications, ask permission
     else if (Notification.permission !== "denied") {
         Notification.requestPermission().then(function (permission) {
-            // If the user accepts, let's create a notification
+            // We have permission, send notification
             if (permission === "granted") {
                 var notification = new Notification(title, notifyObj);
             }
