@@ -32,7 +32,7 @@ var self = module.exports = {
 
 async function initDB() {
     db.serialize(() => { // Run sqlite operation in serial order
-        db.run("CREATE TABLE IF NOT EXISTS users(username text, phash text, sharextoken text, isAdmin integer)", (err) => { // Create users table
+        db.run("CREATE TABLE IF NOT EXISTS users(username text UNIQUE, phash text, sharextoken text, isAdmin integer)", (err) => { // Create users table
             if (err) {
                 console.error(err)
             }
