@@ -73,6 +73,34 @@ module.exports = {
                 createThumbnail(req, rndFilename, deletionKey) // Log upload to database and create thumbnail
             })
         })
+    },
+    handleMultiple: async function(req, res) {
+        for (const file of req.files.uploadfile) {
+            console.log(file)
+            const fileExt = path.extname(file.name)
+            const rndFilename = Utils.rndString(16) + fileExt
+            var deletionKey = Utils.rndString(32)
+            await new Promise((resolve) => {
+                file.mv('public/u/' + rndFilename, async function(error) {
+                    if (error) {
+                        console.log('File upload error: ', error)
+                        return resolve('Something went wrong during the file upload')
+                    }
+                    console.info(`${req.user.username} uploaded file: ${rndFilename}`)
+                    const fakeReq = { // Mimick request object for createThumbnail
+                        body: {
+                            key: req.body.key
+                        },
+                        files: {
+                            uploadfile: file
+                        }
+                    }
+                    createThumbnail(fakeReq, rndFilename, deletionKey) // Log upload to database and create thumbnail
+                    resolve()
+                })
+            })
+        }
+        res.send("Uploaded")
     }
 }
 

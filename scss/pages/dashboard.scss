@@ -62,7 +62,7 @@
                     flex: 1 1 auto;
                 }
             }
-            &__album-name-input, &__submit-album, &__add-selected-to-album {
+            &__album-name-input, &__submit-album, &__add-selected-to-album, &__remove-selected-from-album {
                 display: none;
             }
         }
@@ -351,5 +351,26 @@
         .dashboard {
             padding: 20px;
         }
+    }
+}
+
+.floating-wrapper {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    right: var(--summary-padding);
+    bottom: var(--summary-padding);
+    gap: 5px;
+    .file-input-label {
+        cursor: pointer;
+        display: inline-block;
+    }
+    .file-input {
+        z-index: -1;
+        max-width: 0.1px;
+        max-height: 0.1px;
+        overflow: hidden;
+        opacity: 0;
     }
 }

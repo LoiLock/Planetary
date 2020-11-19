@@ -54,6 +54,14 @@
             </section>
             <section class="dashboard__content"></section>
         </div>
+
+        <form class="floating-wrapper" action="/uploadmultiple" method="POST" encType="multipart/form-data">
+            <label for="uploadfile" class="icon-btn icon-btn__plus file-input-label"></label>
+            <input class="file-input" id="uploadfile" type="file" multiple name="uploadfile">
+            <input type="hidden" id="sharextoken" name="key" value="{{ user.sharextoken }}">
+            <input type="hidden" id="filetype" name="type" value="file">
+            <input class="btn confirm-action" type="submit" value="Upload">
+        </form>
         <script src="js/registersw.js" async></script>
     </body>
 </html>

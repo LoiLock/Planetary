@@ -46,6 +46,7 @@ module.exports = function(app) {
     app.post("/register", ratelimit, Auth.registerUser)
 
     app.post("/upload", Upload.handleUpload)
+    app.post("/uploadmultiple", Auth.isTokenValid, Upload.handleMultiple)
     
     // Handle sending of deletion page and confirmation page, and actual deletion on post with the right key provided
     app.get("/delete/:deletionkey", Delete.handleDelete)

@@ -496,7 +496,7 @@ function albumSelectionHandler(e) { // Show input field if user selected to crea
         albumNameInput.style.display = "none"
         addFilelistToAlbumBtn.firstElementChild.textContent = `${e.target.options[selectedOptionIndex].text}` // Change button text to the current select option's text
         addFilelistToAlbumBtn.style.display = "block"
-        removeFilesFromAlbum.style.display = "block"
+        removeFileFromAlbumBtn.style.display = "block"
     }
 }
 
