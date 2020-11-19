@@ -10,6 +10,13 @@ const db = new sqlite3.Database("./db/planetary.db", (err) => {
     console.info("Connected to the database")
 })
 
+process.on('SIGINT', () => {
+    db.close(function() {
+        console.info("\nClosed database")
+        process.exit(0)
+    });
+});
+
 var self = module.exports = {
     addUser,
     initDB,
