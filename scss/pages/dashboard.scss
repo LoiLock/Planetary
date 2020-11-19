@@ -45,12 +45,12 @@
             &__group {
                 min-width: 100%;
                 padding: 5px 0;
-                align-items: center;
             }
         }
         &__group {
             display: inline-flex;
             gap: 10px; // * New property
+            align-items: center;
         }
         .editor-controls {
             display: none;
@@ -62,7 +62,7 @@
                     flex: 1 1 auto;
                 }
             }
-            &__album-name-input, &__submit-album {
+            &__album-name-input, &__submit-album, &__add-selected-to-album {
                 display: none;
             }
         }

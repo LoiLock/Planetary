@@ -23,7 +23,11 @@ var self = module.exports = {
     getAllUploads,
     getUserCount,
     addAlbum,
-    getAlbums
+    getAlbums,
+    addFilesToAlbum,
+    removeFilesFromAlbum,
+    getKeysFromAlbum,
+    isValidDeletionkey
 }
 
 async function initDB() {
@@ -215,9 +219,9 @@ async function getUserCount() { // Get user count
 // ! WIP
 async function addAlbum(albumprops) { // ? adds album to database, not yet implemented
     var results = new Promise((resolve, reject) => {
-        db.run("INSERT INTO albums(albumname, owner, slug) VALUES(?,?,?)", [albumprops.albumname, albumprops.owner, albumprops.slug], (error) => {
+        db.run("INSERT INTO albums(name, owner, slug) VALUES(?,?,?)", [albumprops.albumname, albumprops.owner, albumprops.slug], (error) => {
             if(error) {
-                reject(error)
+                return reject(error)
             }
             resolve("Successfully added album")
         })
@@ -229,7 +233,7 @@ async function addAlbum(albumprops) { // ? adds album to database, not yet imple
 // tags must be an array
 async function getAlbums(username) { // ? Gets all the albums where the owner matches the username who requested it, not yet implemented
     var results = new Promise((resolve, reject) => {
-        db.all("SELECT albumname, slug, files, albumcover FROM albums WHERE owner = ?", username, (error, result) => {
+        db.all("SELECT name, slug, files, cover FROM albums WHERE owner = ?", username, (error, result) => {
             if(error) {
                 reject(error)
             }
@@ -238,4 +242,91 @@ async function getAlbums(username) { // ? Gets all the albums where the owner ma
     })
     var res = await results
     return res
+}
+
+// ? Gets the files currently in the album as a set (To prevent duplicates).
+async function addFilesToAlbum(slug, files) { // Files is array of deletionkeys from the client
+    let currentFiles = await self.getKeysFromAlbum(slug) // Get array of files (deletionkeys) in album by slug
+    if (!currentFiles) { // If files array currently does not contain any files (sqlite returns NULL), create an empty array
+        currentFiles = []
+    } else { // If currentfiles is csv string, split it into an array
+        currentFiles = currentFiles.split(",")
+    }
+    console.log(currentFiles)
+    var fileSet = new Set(currentFiles) // Create set from files array in the album
+    console.log(fileSet)
+    // for every deletionkey in user submitted files array, check if valid and if so add it to the fileSet
+    for (const file of files) {
+        const fileExists = await self.isValidDeletionkey(file)
+        if (fileExists === false) { continue }; // Skip current iteration
+        fileSet.add(file)
+        console.log(fileSet)
+    }
+    const fileCountAlbum = fileSet.size
+    const csvFileList = Array.from(fileSet).join(",") // Create csv string from fileSet Set()
+    const results = new Promise((resolve, reject) => {
+        db.run("UPDATE albums SET files = ? WHERE slug = ?", [csvFileList, slug], (error) => {
+            if(error) {
+                return reject(error)
+            }
+            resolve("Succesfully added files to album")
+        })
+    })
+    let res = await results
+    return {
+        message: res,
+        filecount: fileCountAlbum
+    }
+}
+
+async function removeFilesFromAlbum(slug, files) { // Files is array of deletionkeys from the client
+    let currentFiles = await self.getKeysFromAlbum(slug) // Get array of files (deletionkeys) in album by slug
+    currentFiles = currentFiles.split(",")
+    console.log(currentFiles)
+
+    currentFiles = currentFiles.filter((key) => { // Remove all array entries that contain deletionkey
+        return !files.includes(key)
+    })
+    
+    const csvFileList = currentFiles.join(",") // Create csv string from currentFiles array
+    const results = new Promise((resolve, reject) => {
+        db.run("UPDATE albums SET files = ? WHERE slug = ?", [csvFileList, slug], (error) => {
+            if(error) {
+                return reject(error)
+            }
+            resolve("Succesfully removed files from album")
+        })
+    })
+    let res = await results
+    return {
+        message: res
+    }
+}
+
+async function getKeysFromAlbum(slug) { // Returns csv string with deletionkeys (Which act as unique file IDs) for all the files in album by slug
+    const results = new Promise((resolve, reject) => {
+        db.get("SELECT files FROM albums WHERE slug = ? ", slug, (error, result) => {
+            if (error) {
+                return reject(error)
+            }
+
+            resolve(result.files)
+        })
+    })
+    let res = await results
+    return res
+}
+
+// ? Return boolean indicating whether deletionkey exists in the database
+async function isValidDeletionkey(deletionkey) { // Could use getFilename, but this is cleaner
+    return new Promise((resolve) => {
+        db.get("SELECT EXISTS(SELECT 1 FROM uploads WHERE deletionkey = ?)", deletionkey, (error, result) => {
+            if(error) {
+                return resolve(false) // Don't reject, just assume deletionkey wasn't found, outcome would be the same eitherway
+            }
+
+            let resultValue = result[Object.keys(result)[0]] // Get 1 or 0 (true false) from result object (first object key)
+            resolve((resultValue == 1 ? true : false)) // If key is found (sqlite returned 1) resolve as true, otherwise resolve as false
+        })
+    })
 }

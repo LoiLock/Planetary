@@ -40,5 +40,4 @@ async function setSiteInfo(response) { // Sets footer of siteinfo from server or
     footerLinks[3].firstElementChild.setAttribute("href", "https://github.com/loilock/planetary/commit/" + SiteInfo.CommitHash)
     let commitwrapper = footerLinks[3].firstElementChild
     commitwrapper.textContent = SiteInfo.ShortCommitHash
-
 }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -26,9 +26,6 @@
         </header>
 
         <div class="dashboard">
-            <section class="dashboard__albums">
-                
-            </section>
             <section class="dashboard__filters">
                 <div class="dashboard__filters__group">
                     <button class="start-editor icon-btn icon-btn__edit" aria-label="Start editor"></button>
@@ -40,11 +37,17 @@
                         </select>
                         <input class="editor-controls__album-name-input" type="text" placeholder="Album name">
                         <button class="editor-controls__submit-album icon-btn icon-btn__plus"></button>
+                        <button class="editor-controls__add-selected-to-album btn btn-secondary">Add files to <span class="selected-album-name text--highlighted"></span></button>
+                        <button class="editor-controls__remove-selected-from-album btn btn-secondary">Remove selected files</button>
                     </span>
                 </div>
 
 
                 <div class="dashboard__filters__group">
+                    <span class="file-count-label text--secondary text--highlighted"></span>
+                    <select class="album-filter__dropdown" id="">
+                        <option value="" selected>Show all</option>
+                    </select>
                     <div class="input-container"><button id="showFilenames" class="check-box toggle-filter" data-value="showFilenames" aria-label="Show file info"></button> <label for="showFilenames" class="input-label">show info</label></div>
                     <div class="input-container"><button id="hideDeleted" class="check-box toggle-filter" data-value="hideDeleted" data-checked="true" aria-label="Hide deleted files"></button> <label for="hideDeleted" class="input-label">hide deleted</label></div>
                 </div>

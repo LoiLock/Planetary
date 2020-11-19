@@ -10,7 +10,7 @@ window.onload = function() {
 window.addEventListener('DOMContentLoaded', (event) => {
     getUploads()
     document.body.classList.remove("preload") // Prevent any transitions firing on page load
-    // getAlbums()
+    getAlbums()
 })
 
 var previousUploads = [] // Empty array to compare against in getUploads
@@ -34,6 +34,7 @@ export async function getUploads() { // Get all the uploads, compare them to the
     gridElement.prepend(gridFragment) // Consume the gridFragment and append it to the body
     
     initFilters() // After everything is loaded, add filters
+    updateFileCount()
 }
 
 function thumbnailContainer(element) { // Creates image element to be added to the image grid, gridElement is the element to which the grid items will be added
@@ -331,8 +332,14 @@ function initComponents() { // Add events listeners to components and set other 
     document.querySelector(".toggle-colortheme").addEventListener("click", (event) => {toggleColorTheme(event)}, false)
     document.querySelector(".start-editor").addEventListener("click", (event) => { startEditor(event) }, false)
     document.querySelector(".submit-deletion").addEventListener("click", submitDeleteSelection, false)
+
     document.querySelector(".editor-controls__album-select").addEventListener("change", albumSelectionHandler, false)
     document.querySelector(".editor-controls__submit-album").addEventListener("click", submitAlbum, false)
+
+    document.querySelector(".editor-controls__add-selected-to-album").addEventListener("click", addSelectedToAlbum, false)
+    document.querySelector(".editor-controls__remove-selected-from-album").addEventListener("click", removeSelectedFromAlbum, false)
+    document.querySelector(".album-filter__dropdown").addEventListener("change", albumFilterFiles, false)
+
     document.querySelector(".page-header__user__logout").addEventListener("click", logout, false)
     var checkboxElems = document.querySelectorAll(".toggle-filter")
     for (var i = 0; i < checkboxElems.length; i++) {
@@ -464,27 +471,37 @@ async function showConfirmation(message) { // Creates confirmation popup for fil
     return res
 }
 
-function removeAllElementsByQuery(query) { // Used to remove .popup-container
+function removeAllElementsByQuery(query) { // Used to remove any .popup-container's that are still open
     document.querySelectorAll(query).forEach(elem => elem.remove())
 }
 
-function albumSelectionHandler(e) {
+
+
+
+function albumSelectionHandler(e) { // Show input field if user selected to create a new album
     var albumSelection = e.target
     var selectedOption = albumSelection.value
     var albumNameInput = document.querySelector(".editor-controls__album-name-input")
+    var addFilelistToAlbumBtn = document.querySelector(".editor-controls__add-selected-to-album")
+    var removeFileFromAlbumBtn = document.querySelector(".editor-controls__remove-selected-from-album")
     albumNameInput.addEventListener("paste", validateAlbumName, false)
     albumNameInput.addEventListener("input", validateAlbumName, false)
+    let selectedOptionIndex = e.target.selectedIndex
     if(selectedOption == "newalbum") {
         albumNameInput.style.display = "block"
+        addFilelistToAlbumBtn.style.display = "none"
+        removeFileFromAlbumBtn.style.display = "none"
     } else {
+        console.log(e.target.value)
         albumNameInput.style.display = "none"
+        addFilelistToAlbumBtn.firstElementChild.textContent = `${e.target.options[selectedOptionIndex].text}` // Change button text to the current select option's text
+        addFilelistToAlbumBtn.style.display = "block"
+        removeFilesFromAlbum.style.display = "block"
     }
 }
 
 
-// ! WIP Not implemented
-
-function validateAlbumName(e) {
+function validateAlbumName(e) { // Check if album name matches only alphanumeric characters and no spaces
     var inputStr = e.target.value
     var submitAlbumBtn = document.querySelector(".editor-controls__submit-album")
     if (inputStr.match(/^[a-z0-9]+$/i) && inputStr.length <= 14) { // Validate user input and change the input color
@@ -499,7 +516,7 @@ function validateAlbumName(e) {
     }
 }
 
-async function submitAlbum() { // Not implemented yet
+async function submitAlbum() { // Create new album
     var albumName = document.querySelector(".editor-controls__album-name-input").value
 
     var response = await fetch("/albums/add", {
@@ -514,16 +531,164 @@ async function submitAlbum() { // Not implemented yet
     })
     // TODO: show feedback in UI
     var data = await response.json()
-    console.log(data)
+    if (data && data.success) {
+        console.info(data.message)
+    } else {
+        console.warn(data.message)
+    }
+}
+
+async function getAlbums() { // Get all albums owned by the current user
+    var response = await fetch("/albums/get", {
+        credentials: "include",
+    })
+
+    var data = await response.json()
+    if(data && data.success) {
+        const albumSelectElem = document.querySelector(".editor-controls__album-select")
+        const albumFilterElem = document.querySelector(".album-filter__dropdown")
+        data.albums.forEach(album => { // Add all the albums to the dropdown menu
+            let albumSelectOption = document.createElement("option")
+            albumSelectOption.value = album.slug
+            albumSelectOption.text = album.name
+            albumSelectElem.add(albumSelectOption.cloneNode(true))
+            albumFilterElem.add(albumSelectOption)
+        })
+    }
+}
+
+async function addSelectedToAlbum() { // Gets a list of all the files (array of their deletionkeys) selected, and submit array with deletionkeys to album with slug
+    const selectedThumbs = document.querySelectorAll(".thumbnail-container.selected")
+    const albumslug = document.querySelector(".editor-controls__album-select").value
+    let fileList = []
+    for (const selectedThumb of selectedThumbs) {
+        fileList.push(selectedThumb.getAttribute("data-deletionkey"))
+    }
+
+    const response = await fetch("/albums/addfiles", { // Submit selected album and filelist
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            slug: albumslug,
+            filelist: fileList
+        })
+    })
+    let data = await response
+    console.log(await data.json())
+}
+
+async function removeSelectedFromAlbum() { // removes selected files from album
+    const selectedThumbs = document.querySelectorAll(".thumbnail-container.selected")
+    const albumslug = document.querySelector(".editor-controls__album-select").value
+    let fileList = []
+    for (const selectedThumb of selectedThumbs) {
+        fileList.push(selectedThumb.getAttribute("data-deletionkey"))
+    }
+
+    const response = await fetch("/albums/removefiles", { // Submit selected album and filelist
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            slug: albumslug,
+            filelist: fileList
+        })
+    })
+    let data = await response
+    console.log(await data.json())
+    for (const selectedThumb of selectedThumbs) {
+        selectedThumb.style.display = 'none'
+    }
 }
 
 
+// ? Gets files that belong to selected album, filters out the files that don't belong and hide them
+async function albumFilterFiles(e) {
+    showAllThumbnails()
+    if(e.target.value == "") {
+        updateFileCount()
+        return;
+    }
 
-// async function getAlbums() {
-//     var response = await fetch("/albums/get", {
-//         credentials: "include",
-//     })
+    const selectedAlbumSlug = e.target.value
+    const response = await fetch(`/albums/list/${selectedAlbumSlug}`, {
+        credentials: 'include'
+    })
+    let data = await response.json()
+    console.log(data)
+    if(data && data.success && data.deletionkeys) {
+        const albumDeletionKeys = data.deletionkeys.split(",") // Csv array from server
+        updateFileCount(albumDeletionKeys.length)
+        const filteredContainers = new Map()
 
-//     var data = await response.json()
-//     console.log(data)
-// }
+        const thumbnailContainers = document.querySelectorAll('.thumbnail-container') // All the thumbnail containers on the page
+        for (const thumbnailContainer of thumbnailContainers) { // Every thumbnail that has a deletionkey that's in the album csv array, add to Map()
+            const thumbnailDeletionKey = thumbnailContainer.getAttribute("data-deletionkey")
+            // console.log(thumbnailDeletionKey)
+
+            // Get index of where in the album csv array the current thumbnail is added
+            let albumIndex = albumDeletionKeys.findIndex((key) => {
+                return key == thumbnailDeletionKey
+            }) 
+            if (albumIndex != -1) { // Map thumbnailContainer element to their respective index in the album csv array (To keep added to album order)
+                filteredContainers.set(albumIndex, thumbnailContainer)
+            }
+
+            // console.log(albumIndex)
+            // console.log(thumbnailContainer)
+        }
+        // console.log(filteredContainers)
+        // for (const singleEntry of filteredContainers.entries()) { // For of allows looping over Iterator object that .entries() returns
+        //     console.log(singleEntry) // e.g.: [ 2, div.thumbnail-container ]
+        // }
+
+        // Every Map entry now looks like: Array [ 2, div.thumbnail-container ], an array with the key and value
+        // Compare the index of the current entry (a) to the index of the next entry (b) in the filteredContainers.entries() array. e.g.:
+        // return [ 2, div.thumbnail-container ] (has index 2) > [ 3, div.thumbnail-container ] (has index 3) // returns false
+        const sortedMap = new Map([...filteredContainers.entries()].sort((a, b) => {
+            return a[0] > b[0]
+        }))
+
+        const gridContent = document.querySelector(".dashboard__content")
+        const tempFragment = document.createDocumentFragment()
+        for (const singleThumbnail of thumbnailContainers) {
+            if (![...sortedMap.values()].includes(singleThumbnail)) { // If a thumbnail is not in the sortedmap, hide it
+                singleThumbnail.style.display = 'none'
+            }
+        }
+        for (const albumEntry of sortedMap.values()) {
+            tempFragment.prepend(albumEntry)
+        }
+        gridContent.appendChild(tempFragment)
+    } else {
+        hideAllThumbnails()
+        updateFileCount(0)
+    }
+}
+
+// Show all the thumbnails again (Style hide the deleted ones)
+function showAllThumbnails() {
+    const thumbnailContainers = document.querySelectorAll('.thumbnail-container:not([data-isdeleted="true"])')
+    thumbnailContainers.forEach(singleThumbnail => {
+        singleThumbnail.style.display = 'block'
+    })
+}
+
+function hideAllThumbnails() {
+    const thumbnailContainers = document.querySelectorAll('.thumbnail-container:not([data-isdeleted="true"])')
+    thumbnailContainers.forEach(singleThumbnail => {
+        singleThumbnail.style.display = 'none'
+    })
+}
+
+// Updates file count label in filter bar
+function updateFileCount(size) {
+    var fileCount = document.querySelectorAll('.thumbnail-container:not([data-isdeleted="true"])').length
+    if(typeof size !== 'undefined') {
+        fileCount = size
+    }
+    const fileCountLabel = document.querySelector(".file-count-label").textContent = `Files: ${fileCount}`
+}
