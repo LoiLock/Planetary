@@ -57,7 +57,7 @@ async function initDB() {
                 console.error(err)
             }
         })
-        db.run("CREATE TABLE IF NOT EXISTS albums(name text, cover text, owner text, public integer DEFAULT 0, slug text, files text)", (err) => { // Create albums table
+        db.run("CREATE TABLE IF NOT EXISTS albums(owner TEXT UNIQUE, data TEXT)", (err) => { // Create albums table
             if (err) {
                 console.error(err)
             }
