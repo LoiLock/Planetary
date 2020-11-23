@@ -157,3 +157,94 @@ function getIP (req) {  // Give a request object, it will return the client's IP
     req.socket.remoteAddress ||
     (req.connection.socket ? req.connection.socket.remoteAddress : null);
 }
+
+
+async function getDirectoryFromPath(obj, path) {
+    return new Promise((resolve, reject) => {
+        var currentDirectory = obj
+        /*
+            Example for full urlpath: /videos/documentaries
+    
+            First iteration it will go over data.children (where .name == "videos" and "music")
+            it will find videos and set that as the new currentDirectory
+            
+            Second iteration it will find the first occurance of "videos"'s children and check the second part of the urlpath
+            (/documentaries/)
+            It will find this and set that as the new currentDirectory
+            
+        */
+        for (let i = 0; i < path.length; i++) { // For all paths. e.g.: /videos/documentaries ["videos", "documentaries"]
+            var foundPath = currentDirectory.children.find(currentChild => { // In the currentDirectory's children array, look for child where the name property matches the current url-part
+                return currentChild.name == path[i]
+            });
+            if (foundPath && foundPath.children) { // If currentDirectory has a child with the same .name as the current url-part, set currentDirectory to that object part
+                currentDirectory = foundPath
+            } else {
+                const validPath = foundPath ? currentDirectory : undefined // if /documentaries/ AND /videos/ (or whatever the previous path is) are correctly spelled. Otherwise /videos/doScusdfsd/ falls back onto /videos
+                return resolve(validPath)
+            }
+        }
+        // console.log("Found directory:", currentDirectory)
+        return resolve(currentDirectory)
+    })
+}
+
+// // Add folder called memes in /videos/movies: addEntryAtPath(userAlbum, "/videos/movies", "memes")
+// /* Add file to folder called /videos/movies: addEntryAtPath(userAlbum, "/videos/movies", null, false {
+//     type: "file",
+//     name: "buEciCHeLlNK7ZKL.mp3",
+//     thumbnail: "s1vJFqhPZYLyuX4h.opus",
+//     unixtime: "1605795678",
+//     path: "/videos/movies/buEciCHeLlNK7ZKL.mp3"
+// })
+
+
+
+// */
+// async function addEntryAtPath(obj, path, directoryname, isFolder, fileobject) {
+//     path = path.split("/")
+//     console.log("path:")
+//     console.log(path)
+//     return new Promise((resolve, reject) => {
+//         var userAlbum = obj // userAlbum is the user's directory data object
+//         console.log(userAlbum)
+//         var tempObject = userAlbum.data
+//         if (path[0] == "") { // If directory is created at the root, no need to search the rest
+//             tempObject.children.push( {
+//                 type: "folder",
+//                 name: directoryname,
+//                 path: "/" + directoryname,
+//                 children: []
+//             })
+//         } else {
+//             var objectWalker = tempObject
+//             for (let i = 0; i < path.length; i++) {
+//                 var foundChild = tempObject.children.find(currentChild => { // In the currentDirectory's children array, look for child where the name property matches the current url-part
+//                     return currentChild.name == path[i]
+//                 });
+//                 if (foundChild && tempObject.children) { // If current level has child that matches current path level name
+//                     objectWalker = foundChild
+//                 }
+//             }
+//             if (isFolder) {
+//                 objectWalker.children.push({
+//                     type: "folder",
+//                     name: directoryname,
+//                     path: "/" + directoryname,
+//                     children: []
+//                 })
+//             } else {
+//                 objectWalker.children.push(fileobject)
+//             }
+//         }
+
+
+
+//         userAlbum.data = tempObject
+
+//         // console.log("Useralbum:")
+//         // console.log(JSON.stringify(userAlbum, null, 4))
+//         console.log(userAlbum)
+//         resolve(userAlbum)
+//     })
+// }

@@ -1,16 +1,22 @@
 import { humanDate, generateShareXConfig, logout, TIME } from './clientutils.js'
 import { initSSE } from './handleevents.js'
 
+var currentDirectoryPath = window.location.pathname.replace("/dashboard", "") // "" == root. Used to get the files and directories/folders of the currently open album
 var isInEditor = false // Used to check if click events
-window.onload = function() {
+window.onload = async function() {
+    console.log(currentDirectoryPath)
     initComponents() // Add event listeners to buttons and such
     initSSE()
 }
 
 window.addEventListener('DOMContentLoaded', (event) => {
-    getUploads()
+    console.log(window.location.pathname)
+    if(window.location.pathname == "/dashboard") { // Only load ALL uploads if we're at the root of the dashboard
+        getUploads()
+    } else if (window.location.pathname.startsWith("/dashboard/")) { // If dashboard has subpages (e.g. /videos/movies, etc etc) > don't load the dashboard. Load the album with that pathname
+        addAlbumEntries()
+    }
     document.body.classList.remove("preload") // Prevent any transitions firing on page load
-    getAlbums()
 })
 
 var previousUploads = [] // Empty array to compare against in getUploads
@@ -35,6 +41,7 @@ export async function getUploads() { // Get all the uploads, compare them to the
     
     initFilters() // After everything is loaded, add filters
     updateFileCount()
+    addAlbumEntries()
 }
 
 function thumbnailContainer(element) { // Creates image element to be added to the image grid, gridElement is the element to which the grid items will be added
@@ -86,7 +93,7 @@ function thumbnailContainer(element) { // Creates image element to be added to t
                 videoContainer.classList.add("thumbnail-container__video")
                 var videoSource = document.createElement("source")
                 videoSource.type = "video/mp4"
-                videoSource.src = `thumbs/${element.thumbnail}`
+                videoSource.src = `/thumbs/${element.thumbnail}`
                 videoContainer.appendChild(videoSource)
                 thumbnailContainer.appendChild(videoContainer)
 
@@ -103,7 +110,7 @@ function thumbnailContainer(element) { // Creates image element to be added to t
                 thumbnailContainer.setAttribute("data-filename", element.filename) // Set Filename, used for opening in new tab
                 containerChild.setAttribute("loading", "lazy") // Use lazy loading where possible
                 containerChild.setAttribute("alt", element.thumbnail) // Use lazy loading where possible
-                containerChild.src = `thumbs/${element.thumbnail}` // Set img.src for the thumbnail
+                containerChild.src = `/thumbs/${element.thumbnail}` // Set img.src for the thumbnail
                 break;
             case "opus":
                 summaryCover.classList.add("type", "type__sound")
@@ -115,7 +122,7 @@ function thumbnailContainer(element) { // Creates image element to be added to t
                 // soundContainer.classList.add("thumbnail-container__video")
                 var soundSource = document.createElement("source")
                 soundSource.type = "audio/ogg"
-                soundSource.src = `thumbs/${element.thumbnail}`
+                soundSource.src = `/thumbs/${element.thumbnail}`
 
                 var progressBar = document.createElement("div")
                 progressBar.classList.add("audio-progress")
@@ -331,15 +338,11 @@ function initComponents() { // Add events listeners to components and set other 
     document.querySelector(".generate-sharex-config").addEventListener("click", generateShareXConfig, false) // Generate sharex config file
     document.querySelector(".toggle-colortheme").addEventListener("click", (event) => {toggleColorTheme(event)}, false)
     document.querySelector(".start-editor").addEventListener("click", (event) => { startEditor(event) }, false)
+    document.querySelector(".add-directory").addEventListener("click", createDirectory, false)
     document.querySelector(".submit-deletion").addEventListener("click", submitDeleteSelection, false)
-
-    document.querySelector(".editor-controls__album-select").addEventListener("change", albumSelectionHandler, false)
-    document.querySelector(".editor-controls__submit-album").addEventListener("click", submitAlbum, false)
-
-    document.querySelector(".editor-controls__add-selected-to-album").addEventListener("click", addSelectedToAlbum, false)
-    document.querySelector(".editor-controls__remove-selected-from-album").addEventListener("click", removeSelectedFromAlbum, false)
-    document.querySelector(".album-filter__dropdown").addEventListener("change", albumFilterFiles, false)
-
+    document.querySelector(".add-selected-to-directory").addEventListener("click", addFilesToDirectory, false)
+    document.querySelector(".remove-selected-from-directory").addEventListener("click", removeFilesFromDirectory, false)
+    
     document.querySelector(".page-header__user__logout").addEventListener("click", logout, false)
     var checkboxElems = document.querySelectorAll(".toggle-filter")
     for (var i = 0; i < checkboxElems.length; i++) {
@@ -371,8 +374,12 @@ function startEditor(e) {
         editorBtn.classList.remove("selected")
         editorControls.style.display = "none"
         var selectedThumbs = document.querySelectorAll(".thumbnail-container.selected")
+        var selectedDirectories = document.querySelectorAll(".directory-container.selected")
         for(var i = 0; i < selectedThumbs.length; i++) {
             selectedThumbs[i].classList.remove("selected")
+        }
+        for(var i = 0; i < selectedDirectories.length; i++) {
+            selectedDirectories[i].classList.remove("selected")
         }
     }
 }
@@ -380,7 +387,12 @@ function startEditor(e) {
 function selectThumbnailContainer(e) { // ? If isInEditor, then stop other (click) events on the thumbnail-containers, this way
     if (!isInEditor) { return }
     e.stopImmediatePropagation()
-
+    if (e.currentTarget.classList.contains("directory-container")) { // If selected container is a directory, unselect all other directory-containers
+        const directoryContainers = document.querySelectorAll(".directory-container.selected")
+        directoryContainers.forEach((singleContainer) => {
+            singleContainer.classList.remove("selected")
+        })
+    }
     var thumbnailContainer = e.currentTarget
     thumbnailContainer.classList.toggle("selected")
 }
@@ -471,91 +483,303 @@ async function showConfirmation(message) { // Creates confirmation popup for fil
     return res
 }
 
+
+async function askStringInput(data, validator) { // Popup that returns a string and also takes a validator function
+    removeAllElementsByQuery(".popup-container")
+
+    // Headers
+    var popupContainer = document.createElement("div")
+    popupContainer.classList.add("popup-container")
+
+    var popupHeader = document.createElement("h2")
+    popupHeader.classList.add("popup-container__header")
+
+    var popupText = document.createTextNode(data.message)
+    popupHeader.appendChild(popupText)
+    // End headers
+
+    const textInput = document.createElement("input")
+    textInput.setAttribute("type", "text")
+    
+
+    // Buttons
+    var confirmBtn = document.createElement("button")
+    confirmBtn.classList.add("confirm-btn")
+    var cancelBtn = document.createElement("button")
+    cancelBtn.classList.add("cancel-btn")
+
+    var confirmText = document.createTextNode("Confirm")
+    var cancelText = document.createTextNode("Cancel")
+    confirmBtn.appendChild(confirmText)
+    cancelBtn.appendChild(cancelText)
+    
+    confirmBtn.setAttribute("disabled", "")
+
+    confirmBtn.classList.add("confirm-action")
+    cancelBtn.classList.add("btn-secondary")
+    // End buttons
+
+    popupContainer.appendChild(popupHeader)
+    popupContainer.appendChild(textInput)
+    popupContainer.appendChild(confirmBtn)
+    popupContainer.appendChild(cancelBtn)
+    document.body.appendChild(popupContainer)
+
+    if(validator) { // If a validator function has been specified, use it
+        textInput.addEventListener("input", (e) => {
+            if (validateAlbumName(e.currentTarget.value)) {
+                confirmBtn.removeAttribute("disabled")
+                e.currentTarget.style.color = "var(--fg-color-text)"
+            } else {
+                confirmBtn.setAttribute("disabled", "")
+                e.currentTarget.style.color = "var(--color-medium-red)"
+            }
+        }, false)
+    }
+
+    return new Promise((resolve, reject) => {
+        confirmBtn.addEventListener("click", function() {
+            popupContainer.remove()
+            resolve(textInput.value)
+        }, false)
+        cancelBtn.addEventListener("click", function() {
+            popupContainer.remove()
+            reject(undefined)
+        }, false)
+    })
+}
+
+
 function removeAllElementsByQuery(query) { // Used to remove any .popup-container's that are still open
     document.querySelectorAll(query).forEach(elem => elem.remove())
 }
 
 
-
-
-function albumSelectionHandler(e) { // Show input field if user selected to create a new album
-    var albumSelection = e.target
-    var selectedOption = albumSelection.value
-    var albumNameInput = document.querySelector(".editor-controls__album-name-input")
-    var addFilelistToAlbumBtn = document.querySelector(".editor-controls__add-selected-to-album")
-    var removeFileFromAlbumBtn = document.querySelector(".editor-controls__remove-selected-from-album")
-    albumNameInput.addEventListener("paste", validateAlbumName, false)
-    albumNameInput.addEventListener("input", validateAlbumName, false)
-    let selectedOptionIndex = e.target.selectedIndex
-    if(selectedOption == "newalbum") {
-        albumNameInput.style.display = "block"
-        addFilelistToAlbumBtn.style.display = "none"
-        removeFileFromAlbumBtn.style.display = "none"
-    } else {
-        console.log(e.target.value)
-        albumNameInput.style.display = "none"
-        addFilelistToAlbumBtn.firstElementChild.textContent = `${e.target.options[selectedOptionIndex].text}` // Change button text to the current select option's text
-        addFilelistToAlbumBtn.style.display = "block"
-        removeFileFromAlbumBtn.style.display = "block"
-    }
-}
-
-
-function validateAlbumName(e) { // Check if album name matches only alphanumeric characters and no spaces
-    var inputStr = e.target.value
-    var submitAlbumBtn = document.querySelector(".editor-controls__submit-album")
+function validateAlbumName(inputStr) { // Check if album name matches only alphanumeric characters and no spaces
     if (inputStr.match(/^[a-z0-9]+$/i) && inputStr.length <= 14) { // Validate user input and change the input color
-        submitAlbumBtn.style.display = "block"
-        e.target.style.color = "var(--fg-color-text)"
+        return true
     } else {
-        submitAlbumBtn.style.display = "none"
-        e.target.style.color = "var(--color-medium-red)"
-    }
-    if (inputStr.length == 0) {
-        e.target.style.color = "var(--fg-color-text)"
+        return false
     }
 }
 
-async function submitAlbum() { // Create new album
-    var albumName = document.querySelector(".editor-controls__album-name-input").value
+async function createDirectory() { // onclick handler to create new directory
+    try {
+        const directoryName = await askStringInput({
+            message: "Name of the folder?"
+        }, validateAlbumName)
+        console.log(directoryName)
 
-    var response = await fetch("/albums/add", {
+        const response = await fetch("/albums/add", {
+            method: "POST",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                insertIntoPath: window.location.pathname.replace("/dashboard", ""), // Add the directory to this path
+                directoryName
+            })
+        })
+        const data = await response.json()
+        if(data.success) {
+            document.querySelector(".dashboard__content").prepend(directoryContainer({
+                name: directoryName
+            }))
+        } else {
+            alert("Didn't add directory, already exists?")
+        }
+    } catch (error) {
+        // User cancelled creating of directory
+    }
+}
+
+async function addAlbumEntries() { // Make get albums from pathname
+    try {
+        const response = await fetch("/albums/get", {
+            method: "POST",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                path: currentDirectoryPath
+            })
+        })
+        const data = await response.json()
+        console.log(data) // Current directory that we're browsing
+        console.log(data.children) // The items that need to be added to the dashboard
+
+
+        const gridFragment = document.createDocumentFragment()
+        var gridElement = document.querySelector(".dashboard__content")
+        for (let singleAlbumEntry of data.children) {
+            if(singleAlbumEntry.type != "file"){
+                continue;
+            }
+            console.log(singleAlbumEntry)
+            singleAlbumEntry.filename = singleAlbumEntry.name
+            gridFragment.prepend(thumbnailContainer(singleAlbumEntry))
+        }
+        for (let singleAlbumEntry of data.children) {
+            if(singleAlbumEntry.type != "folder") continue;
+            singleAlbumEntry.filename = singleAlbumEntry.name
+            gridFragment.prepend(directoryContainer(singleAlbumEntry))
+        }
+        gridElement.prepend(gridFragment)
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+// Creates directory "thumbnail" card for album directories
+function directoryContainer(folderInfo) {
+    const directoryCard = document.createElement("div") // Different style of .thumbnail-container
+    directoryCard.addEventListener("click", (event) => { selectThumbnailContainer(event) }, false) // first event listener will be the one for the editor, so that it can stop immediate propagation if isInEditor equals true
+
+    const directoryInfoCover = document.createElement("div") // Shows filecount, etc
+    directoryCard.classList.add("directory-container")
+    directoryInfoCover.classList.add("directory-container__cover")
+
+    directoryCard.setAttribute("data-name", folderInfo.name)
+
+    const infoHeader = document.createElement("h3")
+    const infoHeaderText = document.createTextNode(folderInfo.name)
+    infoHeader.appendChild(infoHeaderText)
+
+    // const fileCount = folderInfo.children.length
+    const fileCount = 0
+    const fileCountTag = document.createElement("span")
+    fileCountTag.appendChild(document.createTextNode(fileCount))
+
+    directoryInfoCover.appendChild(infoHeader)
+    directoryInfoCover.appendChild(fileCountTag)
+
+    directoryCard.appendChild(directoryInfoCover)
+
+    directoryCard.addEventListener("click", (e) => {
+        console.log(folderInfo.path)
+        if (folderInfo.path == "/") { // If at root don't include /, prevents /dashboard//videos (double slash)
+            openDirectory(folderInfo.path + folderInfo.name)
+            return
+        }
+        openDirectory(folderInfo.path + "/" + folderInfo.name)
+    }, false)
+
+    return directoryCard
+}
+
+function openDirectory(path) { // Adds thumbnail and directory cards to the dashboard by the current album path
+    clearDashboard()
+    currentDirectoryPath = path
+    addAlbumEntries()
+    console.log(path)
+    window.history.pushState({ path }, "Planetary - Dashboard", `/dashboard${path}`) // (add path as state object so we can go back to that page in the browsers history)
+    console.log("openDirectory reports currentDirectoryPath:", currentDirectoryPath)
+}
+
+async function addFilesToDirectory() { // Get all the selected directories and files, add the files to all the directories selected
+    const fileList = []
+    const selectedDirectory = document.querySelector(".directory-container.selected")
+    const selectedThumbs = document.querySelectorAll(".thumbnail-container.selected")
+    for (const selectedThumb of selectedThumbs) {
+        fileList.push(selectedThumb.getAttribute("data-filename"))
+    }
+
+    const response = await fetch("/albums/addfiles", {
         method: "POST",
         credentials: "include",
         headers: {
-            "Content-type": "application/json"
+            "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            albumname: albumName
+            files: fileList,
+            insertIntoPath: window.location.pathname.replace("/dashboard", ""), // Add the directory to this path
+            dirname: selectedDirectory.getAttribute("data-name")
         })
     })
-    // TODO: show feedback in UI
-    var data = await response.json()
-    if (data && data.success) {
-        console.info(data.message)
-    } else {
-        console.warn(data.message)
-    }
+    const data = await response.json()
 }
 
-async function getAlbums() { // Get all albums owned by the current user
-    var response = await fetch("/albums/get", {
+async function removeFilesFromDirectory() { // Get all the selected directories and files, add the files to all the directories selected
+    const fileList = []
+    const selectedThumbs = document.querySelectorAll(".thumbnail-container.selected")
+    const selectedDirectory = document.querySelector(".directory-container.selected")
+    for (const selectedThumb of selectedThumbs) {
+        fileList.push(selectedThumb.getAttribute("data-filename"))
+    }
+    if (!selectedDirectory) {
+        const response = await fetch("/albums/removefiles", {
+            method: "POST",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                files: fileList,
+                insertIntoPath: window.location.pathname.replace("/dashboard", ""), // Add the directory to this path
+            })
+        })
+        const data = await response.json()
+        if (data.success) {
+            removeSelected()
+        }
+        return
+    }
+    // Remove selected directory
+    const response = await fetch("/albums/remove", {
+        method: "POST",
         credentials: "include",
-    })
-
-    var data = await response.json()
-    if(data && data.success) {
-        const albumSelectElem = document.querySelector(".editor-controls__album-select")
-        const albumFilterElem = document.querySelector(".album-filter__dropdown")
-        data.albums.forEach(album => { // Add all the albums to the dropdown menu
-            let albumSelectOption = document.createElement("option")
-            albumSelectOption.value = album.slug
-            albumSelectOption.text = album.name
-            albumSelectElem.add(albumSelectOption.cloneNode(true))
-            albumFilterElem.add(albumSelectOption)
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            currentPath: window.location.pathname.replace("/dashboard", ""),
+            selectedPath: window.location.pathname.replace("/dashboard", "") + "/" + selectedDirectory.getAttribute("data-name"), // Add the directory to this path
         })
+    })
+    const data = await response.json()
+    if (data.success) {
+        removeSelected()
+    }
+    return
+}
+
+function removeSelected() {
+    const selectedThumbs = document.querySelectorAll(".thumbnail-container.selected")
+    const selectedDirs = document.querySelectorAll(".directory-container.selected")
+    for(const selectedThumb of selectedThumbs) {
+        selectedThumb.remove()
+    }
+    for(const selectedDir of selectedDirs) {
+        selectedDir.remove()
     }
 }
+
+function openDirectoryFromBar() { // onclick event handler for small directory bar
+    console.log(this)
+}
+
+function clearDashboard() { // Removes all thumbnails (including directories) from the dashboard__content
+    document.querySelector(".dashboard__content").innerHTML = ""
+}
+
+window.addEventListener("popstate", (event) => { 
+    // If the user presses back or forwards we update the dashboard accordingly
+    if(window.location.pathname == "/dashboard") { // If url == /dashboard
+        clearDashboard()
+        currentDirectoryPath = ""
+        previousUploads = [] // Remove previous uploads to completely refresh the dashboard
+        getUploads()
+    } else {
+        clearDashboard()
+        currentDirectoryPath = event.state.path
+        console.log({currentDirectoryPath})
+        addAlbumEntries()
+    }
+    console.log("onpopstate reports currenDirectoryPath:", currentDirectoryPath)
+})
+
 
 async function addSelectedToAlbum() { // Gets a list of all the files (array of their deletionkeys) selected, and submit array with deletionkeys to album with slug
     const selectedThumbs = document.querySelectorAll(".thumbnail-container.selected")

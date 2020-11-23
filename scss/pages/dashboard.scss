@@ -26,7 +26,7 @@
     top: 72px;
     width: 100%;
     padding: 20px;
-    &__albums {
+    &__albums { // TODO: remove
         position: relative;
     }
     &__filters {
@@ -61,9 +61,6 @@
                     max-width: 100%;
                     flex: 1 1 auto;
                 }
-            }
-            &__album-name-input, &__submit-album, &__add-selected-to-album, &__remove-selected-from-album {
-                display: none;
             }
         }
     }
@@ -290,6 +287,59 @@
 
     &.selected { // thumbnail-container is selected in the editor
         box-shadow: 0 0 0 4px rgba(49, 231, 125, 0.75);
+    }
+}
+
+.directory-container {
+    overflow: hidden;
+    border-radius: 6px;
+    position: relative;
+    box-shadow: -2px -2px 18px -10px var(--logo-green), 2px 2px 18px -10px var(--logo-blue);
+    * {
+        user-select: none;
+    }
+    &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--logo-gradient);
+        filter: blur(5px);
+        transform: scale(1.2);
+    }
+    &__cover {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+        transition: opacity .5s;
+        display: flex;
+        justify-content: flex-end;
+        flex-direction: column;
+        padding: var(--summary-padding);
+        &::before {
+            content: "";
+            position: absolute;
+            top: calc(var(--summary-padding) + 4px);
+            left: calc(var(--summary-padding) + 4px);
+            height: 24px;
+            width: 24px;
+            background-repeat: none;
+            background-position: 0 0;
+            background: url("../svg/folder.svg");
+            filter: invert(1);
+        }
+    }
+    transition: .3s;
+    &:hover {
+        box-shadow: -2px -2px 30px -10px var(--logo-green), 2px 2px 30px -10px var(--logo-blue);
+    }
+    &.selected {
+        box-shadow: -2px -2px 50px -10px var(--fg-color-text), 2px 2px 50px -10px var(--fg-color-text);
     }
 }
 

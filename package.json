@@ -19,6 +19,8 @@
     "fluent-ffmpeg": "^2.1.2",
     "gm": "^1.23.1",
     "jsonwebtoken": "^8.5.1",
+    "lodash": "^4.17.20",
+    "lowdb": "^1.0.0",
     "nunjucks": "^3.2.2",
     "sharp": "^0.26.2",
     "sqlite3": "^5.0.0"

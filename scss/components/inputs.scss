@@ -39,6 +39,9 @@ button, .btn { // General button styling
             color: rgb(120, 120, 120);
         }
     }
+    &:disabled {
+        opacity: 0.6;
+    }
 }
 
 input[type=text], input[type=password] { // Default text input styling
@@ -202,6 +205,21 @@ button.check-box { // TODO: Change styling
     &__plus {
         &::before {
             background-image: url("../svg/plus.svg");
+        }
+    }
+    &__folder-plus {
+        &::before {
+            background-image: url("../svg/folder-plus.svg");
+        }
+    }
+    &__archive {
+        &::before {
+            background-image: url("../svg/archive.svg");
+        }
+    }
+    &__file-minus {
+        &::before {
+            background-image: url("../svg/file-minus.svg");
         }
     }
 }

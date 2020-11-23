@@ -34,7 +34,15 @@ var self = module.exports = {
     addFilesToAlbum,
     removeFilesFromAlbum,
     getKeysFromAlbum,
-    isValidDeletionkey
+    isValidDeletionkey,
+    getUserAlbumJSON,
+    addDirectory,
+    removeDirectory,
+    getUserDirectories,
+    createDirectoryDataColumn,
+    addFilesToDirectory,
+    getFileAttributes,
+    removeFilesFromDirectory
 }
 
 async function initDB() {
@@ -334,6 +342,201 @@ async function isValidDeletionkey(deletionkey) { // Could use getFilename, but t
 
             let resultValue = result[Object.keys(result)[0]] // Get 1 or 0 (true false) from result object (first object key)
             resolve((resultValue == 1 ? true : false)) // If key is found (sqlite returned 1) resolve as true, otherwise resolve as false
+        })
+    })
+}
+
+async function getFileAttributes(filename) {
+    return new Promise((resolve) => {
+        db.get("SELECT filename, deletionkey, unixtime, thumbnail FROM uploads WHERE filename = ?", filename, (error, result) => {
+            if(error) {
+                return resolve(undefined) // Don't reject, just assume deletionkey wasn't found, outcome would be the same eitherway
+            }
+
+            resolve(result) // If key is found (sqlite returned 1) resolve as true, otherwise resolve as false
+        })
+    })
+}
+
+async function getUserAlbumJSON(username) {
+    return new Promise((resolve, reject) => {
+        db.get("SELECT data FROM albums WHERE owner = ?", "loilock", (error, result) => {
+            if (error) {
+                return reject(error)
+            }
+            if(typeof result === 'undefined') { // If username does not have album yet, create a new one
+                const emptyAlbum = {
+                    data: {
+                        children: []
+                    }
+                }
+
+                console.log("Created album data")
+                db.run("INSERT INTO albums(owner, data) VALUES(?,?)", [username, JSON.stringify(emptyAlbum)])
+                return resolve(JSON.stringify(emptyAlbum))
+            }
+            console.log("Obtained old data")
+            resolve(result.data)
+        })
+    })
+}
+
+// Adds directory/folder to user's albums. rejects if a folder with that name already exists, resolves if successful
+// e.g. to add a folder "documentaries" to the folder "videos":
+// addDirectory("/videos", "documentaries", "loilock")
+
+async function addDirectory(path, newDirectoryName, username) {
+    return new Promise(async (resolve, reject) => {
+        db.serialize(async () => {
+            var currentData = await self.getUserDirectories(username) // Get the current file/directory list stored in the database
+            if(!currentData) { // If user does not have an album data column in the database yet, create one
+                await self.createDirectoryDataColumn(username)
+                currentData = await self.getUserDirectories(username)
+            }
+            currentData = JSON.parse(currentData.data)
+
+            const pathExists = currentData.some((anyPath) => { // check if the path about to be created already exists
+                return ((anyPath.path == path) && (anyPath.name == newDirectoryName))
+            })
+
+            if (pathExists) {
+                return reject(false) // Path already exists
+            }
+            currentData.push({ // Push folder to entries array
+                type: "folder",
+                name: newDirectoryName,
+                path: path
+            })
+            db.run("UPDATE albums SET data = ? WHERE owner = ?", [JSON.stringify(currentData), username], (error) => { // Insert the updated currentData
+                if (error) {
+                    return reject(error)
+                }
+                resolve(true)
+            })
+        })
+    })
+}
+
+async function removeDirectory(path, currentPath, username) { // path is selected directory to be removed
+    return new Promise(async (resolve, reject) => {
+        db.serialize(async () => {
+            var currentData = await self.getUserDirectories(username) // Get the current file/directory list stored in the database
+            if(!currentData) { // If user does not have an album data column in the database yet, create one
+                await self.createDirectoryDataColumn(username)
+                currentData = await self.getUserDirectories(username)
+            }
+            currentData = JSON.parse(currentData.data)
+            console.log("PATH:", path)
+            const pathArr = path.split("/")
+            const selectedDirName = pathArr[pathArr.length - 1]
+            console.log({selectedDirName})
+            console.log({currentPath})
+            console.log(path + "/" + selectedDirName)
+            currentData = currentData.filter((albumEntry) => { // Remove all entries where the parent path is the currently selected path
+                console.log(albumEntry.path)
+                return !(albumEntry.path.startsWith(path) || albumEntry.path == currentPath && albumEntry.name == selectedDirName)
+            })
+
+            db.run("UPDATE albums SET data = ? WHERE owner = ?", [JSON.stringify(currentData), username], (error) => { // Insert the updated currentData
+                if (error) {
+                    return reject(error)
+                }
+                resolve(true)
+            })
+        })
+    })
+}
+
+async function addFilesToDirectory(path, filelist, username) { // Filelist is list of deletionkeys that are selected to be added
+    return new Promise(async (resolve, reject) => {
+        db.serialize(async () => {
+            var currentData = await self.getUserDirectories(username) // Get the current file/directory list stored in the database
+            if(!currentData) { // If user does not have an album data column in the database yet, create one
+                await self.createDirectoryDataColumn(username)
+                currentData = await self.getUserDirectories(username)
+            }
+            currentData = JSON.parse(currentData.data)
+
+            for(const singleFile of filelist) {
+                console.trace(filelist)
+                const fileData = await getFileAttributes(singleFile)
+                console.log(fileData)
+                console.log(path)
+                const pathExists = currentData.some((anyPath) => { // check if the path about to be created already exists
+                    return ((anyPath.path == path) && (anyPath.name == fileData.filename))
+                })
+                console.log(pathExists)
+                console.log(path + "/" + fileData.filename)
+                if (!pathExists) {
+                    currentData.push({
+                        type: "file",
+                        name: fileData.filename,
+                        thumbnail: fileData.thumbnail,
+                        unixtime: fileData.unixtime,
+                        path: path
+                    })
+                }
+            }
+            console.log(JSON.stringify(currentData, null, 4))
+            db.run("UPDATE albums SET data = ? WHERE owner = ?", [JSON.stringify(currentData), username], (error) => { // Insert the updated currentData
+                if (error) {
+                    return reject(error)
+                }
+                resolve(true)
+            })
+        })
+    })
+}
+
+async function removeFilesFromDirectory(path, filelist, username) { // filelist is list of filenames that are selected to be deleted
+    return new Promise(async (resolve, reject) => {
+        db.serialize(async () => {
+            var currentData = await self.getUserDirectories(username) // Get the current file/directory list stored in the database
+            if(!currentData) { // If user does not have an album data column in the database yet, create one
+                await self.createDirectoryDataColumn(username)
+                currentData = await self.getUserDirectories(username)
+            }
+            currentData = JSON.parse(currentData.data)
+            
+
+            currentData = currentData.filter((albumEntry) => {
+                let pathMatches = (path == albumEntry.path)
+                let filenameMatches = (filelist.includes(albumEntry.name))
+                return !(pathMatches && filenameMatches)
+            })
+            
+            console.log(JSON.stringify(currentData, null, 4))
+            db.run("UPDATE albums SET data = ? WHERE owner = ?", [JSON.stringify(currentData), username], (error) => { // Insert the updated currentData
+                if (error) {
+                    return reject(error)
+                }
+                resolve(true)
+            })
+        })
+    })
+}
+
+
+async function getUserDirectories(username) {
+    return new Promise((resolve, reject) => {
+        db.get("SELECT data FROM albums WHERE owner = ?", username, (error, result) => {
+            if (error) {
+                return reject(error)
+            }
+            
+            resolve(result)
+        })
+    })
+}
+async function createDirectoryDataColumn(username) {
+    return new Promise((resolve) => {
+        const emptyData = []
+        db.run("INSERT INTO albums(owner, data) VALUES(?,?)", [username, JSON.stringify(emptyData)], (error) => {
+            if (error) {
+                return reject(error)
+            }
+
+            resolve()
         })
     })
 }

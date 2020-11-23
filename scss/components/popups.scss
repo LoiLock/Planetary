@@ -13,6 +13,9 @@
     transition: .2s;
     &__header {
         color: var(--fg-color-text);
-        margin-bottom: 20px;
+        margin-bottom: 12px;
+    }
+    input[type="text"] {
+        margin: 10px 0;
     }
 }

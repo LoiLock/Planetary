@@ -7,9 +7,10 @@ var Auth =  require("./middleware/auth")
 var { latestSiteInfo } =  require("./middleware/tasks")
 const auth = require("./middleware/auth")
 const LiveEvents = require("./middleware/liveevents")
-var { getIP } = require("./middleware/utils")
+var { getIP, getDirectoryFromPath } = require("./middleware/utils")
 var config = require("./config.json")
 
+const { getUserAlbum } = require("./middleware/database")
 var Albums = require("./routes/albums")
 const { ratelimit } = require("./middleware/ratelimit")
 
@@ -55,6 +56,8 @@ module.exports = function(app) {
     app.post("/deleteselection", Delete.handleDeleteSelection) // Delete a list of files
 
     app.get("/dashboard", Auth.isTokenValid, Dashboard.handleDashboard)
+    app.get("/dashboard/*", Auth.isTokenValid, Dashboard.handleDashboard)
+
 
     app.use("/albums", Auth.isTokenValid, Albums)
 

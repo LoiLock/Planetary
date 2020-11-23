@@ -7,7 +7,7 @@
         <meta name="description" content="{{ page.description }}">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         {% include "favicon_part.html" %}
-        <link rel="stylesheet" href="css/style.css">
+        <link rel="stylesheet" href="/css/style.css">
         <link rel="manifest" href="manifest.json">
         <script type="module" src="{{ jsPath }}"></script>
     </head>
@@ -31,23 +31,15 @@
                     <button class="start-editor icon-btn icon-btn__edit" aria-label="Start editor"></button>
                     <span class="editor-controls">
                         <button class="submit-deletion icon-btn icon-btn__delete"></button>
-                        <select class="editor-controls__album-select" id="">
-                            <option value="" disabled selected>Choose album</option>
-                            <option value="newalbum">Create new...</option>
-                        </select>
-                        <input class="editor-controls__album-name-input" type="text" placeholder="Album name">
-                        <button class="editor-controls__submit-album icon-btn icon-btn__plus"></button>
-                        <button class="editor-controls__add-selected-to-album btn btn-secondary">Add files to <span class="selected-album-name text--highlighted"></span></button>
-                        <button class="editor-controls__remove-selected-from-album btn btn-secondary">Remove selected files</button>
+                        <button class="add-selected-to-directory icon-btn icon-btn__archive"></button>
+                        <button class="remove-selected-from-directory icon-btn icon-btn__file-minus"></button>
                     </span>
+                    <button class="add-directory icon-btn icon-btn__folder-plus" aria-label="Add new album"></button>
                 </div>
 
 
                 <div class="dashboard__filters__group">
                     <span class="file-count-label text--secondary text--highlighted"></span>
-                    <select class="album-filter__dropdown" id="">
-                        <option value="" selected>Show all</option>
-                    </select>
                     <div class="input-container"><button id="showFilenames" class="check-box toggle-filter" data-value="showFilenames" aria-label="Show file info"></button> <label for="showFilenames" class="input-label">show info</label></div>
                     <div class="input-container"><button id="hideDeleted" class="check-box toggle-filter" data-value="hideDeleted" data-checked="true" aria-label="Hide deleted files"></button> <label for="hideDeleted" class="input-label">hide deleted</label></div>
                 </div>
@@ -62,6 +54,6 @@
             <input type="hidden" id="filetype" name="type" value="file">
             <input class="btn confirm-action" type="submit" value="Upload">
         </form>
-        <script src="js/registersw.js" async></script>
+        <script src="/js/registersw.js" async></script>
     </body>
 </html>
