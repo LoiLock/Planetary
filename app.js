@@ -42,10 +42,5 @@ require('./router')(app);
 app.listen(port, async () => {
     console.log(`Planetary started on ${port}`);
     await database.initDB()
-    updateSiteInfo()
-    // Turn off any logging in production, only show console.info and console.warn
-    if (process.env.NODE_ENV && process.env.NODE_ENV.trim().toLowerCase() == "production") {
-        console.log = function() {}
-        console.error = function() {}
-    }
+    updateSiteInfo() // Set site information variables when the server is ready
 })
