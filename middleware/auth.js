@@ -115,10 +115,11 @@ module.exports = {
             try {
                 if (await argon2.verify(user.phash, req.body.password, { type: argon2id, timeCost: 30, memoryCost: 1 << 14 })) {
                     // passwords matched, generate JWT token
-                    var JWTtoken = jwt.sign({username: user.username, isAdmin: user.isAdmin, sharextoken: user.sharextoken}, config.secretToken, { expiresIn: "1h" })
+                    var JWTtoken = jwt.sign({username: user.username, isAdmin: user.isAdmin, sharextoken: user.sharextoken}, config.secretToken, { expiresIn: "14d" })
                     // set cookie
                     res.cookie("token", JWTtoken, {
-                        expiresIn: 60 * 60 * 1000 // Cookie expires after 1 hour, just like the JWT token
+                        expiresIn: 86400 * 1000 * 14, // Cookie expires after 2 weeks, just like the JWT token
+                        sameSite: "Strict"
                     })
                     console.info("User logged in:", user.username)
                     return res.json({

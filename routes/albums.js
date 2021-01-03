@@ -90,21 +90,21 @@ albumRouter.post("/removefiles", async (req, res) => {
     }
 })
 
-// ? /albums/get
-albumRouter.post("/get", async (req, res) => {
-    console.log("req.body.path:", req.body.path)
-    let jsonEntries = await database.getUserDirectories(req.user.username)
-    const entries = JSON.parse(jsonEntries.data)
+// // ? /albums/get
+// albumRouter.post("/get", async (req, res) => {
+//     console.log("req.body.path:", req.body.path)
+//     let jsonEntries = await database.getUserDirectories(req.user.username)
+//     const entries = JSON.parse(jsonEntries.data)
 
-    const requestedPath = (req.body.path == "") ? "/" : req.body.path
-    console.log(requestedPath)
-    const entriesAtPath = entries.filter((albumEntry) => { // Get all the album entries that contain the current path
-        return albumEntry.path == requestedPath
-    })
-    res.json({
-        children: entriesAtPath
-    })
-})
+//     const requestedPath = (req.body.path == "") ? "/" : req.body.path
+//     console.log(requestedPath)
+//     const entriesAtPath = entries.filter((albumEntry) => { // Get all the album entries that contain the current path
+//         return albumEntry.path == requestedPath
+//     })
+//     res.json({
+//         children: entriesAtPath
+//     })
+// })
 
 // // TODO: change to /add/files (Cleaner)
 // albumRouter.post("/addfiles", async (req, res) => {
