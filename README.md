@@ -3,6 +3,7 @@
 </p>
 
 # Planetary - ShareX server
+## The code is fucking garbage, don't mind it
 
 
 ### TODO:
