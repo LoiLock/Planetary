@@ -3,7 +3,7 @@
 </p>
 
 # Planetary - ShareX server
-## The code is garbage, don't mind it
+## The code is garbage, don't mind it. Working on a Vue 3 version
 
 
 ### TODO:
